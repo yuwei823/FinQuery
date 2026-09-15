@@ -1,33 +1,25 @@
 from __future__ import annotations
 
 from dataclasses import asdict, dataclass
-import json
-from pathlib import Path
 from typing import Any
 
-from ..database import SCHEMA
+from ..database import ACTIVE_DATABASES, ROLE_TABLES, SCHEMA
 
 
-DATABASE_ID = "short_video_ops"
-ALL_DATABASES = frozenset({DATABASE_ID})
+ALL_DATABASES = ACTIVE_DATABASES
 ALL_TABLES = frozenset(str(table["id"]) for table in SCHEMA)
+TABLE_DATABASES = {
+    str(table["id"]): str(table.get("database") or "")
+    for table in SCHEMA
+}
 
 
 def _scenario_tables(role: str) -> frozenset[str]:
-    schema_path = (
-        Path(__file__).resolve().parents[2]
-        / "data"
-        / "databases"
-        / DATABASE_ID
-        / "_schema.json"
-    )
-    payload = json.loads(schema_path.read_text(encoding="utf-8"))
-    names = set((payload.get("role_tables") or {}).get(role) or [])
-    return frozenset(
-        str(table["id"])
-        for table in SCHEMA
-        if str(table.get("name") or table["id"]).split(".")[-1] in names
-    )
+    return ROLE_TABLES.get(role, frozenset())
+
+
+def _scenario_databases(tables: frozenset[str]) -> frozenset[str]:
+    return frozenset(TABLE_DATABASES[table_id] for table_id in tables)
 
 
 GROWTH_OPS_TABLES = _scenario_tables("growth_ops")
@@ -82,9 +74,18 @@ class AccessController:
     }
     ROLE_POLICIES = {
         "admin": {"databases": ALL_DATABASES, "tables": ALL_TABLES},
-        "growth_ops": {"databases": ALL_DATABASES, "tables": GROWTH_OPS_TABLES},
-        "channel_ops": {"databases": ALL_DATABASES, "tables": CHANNEL_OPS_TABLES},
-        "content_ops": {"databases": ALL_DATABASES, "tables": CONTENT_OPS_TABLES},
+        "growth_ops": {
+            "databases": _scenario_databases(GROWTH_OPS_TABLES),
+            "tables": GROWTH_OPS_TABLES,
+        },
+        "channel_ops": {
+            "databases": _scenario_databases(CHANNEL_OPS_TABLES),
+            "tables": CHANNEL_OPS_TABLES,
+        },
+        "content_ops": {
+            "databases": _scenario_databases(CONTENT_OPS_TABLES),
+            "tables": CONTENT_OPS_TABLES,
+        },
     }
 
     def resolve(self, user_id: str | None) -> AccessScope:
@@ -108,5 +109,5 @@ class AccessController:
         return [
             table
             for table in SCHEMA
-            if scope.allows_table(DATABASE_ID, str(table["id"]))
+            if scope.allows_table(str(table.get("database") or ""), str(table["id"]))
         ]

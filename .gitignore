@@ -7,8 +7,10 @@ __pycache__/
 .downloads/
 backend/data/*.db
 backend/data/schema_index.json
+backend/data/schema_store.*.json
 backend/.env
 frontend/node_modules/
 frontend/dist/
 frontend/.env
+frontend/*.tsbuildinfo
 code_analysis/

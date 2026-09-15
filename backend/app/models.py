@@ -119,7 +119,7 @@ class SchemaTable(BaseModel):
     label: str
     description: str
     fields: list[SchemaField]
-    database: str = "short_video_ops"
+    database: str = ""
     domain: str = ""
     business_terms: list[str] = Field(default_factory=list)
     primary_key: list[str] = Field(default_factory=list)

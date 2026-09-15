@@ -1,11 +1,21 @@
 from __future__ import annotations
 
 import os
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 
 
 BASE_DIR = Path(__file__).resolve().parent.parent
+
+
+def parse_string_set(value: str) -> set[str]:
+    """将逗号分隔的配置值解析为去重后的字符串集合。"""
+    return {item.strip() for item in value.split(",") if item.strip()}
+
+
+def _database_switches_from_env() -> set[str]:
+    raw = os.getenv("DATABASE_SWITCHES")
+    return {"short_video_ops"} if raw is None else parse_string_set(raw)
 
 
 def load_env(path: Path | None = None) -> None:
@@ -26,6 +36,7 @@ load_env()
 
 @dataclass(frozen=True)
 class Settings:
+    database_switches: set[str] = field(default_factory=_database_switches_from_env)
     api_key: str = os.getenv("LLM_API_KEY", "")
     llm_base_url: str = os.getenv(
         "LLM_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -92,6 +103,7 @@ class Settings:
 
     def public_status(self) -> dict[str, object]:
         return {
+            "database_switches": sorted(self.database_switches),
             "api_key_configured": bool(self.api_key),
             "llm_model": self.llm_model,
             "llm_enable_thinking": self.llm_enable_thinking,

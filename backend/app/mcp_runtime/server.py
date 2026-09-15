@@ -3,7 +3,7 @@ from __future__ import annotations
 from mcp.server import MCPServer
 from mcp.types import ToolAnnotations
 
-from ..database import SCHEMA, physical_table_name
+from ..database import DEFAULT_DATABASE, SCHEMA, physical_table_name
 from ..querying.duckdb_engine import DuckDbEngine
 from ..security import AccessController, AccessScope
 from .tools import (
@@ -68,7 +68,7 @@ def create_local_mcp_server(
         annotations=READ_ONLY,
     )(build_pie_chart)
 
-    databases = sorted({str(table.get("database") or "short_video_ops") for table in SCHEMA})
+    databases = sorted({str(table.get("database") or DEFAULT_DATABASE) for table in SCHEMA})
     for database in databases:
         if not scope.allows_database(database):
             continue

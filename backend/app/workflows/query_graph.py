@@ -7,7 +7,7 @@ from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
 
 from ..config import Settings, settings
-from ..database import SCHEMA
+from ..database import DEFAULT_DATABASE, SCHEMA
 from ..errors import PipelineStageError
 from ..mcp_runtime import LocalMcpClient, create_local_mcp_server
 from ..model_client import ModelClient
@@ -213,7 +213,7 @@ class QueryWorkflow:
         )
         retrieval["schema_graph"] = schema_graph
         databases = sorted({
-            str(table.get("database") or schema_graph.get("database") or "short_video_ops")
+            str(table.get("database") or schema_graph.get("database") or DEFAULT_DATABASE)
             for table in schema_graph.get("tables", [])
         })
         return {
@@ -252,7 +252,7 @@ class QueryWorkflow:
 
     def _prepare_single_database(self, state: QueryState) -> dict[str, Any]:
         workspace = dict(state.get("workspace") or {})
-        database = (state.get("database_names") or ["short_video_ops"])[0]
+        database = (state.get("database_names") or [DEFAULT_DATABASE])[0]
         decision = self.single_database_agent.prepare(
             state["standalone_query"],
             database,
@@ -280,7 +280,7 @@ class QueryWorkflow:
         }
 
     def _execute_single_database(self, state: QueryState) -> dict[str, Any]:
-        database = (state.get("database_names") or ["short_video_ops"])[0]
+        database = (state.get("database_names") or [DEFAULT_DATABASE])[0]
         raw_execution = state.get("mcp_execution") or {}
         execution = SqlExecution(
             sql=str(raw_execution.get("sql") or state.get("direct_sql") or ""),

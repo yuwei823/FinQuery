@@ -1,1 +1,87 @@
-[]
+[
+  {
+    "id": "result:70c7511b3598",
+    "user_id": "demo_admin",
+    "kind": "result_table",
+    "task_id": "70c7511b3598",
+    "query": "按渠道统计广告消耗和转化数",
+    "summary": "搜索广告消耗最高（约436.4万）且转化数最多（380,271次），其次为达人推广、信息流广告和品牌广告。",
+    "title": "各渠道广告消耗与转化统计",
+    "columns": [
+      "channel_name",
+      "total_spend",
+      "total_conversions"
+    ],
+    "rows": [
+      {
+        "channel_name": "搜索广告",
+        "total_spend": 4363948.339999992,
+        "total_conversions": 380271
+      },
+      {
+        "channel_name": "达人推广",
+        "total_spend": 3115939.0699999966,
+        "total_conversions": 291343
+      },
+      {
+        "channel_name": "信息流广告",
+        "total_spend": 3026418.6699999985,
+        "total_conversions": 253235
+      },
+      {
+        "channel_name": "品牌广告",
+        "total_spend": 2900525.799999998,
+        "total_conversions": 220847
+      }
+    ],
+    "created_at": "2026-09-15T17:19:34"
+  },
+  {
+    "id": "result:86b04bae4631",
+    "user_id": "demo_admin",
+    "kind": "result_table",
+    "task_id": "86b04bae4631",
+    "query": "查询2026年每个月的日活用户数",
+    "summary": "查询结果显示2026年1月至8月的每月活跃用户数（monthly_dau），数值从1月的2115增长至8月的25292。注意SQL中聚合的是daily_active_users字段，列名为monthly_dau，实际含义为该月每日活跃用户数的总和（即月活跃人次或累计日活），而非去重后的月活跃用户数（MAU）。",
+    "title": "2026年1-8月月活用户统计",
+    "columns": [
+      "month",
+      "monthly_dau"
+    ],
+    "rows": [
+      {
+        "month": "2026-01",
+        "monthly_dau": 2115
+      },
+      {
+        "month": "2026-02",
+        "monthly_dau": 3777
+      },
+      {
+        "month": "2026-03",
+        "monthly_dau": 5842
+      },
+      {
+        "month": "2026-04",
+        "monthly_dau": 7444
+      },
+      {
+        "month": "2026-05",
+        "monthly_dau": 10256
+      },
+      {
+        "month": "2026-06",
+        "monthly_dau": 13017
+      },
+      {
+        "month": "2026-07",
+        "monthly_dau": 18274
+      },
+      {
+        "month": "2026-08",
+        "monthly_dau": 25292
+      }
+    ],
+    "created_at": "2026-09-15T17:14:32"
+  }
+]

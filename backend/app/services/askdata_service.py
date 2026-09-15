@@ -6,7 +6,7 @@ from typing import Any
 from langgraph.types import Command
 
 from ..config import settings
-from ..database import SCHEMA
+from ..database import DEFAULT_DATABASE, SCHEMA
 from ..errors import PipelineStageError
 from ..model_client import ModelClient
 from ..models import QueryResult
@@ -206,7 +206,7 @@ class AskDataService:
     ) -> None:
         scope = self.access_controller.resolve(user_id)
         table = next((item for item in SCHEMA if item["id"] == table_id), None)
-        database = str(table.get("database") or "short_video_ops") if table else ""
+        database = str(table.get("database") or DEFAULT_DATABASE) if table else ""
         if not table or not scope.allows_table(database, table_id):
             raise PermissionError("无权保存该字段")
         if not any(field["name"] == name for field in table["fields"]):

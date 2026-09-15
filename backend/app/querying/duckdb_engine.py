@@ -14,7 +14,7 @@ from sqlglot import exp
 from sqlglot.errors import ParseError
 
 from ..config import BASE_DIR
-from ..database import SCHEMA, physical_table_name
+from ..database import DEFAULT_DATABASE, SCHEMA, physical_table_name
 from ..security import AccessScope
 from .models import SqlExecution
 
@@ -120,7 +120,7 @@ class DuckDbEngine:
         database_tables = [
             table
             for table in SCHEMA
-            if table.get("database", "short_video_ops") == database
+            if table.get("database", DEFAULT_DATABASE) == database
         ]
         allowed = {
             physical_table_name(table): table["id"]

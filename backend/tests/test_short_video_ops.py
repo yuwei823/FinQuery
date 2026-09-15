@@ -4,7 +4,9 @@ import json
 import unittest
 from pathlib import Path
 
+from app.database import SCHEMA
 from app.querying.duckdb_engine import DuckDbEngine
+from app.retrieval.service import SYNONYMS, SchemaIndex
 from app.security import AccessController
 
 
@@ -13,6 +15,37 @@ DATABASE_DIR = Path(__file__).resolve().parents[1] / "data" / "databases" / DATA
 
 
 class ShortVideoOpsDataTest(unittest.TestCase):
+    def test_retrieval_synonyms_reference_existing_qualified_fields(self) -> None:
+        field_ids = {
+            f"{table['id']}.{field['name']}"
+            for table in SCHEMA
+            for field in table["fields"]
+        }
+
+        self.assertTrue(SYNONYMS)
+        self.assertEqual(set(), set(SYNONYMS) - field_ids)
+        self.assertNotIn("paid_amount", SYNONYMS)
+        self.assertNotIn("status", SYNONYMS)
+
+    def test_retrieval_synonyms_extend_prebuilt_index_content(self) -> None:
+        table = next(
+            table for table in SCHEMA
+            if table["id"] == "short_video_ops.growth_daily_metrics"
+        )
+        documents: list[dict] = []
+        index = object.__new__(SchemaIndex)
+
+        index._append_table_documents(documents, None, table)
+
+        document = next(
+            item for item in documents
+            if item["field_name"] == "daily_active_users"
+        )
+        self.assertIn("DAU", document["aliases"])
+        self.assertIn("DAU", document["keyword_text"])
+        self.assertIn("DAU", document["semantic_text"])
+        self.assertIn("DAU", document["rerank_text"])
+
     def test_low_cardinality_schema_keeps_filter_values(self) -> None:
         schema = json.loads((DATABASE_DIR / "_schema.json").read_text(encoding="utf-8"))
         category = next(

@@ -6,26 +6,19 @@ from pathlib import Path
 from typing import Any
 
 from ..config import BASE_DIR, Settings, settings
-from ..database import RELATIONS, SCHEMA, physical_table_name
+from ..database import (
+    ACTIVE_DATABASES,
+    DEFAULT_DATABASE,
+    RELATIONS,
+    SCHEMA,
+    SYNONYMS,
+    physical_table_name,
+)
 from ..errors import PipelineStageError
 from ..model_client import ModelClient
 from ..querying.duckdb_engine import DuckDbEngine
 from ..security import AccessScope
 from .store import FieldDocument, LocalSchemaStore
-
-
-SYNONYMS = {
-    "paid_amount": ["销售额", "成交额", "收入", "实收", "实付"],
-    "target_amount": ["销售目标", "目标额", "业绩目标"],
-    "order_id": ["订单数", "笔数", "订单量"],
-    "region": ["地区", "区域", "大区"],
-    "category": ["品类", "类别", "产品类型"],
-    "order_date": ["时间", "日期", "下单时间"],
-    "status": ["状态", "支付状态", "退款", "取消"],
-    "customer_name": ["客户", "客户名称", "企业名称"],
-    "customer_level": ["客户等级", "客户层级", "客户级别"],
-    "product_name": ["产品", "商品", "产品名称"],
-}
 
 
 class SchemaIndex:
@@ -39,7 +32,8 @@ class SchemaIndex:
     ) -> None:
         self.config = config or settings
         self.model_client = model_client or ModelClient(self.config)
-        self.index_path = index_path or BASE_DIR / "data" / "schema_store.json"
+        database_key = "-".join(sorted(ACTIVE_DATABASES))
+        self.index_path = index_path or BASE_DIR / "data" / f"schema_store.{database_key}.json"
         self.store = LocalSchemaStore(self.index_path)
         self.data_engine = DuckDbEngine()
         self.embedding_source = "not_built"
@@ -309,12 +303,12 @@ class SchemaIndex:
 
     def _build_raw_documents(self) -> list[dict[str, Any]]:
         output: list[dict[str, Any]] = []
-        database_names = sorted({table.get("database", "short_video_ops") for table in SCHEMA})
+        database_names = sorted({table.get("database", DEFAULT_DATABASE) for table in SCHEMA})
         for database in database_names:
             tables = [
                 item
                 for item in SCHEMA
-                if item.get("database", "short_video_ops") == database
+                if item.get("database", DEFAULT_DATABASE) == database
             ]
             prebuilt = [
                 table
@@ -351,8 +345,10 @@ class SchemaIndex:
                     ).fetchall()
                 ]
                 profile = self._field_profile(connection, sql_table_name, field)
+            field_id = f"{table['id']}.{field['name']}"
+            synonyms = SYNONYMS.get(field_id, [])
             aliases = list(dict.fromkeys([
-                *field.get("aliases", []), *SYNONYMS.get(field["name"], [])
+                *field.get("aliases", []), *synonyms,
             ]))
             samples_text = "、".join(str(item) for item in samples)
             relations = [
@@ -362,7 +358,7 @@ class SchemaIndex:
                 and field["name"] in {item["left_field"], item["right_field"]}
             ]
             default_keyword_text = " ".join([
-                table.get("database", "short_video_ops"), table.get("domain", ""),
+                table.get("database", DEFAULT_DATABASE), table.get("domain", ""),
                 table["id"], sql_table_name, table["label"], *table.get("business_terms", []),
                 field["name"], field["label"], field.get("description", ""),
                 *aliases, samples_text,
@@ -383,9 +379,14 @@ class SchemaIndex:
             keyword_text = str(index_content.get("keyword_text") or default_keyword_text)
             semantic_text = str(index_content.get("vector_text") or default_semantic_text)
             rerank_text = str(index_content.get("rerank_text") or default_rerank_text)
+            if synonyms:
+                synonym_text = "、".join(synonyms)
+                keyword_text = f"{keyword_text} {synonym_text}"
+                semantic_text = f"{semantic_text} 补充业务表达：{synonym_text}。"
+                rerank_text = f"{rerank_text} 补充同义词：{synonym_text}。"
             output.append({
                 "doc_id": f"{table['id']}.{field['name']}",
-                "database_id": table.get("database", "short_video_ops"),
+                "database_id": table.get("database", DEFAULT_DATABASE),
                 "table_id": table["id"],
                 "table_label": table["label"],
                 "field_name": field["name"],
@@ -479,9 +480,11 @@ class SchemaIndex:
     def _schema_signature() -> str:
         payload = json.dumps(
             {
-                "store_version": "csv_duckdb_v1",
+                "store_version": "csv_duckdb_v2",
+                "database_switches": sorted(ACTIVE_DATABASES),
                 "schema": SCHEMA,
                 "relations": RELATIONS,
+                "synonyms": SYNONYMS,
             },
             ensure_ascii=False,
             sort_keys=True,
