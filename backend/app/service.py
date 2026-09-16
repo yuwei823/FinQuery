@@ -1,5 +1,5 @@
 """兼容旧版服务导入路径。"""
 
-from .services.askdata_service import AskDataService
+from .services.finquery_service import FinQueryService
 
-__all__ = ["AskDataService"]
+__all__ = ["FinQueryService"]

@@ -17,7 +17,7 @@ from .memory_store import MemoryStore
 from .session_context import SessionContext
 
 
-class AskDataService:
+class FinQueryService:
     """查询服务入口，负责会话管理和工作流调用。"""
 
     def __init__(

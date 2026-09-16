@@ -461,11 +461,11 @@ function clarificationHint(result: QueryResult) {
 </script>
 
 <template>
-  <div v-if="!authReady" class="auth-loading"><span></span><p>正在连接 AskData…</p></div>
+  <div v-if="!authReady" class="auth-loading"><span></span><p>正在连接 FinQuery…</p></div>
 
   <main v-else-if="!authUser" class="login-page">
     <section class="login-intro">
-      <div class="login-brand"><span>A</span><strong>AskData</strong></div>
+      <div class="login-brand"><span>A</span><strong>FinQuery</strong></div>
       <div>
         <p class="kicker">AI DATA ASSISTANT</p>
         <h1>用自然语言，<br>读懂你的数据。</h1>
@@ -476,7 +476,7 @@ function clarificationHint(result: QueryResult) {
 
     <section class="login-side">
       <form class="login-card" @submit.prevent="loginUser">
-        <header><span class="login-mark">A</span><div><h2>欢迎回来</h2><p>登录 AskData Studio</p></div></header>
+        <header><span class="login-mark">A</span><div><h2>欢迎回来</h2><p>登录 FinQuery Studio</p></div></header>
         <label>
           <span>账号</span>
           <input v-model="loginUsername" autocomplete="username" placeholder="请输入账号">
@@ -522,7 +522,7 @@ function clarificationHint(result: QueryResult) {
     <aside class="history-sidebar" :class="{ open: leftOpen }">
       <div class="brand-row">
         <span class="brand-symbol">A</span>
-        <div><strong>AskData</strong><small>AI 数据分析</small></div>
+        <div><strong>FinQuery</strong><small>AI 数据分析</small></div>
       </div>
 
       <button class="new-chat" :disabled="loading || !activeConversation?.turns.length" @click="createConversation"><span>＋</span>新建对话</button>
@@ -591,7 +591,7 @@ function clarificationHint(result: QueryResult) {
               <div class="message-avatar assistant">A</div>
               <div class="message-body assistant-body">
                 <div class="answer-heading" :class="{ 'qa-heading': turn.result.route !== 'database_query' }">
-                  <div><small>AskData</small><strong v-if="turn.result.route === 'database_query'">{{ turn.result.status === "failed" ? "处理失败" : turn.result.status === "waiting_clarification" ? "需要补充信息" : "查询完成" }}</strong></div>
+                  <div><small>FinQuery</small><strong v-if="turn.result.route === 'database_query'">{{ turn.result.status === "failed" ? "处理失败" : turn.result.status === "waiting_clarification" ? "需要补充信息" : "查询完成" }}</strong></div>
                   <span v-if="turn.result.route === 'database_query' && turn.result.status === 'completed'">
                     {{ turn.result.workflow_mode === "single_database_agent" ? "单库智能体" : "多库流程" }}
                   </span>

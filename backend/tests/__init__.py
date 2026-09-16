@@ -1,1 +1,1 @@
-"""AskData Studio backend tests."""
+"""FinQuery Studio backend tests."""

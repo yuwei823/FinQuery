@@ -1,2 +1,2 @@
-"""AskData Studio backend package."""
+"""FinQuery Studio backend package."""
 

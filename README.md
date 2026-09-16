@@ -1,4 +1,4 @@
-# AskData Studio 运营场景版
+# FinQuery Studio 运营场景版
 
 面向短视频运营的自然语言问数项目，包含 Vue 前端、FastAPI + LangGraph 后端、41 张 CSV 数据表、字段级 Schema 索引、测试脚本和当前评测报告。
 

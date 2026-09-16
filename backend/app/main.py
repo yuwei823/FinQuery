@@ -7,7 +7,7 @@ from .api.routes import router
 
 
 app = FastAPI(
-    title="AskData Studio API",
+    title="FinQuery Studio API",
     version="1.0.0",
     description="面向短视频运营场景的自然语言问数服务",
 )
