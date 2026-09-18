@@ -58,6 +58,32 @@ class SchemaGraphBuilder:
                 "score": hit.get("score", 0),
             }
 
+        # 实体筛选必须始终获得真实的标识字段，避免模型根据行业惯例猜列名。
+        for table_id in graph_tables:
+            table_definition = self.tables.get(table_id, {})
+            table_name = physical_table_name(table_definition) if table_definition else table_id
+            for definition in table_definition.get("fields", []):
+                if definition.get("role") not in {"identifier", "entity_name"}:
+                    continue
+                field_name = str(definition["name"])
+                doc_id = f"{table_id}.{field_name}"
+                fields.setdefault(
+                    doc_id,
+                    {
+                        "id": doc_id,
+                        "table_id": table_id,
+                        "table_name": table_name,
+                        "sql_name": f"{table_name}.{field_name}",
+                        "name": field_name,
+                        "label": definition.get("label", field_name),
+                        "type": definition.get("type", "未知"),
+                        "description": definition.get("description", "实体标识字段"),
+                        "role": definition.get("role", "identifier"),
+                        "source": "entity_identity",
+                        "score": 1.0,
+                    },
+                )
+
         # 补充最短连接路径所需的关联字段。
         for relation in relations:
             for side in ("left", "right"):

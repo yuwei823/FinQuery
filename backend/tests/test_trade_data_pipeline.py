@@ -7,9 +7,12 @@ import unittest
 from pathlib import Path
 
 from app.querying.duckdb_engine import DuckDbEngine
+from app.retrieval.graph import SchemaGraphBuilder
+from app.retrieval.service import SchemaIndex
 from scripts.trade_data_pipeline import (
     COLUMNS,
     EXPECTED_HEADER,
+    compact_dataset,
     convert_dataset,
     inventory,
     validate_dataset,
@@ -34,6 +37,42 @@ class TradeDataPipelineTest(unittest.TestCase):
             [field["name"] for field in fields],
             [column.target for column in COLUMNS],
         )
+
+    def test_schema_only_index_does_not_scan_full_parquet_table(self) -> None:
+        schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+        table = schema["tables"][0]
+        documents: list[dict] = []
+        index = object.__new__(SchemaIndex)
+
+        index._append_table_documents(documents, None, table)
+
+        self.assertEqual(table["profile_mode"], "schema_only")
+        self.assertEqual(len(documents), len(COLUMNS))
+        self.assertTrue(
+            all("未在Schema索引阶段扫描全表" in item["profile"] for item in documents)
+        )
+
+    def test_schema_graph_always_includes_entity_identity_fields(self) -> None:
+        schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+        table = schema["tables"][0]
+        builder = SchemaGraphBuilder()
+        builder.tables = {table["id"]: table}
+        graph = builder.build(
+            [
+                {
+                    "doc_id": "trade_data.stock_daily.close",
+                    "table_id": "trade_data.stock_daily",
+                    "database_id": "trade_data",
+                    "field_name": "close",
+                    "field_label": "收盘价",
+                    "field_type": "数值",
+                }
+            ]
+        )
+
+        field_names = {field["name"] for field in graph["fields"]}
+        self.assertIn("symbol", field_names)
+        self.assertIn("stock_name", field_names)
 
     def test_inventory_and_incremental_parquet_conversion(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -64,6 +103,10 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(validation["errors"], [])
             self.assertEqual(validation["parquet_files"], 2)
             self.assertEqual(validation["row_count"], 4)
+
+            compact = compact_dataset(output)
+            self.assertEqual(compact["row_count"], 4)
+            self.assertTrue((output / "stock_daily.parquet").is_file())
 
             engine = DuckDbEngine(database_root=database_root)
             with engine.connect("trade_data") as connection:

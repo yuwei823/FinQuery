@@ -97,6 +97,26 @@ class SingleDatabaseAgent:
                 tool_name = str(decision["tool_name"])
                 arguments = decision["arguments"]
 
+                if tool_name == database_tool:
+                    sql = str(arguments.get("sql") or "").strip()
+                    previous_sql = {
+                        str(item.get("arguments", {}).get("sql") or "").strip()
+                        for item in tool_trace
+                    }
+                    if sql in previous_sql:
+                        observations.append({
+                            "tool": tool_name,
+                            "result": {
+                                "success": False,
+                                "error": "相同SQL已经失败，禁止原样重试",
+                            },
+                            "instruction": (
+                                "不得重复失败SQL。只使用schema_text中明确列出的字段，"
+                                "根据上一条数据库错误实质修正字段名后再调用。"
+                            ),
+                        })
+                        continue
+
                 tool_result = mcp_client.call_tool(tool_name, arguments)
                 trace = {
                     "call_index": call_index,
@@ -115,7 +135,8 @@ class SingleDatabaseAgent:
                             "result": tool_result,
                             "instruction": (
                                 "上一条SQL执行失败。只根据数据库错误、原问题和Schema修正SQL，"
-                                "不得改变查询口径，然后重新调用同一个数据库工具。"
+                                "不得改变查询口径，不得猜测Schema之外的字段，也不得原样重复失败SQL，"
+                                "然后重新调用同一个数据库工具。"
                             ),
                         })
                         continue

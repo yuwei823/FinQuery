@@ -84,6 +84,17 @@ class ShortVideoOpsDataTest(unittest.TestCase):
         self.assertFalse(denied.success)
         self.assertIn("无权访问", denied.error or "")
 
+    def test_unknown_column_is_rejected_before_duckdb_execution(self) -> None:
+        scope = AccessController().resolve("demo_growth_ops")
+        result = DuckDbEngine().execute(
+            DATABASE,
+            "SELECT missing_field FROM user_registrations",
+            scope,
+        )
+
+        self.assertFalse(result.success)
+        self.assertIn("未知字段", result.error or "")
+
     def test_channel_and_content_scopes_are_isolated(self) -> None:
         controller = AccessController()
         channel_scope = controller.resolve("demo_channel_ops")

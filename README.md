@@ -268,6 +268,14 @@ docker compose --profile tools run --rm data-prep
 输出到 `D:\trade_data_curated\trade_data\stock_daily`。它根据源文件大小和修改时间跳过
 未变化文件，可安全地在每日数据更新后重复执行。原始目录始终只读。
 
+把按股票生成的分片压实成查询文件，避免每次查询打开数千个小文件：
+
+```powershell
+docker compose --profile tools run --rm data-prep `
+  python scripts/trade_data_pipeline.py compact `
+  --output /data/curated/trade_data
+```
+
 转换后运行全量完整性检查：
 
 ```powershell

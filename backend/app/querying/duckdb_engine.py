@@ -76,7 +76,10 @@ class DuckDbEngine:
                 table_sources[parquet_path.stem] = ("parquet", parquet_path)
             for table_dir in sorted(path for path in folder.iterdir() if path.is_dir()):
                 if any(table_dir.glob("*.parquet")):
-                    table_sources[table_dir.name] = ("parquet_glob", table_dir)
+                    table_sources.setdefault(
+                        table_dir.name,
+                        ("parquet_glob", table_dir),
+                    )
             if not table_sources:
                 raise ValueError(f"数据库文件夹没有CSV或Parquet表：{folder}")
             for table, (source_type, source_path) in table_sources.items():
@@ -150,6 +153,27 @@ class DuckDbEngine:
         unknown = {name for name in referenced if name not in allowed}
         if unknown:
             raise ValueError(f"SQL引用了未知数据表：{', '.join(sorted(unknown))}")
+        if len(referenced) == 1 and not cte_names:
+            table_name = next(iter(referenced))
+            table_id = allowed[table_name]
+            table_schema = next(table for table in database_tables if table["id"] == table_id)
+            known_fields = {str(field["name"]) for field in table_schema.get("fields", [])}
+            projection_aliases = {
+                str(projection.alias)
+                for select in statement.find_all(exp.Select)
+                for projection in select.expressions
+                if projection.alias
+            }
+            unknown_fields = {
+                column.name
+                for column in statement.find_all(exp.Column)
+                if column.name not in known_fields
+                and column.name not in projection_aliases
+            }
+            if unknown_fields:
+                raise ValueError(
+                    f"SQL引用了未知字段：{', '.join(sorted(unknown_fields))}"
+                )
         if access_scope:
             denied = {
                 table

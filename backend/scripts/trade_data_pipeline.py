@@ -430,6 +430,54 @@ def validate_dataset(output: Path) -> dict[str, Any]:
     }
 
 
+def compact_dataset(output: Path) -> dict[str, Any]:
+    manifest_path = output / "_pipeline_manifest.json"
+    table_dir = output / TABLE_NAME
+    if not manifest_path.is_file():
+        raise FileNotFoundError(f"转换manifest不存在：{manifest_path}")
+    parquet_files = sorted(table_dir.glob("*.parquet"))
+    if not parquet_files:
+        raise ValueError(f"没有可压实的Parquet分片：{table_dir}")
+
+    manifest = _load_manifest(manifest_path)
+    expected_rows = int(manifest.get("row_count", -1))
+    destination = output / f"{TABLE_NAME}.parquet"
+    temporary = output / f".{TABLE_NAME}.compacting.parquet"
+    temporary.unlink(missing_ok=True)
+    connection = duckdb.connect(":memory:")
+    try:
+        connection.execute("PRAGMA disable_progress_bar")
+        connection.execute(
+            f"""
+            COPY (
+                SELECT *
+                FROM read_parquet(
+                    '{_safe_path(table_dir / '*.parquet')}',
+                    union_by_name=true
+                )
+            ) TO '{_safe_path(temporary)}'
+            (FORMAT PARQUET, COMPRESSION ZSTD, ROW_GROUP_SIZE 122880)
+            """
+        )
+        row_count = connection.execute(
+            f"SELECT COUNT(*) FROM read_parquet('{_safe_path(temporary)}')"
+        ).fetchone()[0]
+    finally:
+        connection.close()
+    if row_count != expected_rows:
+        temporary.unlink(missing_ok=True)
+        raise ValueError(f"压实前后行数不一致：{expected_rows} != {row_count}")
+    os.replace(temporary, destination)
+    return {
+        "database": DATABASE_ID,
+        "table": TABLE_NAME,
+        "source_files": len(parquet_files),
+        "row_count": row_count,
+        "compact_file": destination.name,
+        "compact_bytes": destination.stat().st_size,
+    }
+
+
 def _default_source() -> Path:
     root = os.getenv("TRADE_DATA_ROOT", "D:/trade_data")
     return Path(root) / "stock-trading-data-pro"
@@ -463,6 +511,8 @@ def build_parser() -> argparse.ArgumentParser:
     )
     validate_parser = subparsers.add_parser("validate", help="验证Parquet和manifest")
     validate_parser.add_argument("--output", type=Path, default=_default_output())
+    compact_parser = subparsers.add_parser("compact", help="压实分片以提升查询性能")
+    compact_parser.add_argument("--output", type=Path, default=_default_output())
     return parser
 
 
@@ -479,8 +529,10 @@ def main(argv: Iterable[str] | None = None) -> int:
             workers=args.workers,
             progress=True,
         )
-    else:
+    elif args.command == "validate":
         result = validate_dataset(args.output)
+    else:
+        result = compact_dataset(args.output)
     display_result = (
         {key: value for key, value in result.items() if key != "files"}
         if args.command == "convert"

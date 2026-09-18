@@ -313,7 +313,11 @@ class SchemaIndex:
             prebuilt = [
                 table
                 for table in tables
-                if all(field.get("data_profile") and field.get("index_content") for field in table["fields"])
+                if table.get("profile_mode") == "schema_only"
+                or all(
+                    field.get("data_profile") and field.get("index_content")
+                    for field in table["fields"]
+                )
             ]
             for table in prebuilt:
                 self._append_table_documents(output, None, table)
@@ -336,6 +340,12 @@ class SchemaIndex:
             if isinstance(stored_profile, dict):
                 samples = list(stored_profile.get("sample_values") or [])
                 profile = self._stored_profile_text(stored_profile)
+            elif connection is None:
+                samples = list(field.get("sample_values") or [])
+                profile = str(
+                    field.get("profile_hint")
+                    or "使用流水线完整性检查，未在Schema索引阶段扫描全表"
+                )
             else:
                 samples = [
                     DuckDbEngine._json_value(row[0])

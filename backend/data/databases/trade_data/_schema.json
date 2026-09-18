@@ -12,10 +12,11 @@
       "domain": "股票行情",
       "description": "按股票和交易日记录的价格、成交、资金流、财务快照、指数成分和申万行业数据。",
       "business_terms": ["股票行情", "日线", "交易数据", "A股"],
+      "profile_mode": "schema_only",
       "primary_key": ["symbol", "trade_date"],
       "fields": [
         {"name": "symbol", "label": "股票代码", "type": "文本", "source_type": "VARCHAR", "description": "包含交易所前缀的股票代码", "aliases": ["证券代码", "代码"], "role": "identifier", "aggregation": "none"},
-        {"name": "stock_name", "label": "股票名称", "type": "文本", "source_type": "VARCHAR", "description": "股票在该交易日使用的简称", "aliases": ["证券名称", "名称"], "role": "dimension", "aggregation": "none"},
+        {"name": "stock_name", "label": "股票名称", "type": "文本", "source_type": "VARCHAR", "description": "股票在该交易日使用的简称", "aliases": ["证券名称", "名称"], "role": "entity_name", "aggregation": "none"},
         {"name": "trade_date", "label": "交易日期", "type": "日期", "source_type": "DATE", "description": "日行情所属交易日", "aliases": ["交易日", "日期"], "role": "time", "aggregation": "none"},
         {"name": "open", "label": "开盘价", "type": "数值", "source_type": "DOUBLE", "description": "当日开盘价格", "aliases": ["开盘价格"], "role": "metric", "aggregation": "avg"},
         {"name": "high", "label": "最高价", "type": "数值", "source_type": "DOUBLE", "description": "当日最高价格", "aliases": ["最高价格"], "role": "metric", "aggregation": "max"},
