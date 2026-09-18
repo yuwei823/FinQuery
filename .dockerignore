@@ -1,0 +1,13 @@
+.git
+.gitignore
+.venv
+**/.venv
+**/__pycache__
+**/*.py[cod]
+**/.env
+**/node_modules
+**/dist
+**/*.tsbuildinfo
+backend/data/schema_store.*.json
+backend/data/*.db
+code_analysis

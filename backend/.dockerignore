@@ -1,0 +1,9 @@
+.venv
+.env
+__pycache__
+**/__pycache__
+*.py[cod]
+*.log
+data/*.db
+data/schema_store.*.json
+evaluation/results

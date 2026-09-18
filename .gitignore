@@ -9,6 +9,11 @@ backend/data/*.db
 backend/data/schema_index.json
 backend/data/schema_store.*.json
 backend/.env
+.env
+.env.docker
+.env.docker.local
+compose.local.yaml
+compose.override.local.yaml
 frontend/node_modules/
 frontend/dist/
 frontend/.env
