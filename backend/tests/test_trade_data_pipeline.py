@@ -17,6 +17,13 @@ from scripts.trade_data_pipeline import (
     inventory,
     validate_dataset,
 )
+from scripts.main_index_pipeline import SPEC as INDEX_SPEC
+from scripts.csv_parquet_pipeline import (
+    compact_dataset as compact_configured_dataset,
+    convert_dataset as convert_configured_dataset,
+    inventory as inventory_configured_dataset,
+    validate_dataset as validate_configured_dataset,
+)
 
 
 SCHEMA_PATH = (
@@ -37,6 +44,15 @@ class TradeDataPipelineTest(unittest.TestCase):
             [field["name"] for field in fields],
             [column.target for column in COLUMNS],
         )
+
+        index_table = next(
+            table for table in schema["tables"] if table["name"] == "index_daily"
+        )
+        self.assertEqual(
+            [field["name"] for field in index_table["fields"]],
+            [column.target for column in INDEX_SPEC.columns],
+        )
+        self.assertIn("index_daily", schema["role_tables"]["market_analyst"])
 
     def test_schema_only_index_does_not_scan_full_parquet_table(self) -> None:
         schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -119,6 +135,47 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertIn(rows[0][0], {"bj920000", "sh600000"})
             self.assertEqual(rows[-1][2], 9.06)
             self.assertTrue(rows[0][3])
+
+    def test_main_index_pipeline_and_duckdb_registration(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "raw"
+            database_root = root / "databases"
+            output = database_root / "trade_data"
+            source.mkdir()
+            for index_code in ("sh000001", "sz399006"):
+                with (source / f"{index_code}.csv").open(
+                    "w", encoding="utf-8", newline=""
+                ) as handle:
+                    writer = csv.writer(handle)
+                    writer.writerow(column.source for column in INDEX_SPEC.columns)
+                    writer.writerow(
+                        ["2026-09-16", "100", "103", "99", "102", "5000", "300", index_code]
+                    )
+                    writer.writerow(
+                        ["2026-09-17", "102", "104", "101", "103", "6000", "350", index_code]
+                    )
+
+            report = inventory_configured_dataset(INDEX_SPEC, source)
+            self.assertEqual(report["invalid_header_count"], 0)
+            first = convert_configured_dataset(INDEX_SPEC, source, output, workers=2)
+            self.assertEqual(first["converted_this_run"], 2)
+            second = convert_configured_dataset(INDEX_SPEC, source, output)
+            self.assertEqual(second["skipped_this_run"], 2)
+            validation = validate_configured_dataset(INDEX_SPEC, output)
+            self.assertEqual(validation["errors"], [])
+            self.assertEqual(validation["row_count"], 4)
+            compact_configured_dataset(INDEX_SPEC, output)
+
+            engine = DuckDbEngine(database_root=database_root)
+            with engine.connect("trade_data") as connection:
+                rows = connection.execute(
+                    "SELECT index_code, trade_date, close FROM index_daily "
+                    "ORDER BY index_code, trade_date"
+                ).fetchall()
+            self.assertEqual(len(rows), 4)
+            self.assertEqual(rows[0][0], "sh000001")
+            self.assertEqual(rows[-1][2], 103.0)
 
     @staticmethod
     def _write_source(path: Path, *, reordered: bool = False) -> None:

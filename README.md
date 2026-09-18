@@ -286,6 +286,29 @@ docker compose --profile tools run --rm data-prep `
 
 只有命令返回成功且 `errors` 为空时，才应发布新数据版本或重启生产服务。
 
+主要指数数据使用相同的增量构建流程，但采用独立的字段契约和 manifest。执行：
+
+```powershell
+docker compose --profile tools run --rm index-data-prep `
+  python scripts/main_index_pipeline.py inventory `
+  --source /data/raw/stock-main-index-data `
+  --output /data/curated/trade_data/_inventory.index_daily.json
+
+docker compose --profile tools run --rm index-data-prep
+
+docker compose --profile tools run --rm index-data-prep `
+  python scripts/main_index_pipeline.py validate `
+  --output /data/curated/trade_data
+
+docker compose --profile tools run --rm index-data-prep `
+  python scripts/main_index_pipeline.py compact `
+  --output /data/curated/trade_data
+```
+
+产物为分片目录 `trade_data/index_daily/`、压实查询文件
+`trade_data/index_daily.parquet` 和独立增量清单
+`trade_data/_pipeline_manifest.index_daily.json`。原始 CSV 首行就是英文表头，因此该配置不会跳过说明行。
+
 转换完成后把 `backend/.env` 改为以下配置并重启后端：
 
 ```env

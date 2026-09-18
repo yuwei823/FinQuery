@@ -1,8 +1,8 @@
 {
   "schema_version": "1.0.0",
   "database": "trade_data",
-  "scenario": "中国股票日线行情、资金流、财务快照和行业分类",
-  "role_tables": {"market_analyst": ["stock_daily"]},
+  "scenario": "中国股票和主要指数的日线行情、资金流、财务快照和行业分类",
+  "role_tables": {"market_analyst": ["stock_daily", "index_daily"]},
   "tables": [
     {
       "id": "trade_data.stock_daily",
@@ -53,6 +53,27 @@
         {"name": "close_0935", "label": "09:35收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:35时点价格", "aliases": ["九点三十五价格"], "role": "metric", "aggregation": "avg"},
         {"name": "close_0945", "label": "09:45收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:45时点价格", "aliases": ["九点四十五价格"], "role": "metric", "aggregation": "avg"},
         {"name": "close_0955", "label": "09:55收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:55时点价格", "aliases": ["九点五十五价格"], "role": "metric", "aggregation": "avg"}
+      ]
+    },
+    {
+      "id": "trade_data.index_daily",
+      "name": "index_daily",
+      "label": "主要指数日行情",
+      "database": "trade_data",
+      "domain": "指数行情",
+      "description": "按指数和交易日记录主要市场指数的开高低收、成交额与成交量。常用代码包括 sh000001（上证指数）、sh000016（上证50）、sh000300（沪深300）、sh000688（科创50）、sh000852（中证1000）、sh000905（中证500）、sh932000（中证2000）、sz399001（深证成指）和 sz399006（创业板指）。",
+      "business_terms": ["指数行情", "大盘指数", "主要指数", "指数日线"],
+      "profile_mode": "schema_only",
+      "primary_key": ["index_code", "trade_date"],
+      "fields": [
+        {"name": "trade_date", "label": "交易日期", "type": "日期", "source_type": "DATE", "description": "指数行情所属交易日", "aliases": ["交易日", "日期"], "role": "time", "aggregation": "none"},
+        {"name": "open", "label": "开盘点位", "type": "数值", "source_type": "DOUBLE", "description": "当日开盘指数点位", "aliases": ["开盘价", "开盘指数"], "role": "metric", "aggregation": "avg"},
+        {"name": "high", "label": "最高点位", "type": "数值", "source_type": "DOUBLE", "description": "当日最高指数点位", "aliases": ["最高价", "最高指数"], "role": "metric", "aggregation": "max"},
+        {"name": "low", "label": "最低点位", "type": "数值", "source_type": "DOUBLE", "description": "当日最低指数点位", "aliases": ["最低价", "最低指数"], "role": "metric", "aggregation": "min"},
+        {"name": "close", "label": "收盘点位", "type": "数值", "source_type": "DOUBLE", "description": "当日收盘指数点位", "aliases": ["收盘价", "收盘指数"], "role": "metric", "aggregation": "avg"},
+        {"name": "turnover", "label": "成交额", "type": "数值", "source_type": "DOUBLE", "description": "指数覆盖证券的当日成交金额", "aliases": ["交易额", "amount"], "role": "metric", "aggregation": "sum"},
+        {"name": "volume", "label": "成交量", "type": "数值", "source_type": "DOUBLE", "description": "指数覆盖证券的当日成交数量", "aliases": ["交易量"], "role": "metric", "aggregation": "sum"},
+        {"name": "index_code", "label": "指数代码", "type": "文本", "source_type": "VARCHAR", "description": "带市场前缀的指数代码，例如 sh000001、sh000300 或 sz399006", "aliases": ["代码", "证券代码", "大盘代码"], "role": "identifier", "aggregation": "none"}
       ]
     }
   ],
