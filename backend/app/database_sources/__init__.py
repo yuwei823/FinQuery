@@ -3,8 +3,6 @@ from __future__ import annotations
 from dataclasses import dataclass
 from pathlib import Path
 
-from .short_video_ops import DATABASE_ID as SHORT_VIDEO_OPS_ID
-from .short_video_ops import SYNONYMS as SHORT_VIDEO_OPS_SYNONYMS
 from .trade_data import DATABASE_ID as TRADE_DATA_ID
 from .trade_data import SYNONYMS as TRADE_DATA_SYNONYMS
 
@@ -33,11 +31,6 @@ def source_registry(
 ) -> dict[str, DatabaseSource]:
     """返回所有受支持的数据源；启用状态由调用方负责筛选。"""
     return {
-        SHORT_VIDEO_OPS_ID: DatabaseSource(
-            database_id=SHORT_VIDEO_OPS_ID,
-            folder=database_root / SHORT_VIDEO_OPS_ID,
-            synonyms=SHORT_VIDEO_OPS_SYNONYMS,
-        ),
         TRADE_DATA_ID: DatabaseSource(
             database_id=TRADE_DATA_ID,
             folder=database_root / TRADE_DATA_ID,

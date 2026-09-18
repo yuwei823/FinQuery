@@ -4,9 +4,9 @@ This file applies to the entire repository. It is a working guide for coding age
 
 ## Project purpose
 
-FinQuery Studio is a Chinese-language natural-language analytics application for short-video operations. A Vue 3 client sends questions and optional workspace context to a FastAPI backend. The backend uses LangGraph to route requests, retrieve field-level schema, ask for clarification when needed, generate read-only DuckDB SQL through an in-process MCP tool, and turn the results into an answer or report.
+FinQuery Studio is a Chinese-language natural-language analytics application for financial market data. A Vue 3 client sends questions and optional workspace context to a FastAPI backend. The backend uses LangGraph to route requests, retrieve field-level schema, ask for clarification when needed, generate read-only DuckDB SQL through an in-process MCP tool, and turn the results into an answer or report.
 
-The checked-in sample database is `short_video_ops`: 41 CSV tables plus `_schema.json`. Multiple databases can be enabled, but a query spanning more than one database deliberately ends in the not-yet-implemented multi-database path.
+The registered database is `trade_data`, backed by curated Parquet generated from the external daily market-data directory. It currently exposes stock and major-index daily tables. Multiple financial databases can be enabled, but a query spanning more than one database deliberately ends in the not-yet-implemented multi-database path.
 
 ## Repository map
 
@@ -37,7 +37,6 @@ backend/
   data/databases/             CSV databases and their schema manifests
   scripts/                    Data/schema generation and integrity validation
   tests/                      `unittest` suite
-  evaluation/                 430 benchmark cases, runner, and baseline results
 ```
 
 ## Request flow
@@ -83,14 +82,15 @@ Set-Location backend
 .venv/Scripts/python.exe -m unittest discover -s tests -p "test_*.py"
 
 # Dataset/schema integrity
-.venv/Scripts/python.exe scripts/validate_short_video_ops.py
+.venv/Scripts/python.exe scripts/trade_data_pipeline.py validate
+.venv/Scripts/python.exe scripts/main_index_pipeline.py validate
 
 # Frontend type-check and production build
 Set-Location ../frontend
 npm run build
 ```
 
-Benchmark commands live in `backend/evaluation/README.md`. Gold mode is local. Live modes call paid model services, so do not run them unless the task explicitly requires live evaluation and credentials are available.
+Live model calls can incur cost, so do not run them unless the task explicitly requires live evaluation and credentials are available.
 
 ## Change guidance
 
@@ -121,7 +121,6 @@ Follow the detailed checklist in `README.md`. In summary:
 
 - Ignored/generated: `backend/.env`, `backend/data/schema_store.*.json`, `backend/data/*.db`, `frontend/node_modules/`, `frontend/dist/`, Python caches, and TypeScript build info.
 - `backend/data/saved_memories.json` is checked in even though the app mutates it during use. Tests should use temporary paths, and agents should avoid committing incidental runtime changes to this file.
-- Existing files under `backend/evaluation/results/` are baselines. Add or replace them only as part of an intentional benchmark update.
 
 ## Test expectations
 

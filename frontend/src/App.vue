@@ -30,11 +30,6 @@ interface HistoricalResultTable {
 const SAVED_TABLE_LIMIT = 8
 const FIELD_LIBRARY_LIMIT = 12
 const promptsByDatabase: Record<string, string[]> = {
-  short_video_ops: [
-    "查询2026年每个月的日活用户数",
-    "按渠道统计广告消耗和转化数",
-    "按内容分类统计播放量和互动数",
-  ],
   trade_data: [
     "查询浦发银行最近20个交易日的收盘价和成交额",
     "按申万一级行业统计最新交易日的总市值",
@@ -52,7 +47,7 @@ const prompts = computed(() => {
   const databases = [...new Set(schema.value.map((table) => table.database).filter(Boolean))]
   const items = databases.flatMap((database) => promptsByDatabase[database!] ?? [])
   if (items.length) return items
-  return databases.length ? [] : promptsByDatabase.short_video_ops
+  return databases.length ? [] : promptsByDatabase.trade_data
 })
 const savedMemories = ref<SavedMemory[]>([])
 const workspace = ref<WorkspaceConfig>({})
@@ -503,21 +498,6 @@ function clarificationHint(result: QueryResult) {
             <span class="account-icon admin">管</span>
             <span><strong>admin</strong><small>管理员 · 全部数据</small></span>
             <code>admin123</code>
-          </button>
-          <button type="button" @click="useMockAccount('growth', 'growth123')">
-            <span class="account-icon user">增</span>
-            <span><strong>growth</strong><small>用户增长 · 18张表</small></span>
-            <code>growth123</code>
-          </button>
-          <button type="button" @click="useMockAccount('channel', 'channel123')">
-            <span class="account-icon mock">渠</span>
-            <span><strong>channel</strong><small>渠道投放 · 16张表</small></span>
-            <code>channel123</code>
-          </button>
-          <button type="button" @click="useMockAccount('content', 'content123')">
-            <span class="account-icon mock">内</span>
-            <span><strong>content</strong><small>内容运营 · 19张表</small></span>
-            <code>content123</code>
           </button>
           <button type="button" @click="useMockAccount('market', 'market123')">
             <span class="account-icon mock">行</span>

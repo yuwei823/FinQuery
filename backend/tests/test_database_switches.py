@@ -16,15 +16,15 @@ from app.retrieval.service import SchemaIndex
 class DatabaseSwitchesTest(unittest.TestCase):
     def test_parse_database_switches_as_string_set(self) -> None:
         self.assertEqual(
-            parse_string_set(" short_video_ops,other,short_video_ops "),
-            {"short_video_ops", "other"},
+            parse_string_set(" trade_data,other,trade_data "),
+            {"trade_data", "other"},
         )
         with patch.dict(os.environ, {"DATABASE_SWITCHES": "alpha,beta,alpha"}):
             self.assertEqual(Settings().database_switches, {"alpha", "beta"})
 
     def test_default_database_switch(self) -> None:
         with patch.dict(os.environ, {}, clear=True):
-            self.assertEqual(Settings().database_switches, {"short_video_ops"})
+            self.assertEqual(Settings().database_switches, {"trade_data"})
 
     def test_trade_data_root_is_reported_without_exposing_the_path(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -93,13 +93,13 @@ class DatabaseSwitchesTest(unittest.TestCase):
             self.assertEqual(active, frozenset({"second"}))
             self.assertEqual([table["id"] for table in schema], ["second.items"])
             self.assertEqual(synonyms, {"second.items.item_id": ["second_alias"]})
-            self.assertEqual(role_tables["growth_ops"], frozenset({"second.items"}))
+            self.assertEqual(role_tables["market_analyst"], frozenset({"second.items"}))
 
     def test_active_synonyms_and_cache_are_database_scoped(self) -> None:
-        self.assertEqual(ACTIVE_DATABASES, frozenset({"short_video_ops"}))
-        self.assertIn("short_video_ops.growth_daily_metrics.daily_active_users", SYNONYMS)
+        self.assertEqual(ACTIVE_DATABASES, frozenset({"trade_data"}))
+        self.assertIn("trade_data.stock_daily.close", SYNONYMS)
         index = SchemaIndex(index_path=None)
-        self.assertEqual(index.index_path.name, "schema_store.short_video_ops.json")
+        self.assertEqual(index.index_path.name, "schema_store.trade_data.json")
 
     @staticmethod
     def _source(root: Path, database_id: str, alias: str) -> DatabaseSource:
@@ -116,7 +116,7 @@ class DatabaseSwitchesTest(unittest.TestCase):
                 }
             ],
             "relations": [],
-            "role_tables": {"growth_ops": ["items"]},
+            "role_tables": {"market_analyst": ["items"]},
         }
         (folder / "_schema.json").write_text(
             json.dumps(schema, ensure_ascii=False),

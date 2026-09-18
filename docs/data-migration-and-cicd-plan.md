@@ -685,7 +685,7 @@ Docker Compose
   - docker compose up --build 能启动。
   - 前端可以访问。
   - FastAPI /api/health 正常。
-  - 登录和原有短视频数据查询正常。
+  - 登录和股票、指数行情查询正常。
   - 容器能够看到 D:\trade_data。
   - 镜像中没有 .env、API Key 和原始行情数据。
   - 停止并重建容器后功能仍正常。

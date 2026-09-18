@@ -28,18 +28,6 @@ class AuthService:
             "password": "admin123",
             "user": AuthUser("demo_admin", "admin", "系统管理员", "admin"),
         },
-        "growth": {
-            "password": "growth123",
-            "user": AuthUser("demo_growth_ops", "growth", "用户增长运营", "growth_ops"),
-        },
-        "channel": {
-            "password": "channel123",
-            "user": AuthUser("demo_channel_ops", "channel", "渠道投放运营", "channel_ops"),
-        },
-        "content": {
-            "password": "content123",
-            "user": AuthUser("demo_content_ops", "content", "内容运营", "content_ops"),
-        },
         "market": {
             "password": "market123",
             "user": AuthUser("demo_market_analyst", "market", "行情分析师", "market_analyst"),

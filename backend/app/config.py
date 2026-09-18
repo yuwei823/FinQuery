@@ -15,7 +15,7 @@ def parse_string_set(value: str) -> set[str]:
 
 def _database_switches_from_env() -> set[str]:
     raw = os.getenv("DATABASE_SWITCHES")
-    return {"short_video_ops"} if raw is None else parse_string_set(raw)
+    return {"trade_data"} if raw is None else parse_string_set(raw)
 
 
 def load_env(path: Path | None = None) -> None:

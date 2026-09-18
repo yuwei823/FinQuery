@@ -43,7 +43,7 @@ class SessionContext:
         result: QueryResult,
         query: str,
         workspace: dict[str, Any],
-        user_id: str = "demo_growth_ops",
+        user_id: str = "demo_market_analyst",
     ) -> None:
         self.tasks[result.task_id] = {
             "query": query,

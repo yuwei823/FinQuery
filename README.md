@@ -1,6 +1,6 @@
-# FinQuery Studio 运营场景版
+# FinQuery Studio 金融数据版
 
-面向短视频运营的自然语言问数项目，包含 Vue 前端、FastAPI + LangGraph 后端、41 张 CSV 数据表、字段级 Schema 索引、测试脚本和当前评测报告。
+面向金融市场数据的自然语言问数项目，包含 Vue 前端、FastAPI + LangGraph 后端、股票与指数日行情、字段级 Schema 检索、安全只读 SQL 和增量 Parquet 数据管道。
 
 ## 环境要求
 
@@ -33,12 +33,12 @@ cp .env.example .env
 编辑 `backend/.env`，填写 `LLM_API_KEY`。默认模型配置为 `qwen3.7-plus`、`text-embedding-v4` 和 `qwen3-rerank`。
 
 `DATABASE_SWITCHES` 是逗号分隔、自动去重的数据库 key 集合，默认值为
-`short_video_ops`。每个可选数据库需要在 `backend/app/database_sources/` 注册自己的
+`trade_data`。每个可选数据库需要在 `backend/app/database_sources/` 注册自己的
 Schema 目录和 `SYNONYMS`；切换后端配置后需重启服务。
 
 ## 注册新的数据库
 
-下面以数据库 key `customer_ops` 为例。数据库 key 只能包含英文字母、数字和下划线，
+下面以数据库 key `fund_data` 为例。数据库 key 只能包含英文字母、数字和下划线，
 并且必须以英文字母或下划线开头。
 
 ### 1. 添加数据库文件
@@ -46,11 +46,11 @@ Schema 目录和 `SYNONYMS`；切换后端配置后需重启服务。
 新建目录：
 
 ```text
-backend/data/databases/customer_ops/
+backend/data/databases/fund_data/
 ├── _schema.json
 ├── _database_manifest.json  # 推荐提供，但运行时不强制读取
-├── customers.csv
-└── orders.csv
+├── funds.csv
+└── fund_nav.csv
 ```
 
 CSV 文件名就是 DuckDB 中的物理表名。文件名必须是安全的 SQL 标识符，并与
@@ -60,28 +60,28 @@ CSV 文件名就是 DuckDB 中的物理表名。文件名必须是安全的 SQL 
 
 ```json
 {
-  "database": "customer_ops",
+  "database": "fund_data",
   "tables": [
     {
-      "id": "customer_ops.customers",
-      "name": "customers",
-      "database": "customer_ops",
-      "label": "客户",
-      "description": "客户主数据",
+      "id": "fund_data.funds",
+      "name": "funds",
+      "database": "fund_data",
+      "label": "基金",
+      "description": "基金基本信息",
       "fields": [
         {
-          "name": "customer_id",
-          "label": "客户编号",
+          "name": "fund_code",
+          "label": "基金代码",
           "type": "文本",
-          "description": "客户唯一编号",
-          "aliases": ["客户编号"]
+          "description": "基金唯一代码",
+          "aliases": ["基金代码"]
         }
       ]
     }
   ],
   "relations": [],
   "role_tables": {
-    "growth_ops": ["customers"]
+    "market_analyst": ["funds", "fund_nav"]
   }
 }
 ```
@@ -97,17 +97,17 @@ CSV 文件名就是 DuckDB 中的物理表名。文件名必须是安全的 SQL 
 
 ### 2. 添加该数据库的 SYNONYMS
 
-新建 `backend/app/database_sources/customer_ops.py`：
+新建 `backend/app/database_sources/fund_data.py`：
 
 ```python
 from __future__ import annotations
 
 
-DATABASE_ID = "customer_ops"
+DATABASE_ID = "fund_data"
 
 SYNONYMS: dict[str, list[str]] = {
-    "customer_ops.customers.customer_id": ["客户编号", "客户ID"],
-    "customer_ops.orders.paid_amount": ["销售额", "成交额", "实付金额"],
+    "fund_data.funds.fund_code": ["基金代码", "产品代码"],
+    "fund_data.fund_nav.nav": ["单位净值", "基金净值"],
 }
 ```
 
@@ -128,17 +128,17 @@ SYNONYMS: dict[str, list[str]] = {}
 修改 `backend/app/database_sources/__init__.py`，导入新模块：
 
 ```python
-from .customer_ops import DATABASE_ID as CUSTOMER_OPS_ID
-from .customer_ops import SYNONYMS as CUSTOMER_OPS_SYNONYMS
+from .fund_data import DATABASE_ID as FUND_DATA_ID
+from .fund_data import SYNONYMS as FUND_DATA_SYNONYMS
 ```
 
 然后在 `source_registry()` 返回值中添加：
 
 ```python
-CUSTOMER_OPS_ID: DatabaseSource(
-    database_id=CUSTOMER_OPS_ID,
-    folder=database_root / CUSTOMER_OPS_ID,
-    synonyms=CUSTOMER_OPS_SYNONYMS,
+FUND_DATA_ID: DatabaseSource(
+    database_id=FUND_DATA_ID,
+    folder=database_root / FUND_DATA_ID,
+    synonyms=FUND_DATA_SYNONYMS,
 ),
 ```
 
@@ -150,20 +150,20 @@ CUSTOMER_OPS_ID: DatabaseSource(
 修改 `backend/.env`：
 
 ```env
-DATABASE_SWITCHES=customer_ops
+DATABASE_SWITCHES=fund_data
 ```
 
 同时启用多个数据库时使用逗号分隔：
 
 ```env
-DATABASE_SWITCHES=short_video_ops,customer_ops
+DATABASE_SWITCHES=trade_data,fund_data
 ```
 
 修改后重启后端。Schema 索引会按已启用数据库集合生成独立缓存，例如：
 
 ```text
-backend/data/schema_store.customer_ops.json
-backend/data/schema_store.customer_ops-short_video_ops.json
+backend/data/schema_store.fund_data.json
+backend/data/schema_store.fund_data-trade_data.json
 ```
 
 这些缓存是自动生成物，已被 Git 忽略。首次查询会在签名不匹配或缓存不存在时重建；
@@ -171,7 +171,7 @@ backend/data/schema_store.customer_ops-short_video_ops.json
 
 ### 5. 配置权限和测试账号（按需）
 
-如果新数据库继续使用现有的 `growth_ops`、`channel_ops` 或 `content_ops` 角色，只需在
+如果新数据库继续使用现有的 `market_analyst` 角色，只需在
 新 Schema 的 `role_tables` 中列出对应表，无需修改权限代码。
 
 如果需要新增角色或登录账号，还要同步修改：
@@ -187,9 +187,9 @@ backend/data/schema_store.customer_ops-short_video_ops.json
 
 ```ts
 const promptsByDatabase: Record<string, string[]> = {
-  customer_ops: [
-    "查询本月销售额",
-    "按地区统计客户数量",
+  fund_data: [
+    "查询最近一个月基金净值走势",
+    "按基金类型统计产品数量",
   ],
 }
 ```
@@ -199,8 +199,7 @@ Schema 后不会错误展示其他数据库的问题。
 
 ### 7. 补充验证和评测（推荐）
 
-- 为新数据库增加数据完整性验证脚本，或将
-  `backend/scripts/validate_short_video_ops.py` 泛化为多数据库脚本。
+- 为新数据库增加数据完整性验证脚本，并覆盖主键、日期范围、重复记录和空值检查。
 - 在 `backend/tests/test_database_switches.py` 中增加注册、切换和 SYNONYMS 校验用例。
 - 如果新数据库用于正式问数评测，在 `backend/evaluation/cases/` 增加对应数据集和
   gold fields、gold SQL。
@@ -317,8 +316,8 @@ TRADE_DATA_ROOT=D:/trade_data
 CURATED_DATA_ROOT=D:/trade_data_curated
 ```
 
-如需同时保留演示数据库，使用
-`DATABASE_SWITCHES=short_video_ops,trade_data`；一次查询仍不能跨两个数据库联表。
+如需同时启用其他金融数据库，使用逗号分隔，例如
+`DATABASE_SWITCHES=trade_data,fund_data`；一次查询仍不能跨两个数据库联表。
 
 分别打开两个终端。
 
@@ -351,15 +350,11 @@ npm run dev
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
-.\.venv\Scripts\python.exe scripts\validate_short_video_ops.py
+.\.venv\Scripts\python.exe scripts\trade_data_pipeline.py validate
+.\.venv\Scripts\python.exe scripts\main_index_pipeline.py validate
 ```
-
-评测命令与指标说明见 `backend/evaluation/README.md`。现有评测结果位于 `backend/evaluation/results`。
 
 ## 测试账号
 
 - 管理员：`admin` / `admin123`
-- 用户增长运营：`growth` / `growth123`
-- 渠道投放运营：`channel` / `channel123`
-- 内容运营：`content` / `content123`
 - 行情分析：`market` / `market123`
