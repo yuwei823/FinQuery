@@ -82,8 +82,8 @@ Set-Location backend
 .venv/Scripts/python.exe -m unittest discover -s tests -p "test_*.py"
 
 # Dataset/schema integrity
-.venv/Scripts/python.exe scripts/trade_data_pipeline.py validate
-.venv/Scripts/python.exe scripts/main_index_pipeline.py validate
+.venv/Scripts/python.exe scripts/stock_daily_pipeline.py validate
+.venv/Scripts/python.exe scripts/index_daily_pipeline.py validate
 
 # Frontend type-check and production build
 Set-Location ../frontend

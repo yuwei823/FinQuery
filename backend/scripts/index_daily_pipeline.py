@@ -15,7 +15,7 @@ try:
         validate_dataset,
         write_inventory,
     )
-except ModuleNotFoundError:  # Direct execution: python scripts/main_index_pipeline.py
+except ModuleNotFoundError:  # Direct execution: python scripts/index_daily_pipeline.py
     from csv_parquet_pipeline import (
         ColumnSpec,
         DatasetSpec,

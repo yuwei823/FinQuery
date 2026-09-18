@@ -251,8 +251,8 @@ TRADE_DATA_CURATED_HOST_PATH=D:/trade_data_curated
 首次接入股票日行情时，先扫描全部原始文件的表头：
 
 ```powershell
-docker compose --profile tools run --rm data-prep `
-  python scripts/trade_data_pipeline.py inventory `
+docker compose --profile tools run --rm stock-daily-data-prep `
+  python scripts/stock_daily_pipeline.py inventory `
   --source /data/raw/stock-trading-data-pro `
   --output /data/curated/trade_data/_inventory.json
 ```
@@ -260,7 +260,7 @@ docker compose --profile tools run --rm data-prep `
 确认 `invalid_header_count` 为 `0` 后运行增量转换：
 
 ```powershell
-docker compose --profile tools run --rm data-prep
+docker compose --profile tools run --rm stock-daily-data-prep
 ```
 
 转换器跳过数据提供方说明行，将 GB18030 CSV 标准化为 UTF-8 字段和分片 Parquet，
@@ -270,16 +270,16 @@ docker compose --profile tools run --rm data-prep
 把按股票生成的分片压实成查询文件，避免每次查询打开数千个小文件：
 
 ```powershell
-docker compose --profile tools run --rm data-prep `
-  python scripts/trade_data_pipeline.py compact `
+docker compose --profile tools run --rm stock-daily-data-prep `
+  python scripts/stock_daily_pipeline.py compact `
   --output /data/curated/trade_data
 ```
 
 转换后运行全量完整性检查：
 
 ```powershell
-docker compose --profile tools run --rm data-prep `
-  python scripts/trade_data_pipeline.py validate `
+docker compose --profile tools run --rm stock-daily-data-prep `
+  python scripts/stock_daily_pipeline.py validate `
   --output /data/curated/trade_data
 ```
 
@@ -288,19 +288,19 @@ docker compose --profile tools run --rm data-prep `
 主要指数数据使用相同的增量构建流程，但采用独立的字段契约和 manifest。执行：
 
 ```powershell
-docker compose --profile tools run --rm index-data-prep `
-  python scripts/main_index_pipeline.py inventory `
+docker compose --profile tools run --rm index-daily-data-prep `
+  python scripts/index_daily_pipeline.py inventory `
   --source /data/raw/stock-main-index-data `
   --output /data/curated/trade_data/_inventory.index_daily.json
 
-docker compose --profile tools run --rm index-data-prep
+docker compose --profile tools run --rm index-daily-data-prep
 
-docker compose --profile tools run --rm index-data-prep `
-  python scripts/main_index_pipeline.py validate `
+docker compose --profile tools run --rm index-daily-data-prep `
+  python scripts/index_daily_pipeline.py validate `
   --output /data/curated/trade_data
 
-docker compose --profile tools run --rm index-data-prep `
-  python scripts/main_index_pipeline.py compact `
+docker compose --profile tools run --rm index-daily-data-prep `
+  python scripts/index_daily_pipeline.py compact `
   --output /data/curated/trade_data
 ```
 
@@ -350,8 +350,8 @@ npm run dev
 
 ```powershell
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
-.\.venv\Scripts\python.exe scripts\trade_data_pipeline.py validate
-.\.venv\Scripts\python.exe scripts\main_index_pipeline.py validate
+.\.venv\Scripts\python.exe scripts\stock_daily_pipeline.py validate
+.\.venv\Scripts\python.exe scripts\index_daily_pipeline.py validate
 ```
 
 ## 测试账号

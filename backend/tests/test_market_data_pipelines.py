@@ -9,7 +9,7 @@ from pathlib import Path
 from app.querying.duckdb_engine import DuckDbEngine
 from app.retrieval.graph import SchemaGraphBuilder
 from app.retrieval.service import SchemaIndex
-from scripts.trade_data_pipeline import (
+from scripts.stock_daily_pipeline import (
     COLUMNS,
     EXPECTED_HEADER,
     compact_dataset,
@@ -17,7 +17,7 @@ from scripts.trade_data_pipeline import (
     inventory,
     validate_dataset,
 )
-from scripts.main_index_pipeline import SPEC as INDEX_SPEC
+from scripts.index_daily_pipeline import SPEC as INDEX_SPEC
 from scripts.csv_parquet_pipeline import (
     compact_dataset as compact_configured_dataset,
     convert_dataset as convert_configured_dataset,
@@ -136,7 +136,7 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(rows[-1][2], 9.06)
             self.assertTrue(rows[0][3])
 
-    def test_main_index_pipeline_and_duckdb_registration(self) -> None:
+    def test_index_daily_pipeline_and_duckdb_registration(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             root = Path(temp_dir)
             source = root / "raw"
