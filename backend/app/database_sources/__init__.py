@@ -5,6 +5,8 @@ from pathlib import Path
 
 from .short_video_ops import DATABASE_ID as SHORT_VIDEO_OPS_ID
 from .short_video_ops import SYNONYMS as SHORT_VIDEO_OPS_SYNONYMS
+from .trade_data import DATABASE_ID as TRADE_DATA_ID
+from .trade_data import SYNONYMS as TRADE_DATA_SYNONYMS
 
 
 @dataclass(frozen=True)
@@ -14,19 +16,37 @@ class DatabaseSource:
     database_id: str
     folder: Path
     synonyms: dict[str, list[str]]
+    data_folder: Path | None = None
 
     @property
     def schema_path(self) -> Path:
         return self.folder / "_schema.json"
 
+    @property
+    def query_folder(self) -> Path:
+        return self.data_folder or self.folder
 
-def source_registry(database_root: Path) -> dict[str, DatabaseSource]:
+
+def source_registry(
+    database_root: Path,
+    curated_data_root: Path | None = None,
+) -> dict[str, DatabaseSource]:
     """返回所有受支持的数据源；启用状态由调用方负责筛选。"""
     return {
         SHORT_VIDEO_OPS_ID: DatabaseSource(
             database_id=SHORT_VIDEO_OPS_ID,
             folder=database_root / SHORT_VIDEO_OPS_ID,
             synonyms=SHORT_VIDEO_OPS_SYNONYMS,
+        ),
+        TRADE_DATA_ID: DatabaseSource(
+            database_id=TRADE_DATA_ID,
+            folder=database_root / TRADE_DATA_ID,
+            synonyms=TRADE_DATA_SYNONYMS,
+            data_folder=(
+                curated_data_root / TRADE_DATA_ID
+                if curated_data_root is not None
+                else database_root / TRADE_DATA_ID
+            ),
         ),
     }
 

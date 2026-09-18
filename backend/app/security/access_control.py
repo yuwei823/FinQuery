@@ -25,6 +25,7 @@ def _scenario_databases(tables: frozenset[str]) -> frozenset[str]:
 GROWTH_OPS_TABLES = _scenario_tables("growth_ops")
 CHANNEL_OPS_TABLES = _scenario_tables("channel_ops")
 CONTENT_OPS_TABLES = _scenario_tables("content_ops")
+MARKET_ANALYST_TABLES = _scenario_tables("market_analyst")
 
 
 @dataclass(frozen=True)
@@ -71,6 +72,7 @@ class AccessController:
         "demo_growth_ops": ("growth_ops",),
         "demo_channel_ops": ("channel_ops",),
         "demo_content_ops": ("content_ops",),
+        "demo_market_analyst": ("market_analyst",),
     }
     ROLE_POLICIES = {
         "admin": {"databases": ALL_DATABASES, "tables": ALL_TABLES},
@@ -85,6 +87,10 @@ class AccessController:
         "content_ops": {
             "databases": _scenario_databases(CONTENT_OPS_TABLES),
             "tables": CONTENT_OPS_TABLES,
+        },
+        "market_analyst": {
+            "databases": _scenario_databases(MARKET_ANALYST_TABLES),
+            "tables": MARKET_ANALYST_TABLES,
         },
     }
 

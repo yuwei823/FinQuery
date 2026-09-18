@@ -35,6 +35,11 @@ const promptsByDatabase: Record<string, string[]> = {
     "按渠道统计广告消耗和转化数",
     "按内容分类统计播放量和互动数",
   ],
+  trade_data: [
+    "查询浦发银行最近20个交易日的收盘价和成交额",
+    "按申万一级行业统计最新交易日的总市值",
+    "查询最近交易日成交额最高的20只股票",
+  ],
 }
 const input = ref("")
 const loading = ref(false)
@@ -511,6 +516,11 @@ function clarificationHint(result: QueryResult) {
             <span class="account-icon mock">内</span>
             <span><strong>content</strong><small>内容运营 · 19张表</small></span>
             <code>content123</code>
+          </button>
+          <button type="button" @click="useMockAccount('market', 'market123')">
+            <span class="account-icon mock">行</span>
+            <span><strong>market</strong><small>行情分析 · 股票日行情</small></span>
+            <code>market123</code>
           </button>
         </div>
         <small class="login-note">Mock 登录仅用于本地学习，不适合生产环境。</small>

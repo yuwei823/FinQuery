@@ -10,7 +10,7 @@ from .database_sources import DatabaseSource, source_registry
 
 
 DATABASE_ROOT = BASE_DIR / "data" / "databases"
-DATABASE_SOURCES = source_registry(DATABASE_ROOT)
+DATABASE_SOURCES = source_registry(DATABASE_ROOT, settings.curated_data_path)
 
 
 def load_database_catalog(
@@ -101,3 +101,10 @@ DEFAULT_DATABASE = sorted(ACTIVE_DATABASES)[0]
 
 def physical_table_name(table: dict[str, Any]) -> str:
     return str(table.get("name") or table["id"])
+
+
+def database_query_folder(database: str) -> Path:
+    try:
+        return DATABASE_SOURCES[database].query_folder
+    except KeyError as exc:
+        raise ValueError(f"未知数据库：{database}") from exc

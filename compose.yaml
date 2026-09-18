@@ -10,6 +10,8 @@ services:
       - ./backend/.env
     environment:
       PYTHONUNBUFFERED: "1"
+      TRADE_DATA_ROOT: /data/raw
+      CURATED_DATA_ROOT: /data/curated
     ports:
       - "127.0.0.1:8000:8000"
     volumes:
@@ -18,6 +20,10 @@ services:
         source: ${TRADE_DATA_HOST_PATH:-D:/trade_data}
         target: /data/raw
         read_only: true
+      - type: bind
+        source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
+        target: /data/curated
+        read_only: true
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
       interval: 10s
@@ -25,6 +31,31 @@ services:
       retries: 6
       start_period: 20s
     restart: unless-stopped
+
+  data-prep:
+    profiles: ["tools"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:
+      - python
+      - scripts/trade_data_pipeline.py
+      - convert
+      - --source
+      - /data/raw/stock-trading-data-pro
+      - --output
+      - /data/curated/trade_data
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - type: bind
+        source: ${TRADE_DATA_HOST_PATH:-D:/trade_data}
+        target: /data/raw
+        read_only: true
+      - type: bind
+        source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
+        target: /data/curated
+
 
   frontend:
     build:

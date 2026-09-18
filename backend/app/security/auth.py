@@ -40,6 +40,10 @@ class AuthService:
             "password": "content123",
             "user": AuthUser("demo_content_ops", "content", "内容运营", "content_ops"),
         },
+        "market": {
+            "password": "market123",
+            "user": AuthUser("demo_market_analyst", "market", "行情分析师", "market_analyst"),
+        },
     }
 
     def __init__(self) -> None:

@@ -37,6 +37,12 @@ load_env()
 @dataclass(frozen=True)
 class Settings:
     database_switches: set[str] = field(default_factory=_database_switches_from_env)
+    trade_data_root: str = field(
+        default_factory=lambda: os.getenv("TRADE_DATA_ROOT", "").strip()
+    )
+    curated_data_root: str = field(
+        default_factory=lambda: os.getenv("CURATED_DATA_ROOT", "").strip()
+    )
     api_key: str = os.getenv("LLM_API_KEY", "")
     llm_base_url: str = os.getenv(
         "LLM_BASE_URL", "https://dashscope.aliyuncs.com/compatible-mode/v1"
@@ -89,6 +95,32 @@ class Settings:
         return path if path.is_absolute() else BASE_DIR / path
 
     @property
+    def trade_data_path(self) -> Path | None:
+        if not self.trade_data_root:
+            return None
+        return Path(self.trade_data_root)
+
+    @property
+    def curated_data_path(self) -> Path | None:
+        if not self.curated_data_root:
+            return None
+        return Path(self.curated_data_root)
+
+    def trade_data_status(self) -> dict[str, bool]:
+        path = self.trade_data_path
+        return {
+            "configured": path is not None,
+            "available": bool(path and path.is_dir()),
+        }
+
+    def curated_data_status(self) -> dict[str, bool]:
+        path = self.curated_data_path
+        return {
+            "configured": path is not None,
+            "available": bool(path and path.is_dir()),
+        }
+
+    @property
     def chat_url(self) -> str:
         return f"{self.llm_base_url}/chat/completions"
 
@@ -104,6 +136,8 @@ class Settings:
     def public_status(self) -> dict[str, object]:
         return {
             "database_switches": sorted(self.database_switches),
+            "trade_data": self.trade_data_status(),
+            "curated_data": self.curated_data_status(),
             "api_key_configured": bool(self.api_key),
             "llm_model": self.llm_model,
             "llm_enable_thinking": self.llm_enable_thinking,

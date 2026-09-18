@@ -227,6 +227,68 @@ npm install
 
 ## 启动
 
+### 使用 Docker Compose（本地开发）
+
+复制后端环境变量文件并填写 `LLM_API_KEY`：
+
+```powershell
+Copy-Item backend/.env.example backend/.env
+Copy-Item .env.docker.example .env.docker
+docker compose --env-file .env.docker up --build
+```
+
+Compose 默认把 Windows 的 `D:\trade_data` 只读挂载到后端容器的
+`/data/raw`，把标准化数据目录 `D:\trade_data_curated` 只读挂载到 `/data/curated`。
+如果本机目录不同，只需修改
+忽略提交的 `.env.docker`：
+
+```env
+TRADE_DATA_HOST_PATH=D:/trade_data
+TRADE_DATA_CURATED_HOST_PATH=D:/trade_data_curated
+```
+
+启动后访问 `http://127.0.0.1:8000/api/health`。响应中的
+`trade_data.configured=true` 和 `trade_data.available=true` 表示后端能够看到挂载目录。
+首次接入股票日行情时，先扫描全部原始文件的表头：
+
+```powershell
+docker compose --profile tools run --rm data-prep `
+  python scripts/trade_data_pipeline.py inventory `
+  --source /data/raw/stock-trading-data-pro `
+  --output /data/curated/trade_data/_inventory.json
+```
+
+确认 `invalid_header_count` 为 `0` 后运行增量转换：
+
+```powershell
+docker compose --profile tools run --rm data-prep
+```
+
+转换器跳过数据提供方说明行，将 GB18030 CSV 标准化为 UTF-8 字段和分片 Parquet，
+输出到 `D:\trade_data_curated\trade_data\stock_daily`。它根据源文件大小和修改时间跳过
+未变化文件，可安全地在每日数据更新后重复执行。原始目录始终只读。
+
+转换后运行全量完整性检查：
+
+```powershell
+docker compose --profile tools run --rm data-prep `
+  python scripts/trade_data_pipeline.py validate `
+  --output /data/curated/trade_data
+```
+
+只有命令返回成功且 `errors` 为空时，才应发布新数据版本或重启生产服务。
+
+转换完成后把 `backend/.env` 改为以下配置并重启后端：
+
+```env
+DATABASE_SWITCHES=trade_data
+TRADE_DATA_ROOT=D:/trade_data
+CURATED_DATA_ROOT=D:/trade_data_curated
+```
+
+如需同时保留演示数据库，使用
+`DATABASE_SWITCHES=short_video_ops,trade_data`；一次查询仍不能跨两个数据库联表。
+
 分别打开两个终端。
 
 后端（Windows）：
@@ -269,3 +331,4 @@ npm run dev
 - 用户增长运营：`growth` / `growth123`
 - 渠道投放运营：`channel` / `channel123`
 - 内容运营：`content` / `content123`
+- 行情分析：`market` / `market123`

@@ -14,7 +14,7 @@ from sqlglot import exp
 from sqlglot.errors import ParseError
 
 from ..config import BASE_DIR
-from ..database import DEFAULT_DATABASE, SCHEMA, physical_table_name
+from ..database import DEFAULT_DATABASE, SCHEMA, database_query_folder, physical_table_name
 from ..security import AccessScope
 from .models import SqlExecution
 
@@ -65,21 +65,36 @@ class DuckDbEngine:
 
     @contextmanager
     def connect(self, database: str) -> Iterator[duckdb.DuckDBPyConnection]:
-        """创建内存连接并将 CSV 文件注册为只读视图。"""
+        """创建内存连接并将 CSV 或 Parquet 文件注册为只读视图。"""
         folder = self._database_folder(database)
         connection = duckdb.connect(":memory:")
         try:
-            csv_files = sorted(folder.glob("*.csv"))
-            if not csv_files:
-                raise ValueError(f"数据库文件夹没有CSV表：{folder}")
-            for csv_path in csv_files:
-                table = csv_path.stem
+            table_sources: dict[str, tuple[str, Path]] = {}
+            for csv_path in sorted(folder.glob("*.csv")):
+                table_sources[csv_path.stem] = ("csv", csv_path)
+            for parquet_path in sorted(folder.glob("*.parquet")):
+                table_sources[parquet_path.stem] = ("parquet", parquet_path)
+            for table_dir in sorted(path for path in folder.iterdir() if path.is_dir()):
+                if any(table_dir.glob("*.parquet")):
+                    table_sources[table_dir.name] = ("parquet_glob", table_dir)
+            if not table_sources:
+                raise ValueError(f"数据库文件夹没有CSV或Parquet表：{folder}")
+            for table, (source_type, source_path) in table_sources.items():
                 if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", table):
-                    raise ValueError(f"CSV文件名不能作为安全表名：{csv_path.name}")
-                path = csv_path.resolve().as_posix().replace("'", "''")
+                    raise ValueError(f"数据文件名不能作为安全表名：{source_path.name}")
+                if source_type == "csv":
+                    path = source_path.resolve().as_posix().replace("'", "''")
+                    reader = f"read_csv_auto('{path}', header=true, sample_size=-1)"
+                else:
+                    parquet_source = (
+                        source_path / "*.parquet"
+                        if source_type == "parquet_glob"
+                        else source_path
+                    )
+                    path = parquet_source.resolve().as_posix().replace("'", "''")
+                    reader = f"read_parquet('{path}', union_by_name=true)"
                 connection.execute(
-                    f'CREATE VIEW "{table}" AS '
-                    f"SELECT * FROM read_csv_auto('{path}', header=true, sample_size=-1)"
+                    f'CREATE VIEW "{table}" AS SELECT * FROM {reader}'
                 )
             yield connection
         finally:
@@ -148,9 +163,14 @@ class DuckDbEngine:
     def _database_folder(self, database: str) -> Path:
         if not re.fullmatch(r"[A-Za-z_][A-Za-z0-9_]*", database):
             raise ValueError("数据库名称不合法")
-        folder = (self.database_root / database).resolve()
-        root = self.database_root.resolve()
-        if root not in folder.parents or not folder.is_dir():
+        if self.database_root == DATABASE_ROOT:
+            folder = database_query_folder(database).resolve()
+        else:
+            folder = (self.database_root / database).resolve()
+            root = self.database_root.resolve()
+            if root not in folder.parents:
+                raise ValueError("数据库目录越界")
+        if not folder.is_dir():
             raise ValueError(f"本地CSV数据库不存在：{database}")
         return folder
 
