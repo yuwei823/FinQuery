@@ -490,7 +490,7 @@ function clarificationHint(result: QueryResult) {
       <div class="login-brand"><span>A</span><strong>FinQuery</strong></div>
       <div>
         <p class="kicker">AI DATA ASSISTANT</p>
-        <h1>用自然语言，<br>读懂你的数据。</h1>
+        <h1>用自然语言，<br>读懂金融数据。</h1>
         <p>字段级 Schema 检索、权限隔离和可保存的数据记忆，都从一个问题开始。</p>
       </div>
       <small>FastAPI · LangGraph · MCP</small>
@@ -528,7 +528,7 @@ function clarificationHint(result: QueryResult) {
   <div v-else class="app-layout">
     <aside class="history-sidebar" :class="{ open: leftOpen }">
       <div class="brand-row">
-        <span class="brand-symbol">A</span>
+        <span class="brand-symbol">FinQ</span>
         <div><strong>FinQuery</strong><small>AI 数据分析</small></div>
       </div>
 
