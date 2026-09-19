@@ -14,6 +14,7 @@ backend/.env
 .env
 .env.docker
 .env.docker.local
+.env.public
 compose.local.yaml
 compose.override.local.yaml
 frontend/node_modules/

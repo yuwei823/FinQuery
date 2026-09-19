@@ -344,6 +344,49 @@ npm run dev
 
 访问 `http://127.0.0.1:5173`，API 文档位于 `http://127.0.0.1:8000/docs`。
 
+### 本机公网预览（Cloudflare Tunnel）
+
+公网预览使用独立的生产后端、Nginx 静态前端和 Cloudflare Tunnel，不暴露开发服务器、
+FastAPI 端口或本地数据目录。先复制配置：
+
+```powershell
+Copy-Item .env.public.example .env.public
+```
+
+编辑忽略提交的 `.env.public`：
+
+- 为 `FINQUERY_ADMIN_PASSWORD` 和 `FINQUERY_MARKET_PASSWORD` 设置不同的随机密码，长度至少 16 位。
+- 先在 Cloudflare Zero Trust 为 `finquery.dev` 创建 Access Self-hosted Application，只允许指定邮箱。
+- 再创建 remotely-managed Tunnel（建议命名 `finquery-home`），把 token 填入 `CLOUDFLARE_TUNNEL_TOKEN`。
+- 在 Tunnel 中添加 Published application：Hostname 为 `finquery.dev`，Service 为 `http://public-gateway:80`。
+
+Cloudflare 官方建议先建立 Access 应用，再发布 Tunnel route，避免域名在没有访问控制的时间窗内
+直接暴露。不要把 Tunnel token 提交到 Git；持有该 token 的机器可以运行这个 Tunnel。
+
+先不启动 Tunnel，只验证本机生产链路：
+
+```powershell
+docker compose --env-file .env.public --profile public-preview up -d --build `
+  backend-public public-gateway
+
+Invoke-RestMethod http://127.0.0.1:8080/api/health
+```
+
+确认健康后启动隧道：
+
+```powershell
+docker compose --env-file .env.public --profile public-preview up -d cloudflared
+docker compose --env-file .env.public --profile public-preview ps
+docker compose --env-file .env.public --profile public-preview logs cloudflared
+```
+
+公网模式会关闭 `/docs`、`/redoc` 和 `/openapi.json`，并在 Nginx 对登录、查询及普通 API
+分别限流。如果仍使用默认密码或密码不足 16 位，`backend-public` 会拒绝启动。停止预览：
+
+```powershell
+docker compose --env-file .env.public --profile public-preview down
+```
+
 ## 测试
 
 在 `backend` 目录执行：

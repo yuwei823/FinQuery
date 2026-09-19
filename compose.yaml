@@ -32,6 +32,37 @@ services:
       start_period: 20s
     restart: unless-stopped
 
+  backend-public:
+    profiles: ["public-preview"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    env_file:
+      - ./backend/.env
+    environment:
+      PYTHONUNBUFFERED: "1"
+      FINQUERY_PUBLIC_MODE: "true"
+      FINQUERY_ADMIN_PASSWORD: ${FINQUERY_ADMIN_PASSWORD:-}
+      FINQUERY_MARKET_PASSWORD: ${FINQUERY_MARKET_PASSWORD:-}
+      TRADE_DATA_ROOT: /data/raw
+      CURATED_DATA_ROOT: /data/curated
+    volumes:
+      - type: bind
+        source: ${TRADE_DATA_HOST_PATH:-D:/trade_data}
+        target: /data/raw
+        read_only: true
+      - type: bind
+        source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
+        target: /data/curated
+        read_only: true
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 20s
+    restart: unless-stopped
+
   stock-daily-data-prep:
     profiles: ["tools"]
     build:
@@ -97,6 +128,42 @@ services:
     depends_on:
       backend:
         condition: service_healthy
+    restart: unless-stopped
+
+  public-gateway:
+    profiles: ["public-preview"]
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+      target: public-preview
+    ports:
+      - "127.0.0.1:${PUBLIC_PREVIEW_PORT:-8080}:80"
+    depends_on:
+      backend-public:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD-SHELL", "wget -qO- http://127.0.0.1/ >/dev/null || exit 1"]
+      interval: 10s
+      timeout: 5s
+      retries: 6
+      start_period: 10s
+    restart: unless-stopped
+
+  cloudflared:
+    profiles: ["public-preview"]
+    image: cloudflare/cloudflared:2026.9.1
+    command: ["tunnel", "--no-autoupdate", "run"]
+    environment:
+      TUNNEL_TOKEN: ${CLOUDFLARE_TUNNEL_TOKEN:-}
+      TUNNEL_LOGLEVEL: info
+    depends_on:
+      public-gateway:
+        condition: service_healthy
+    read_only: true
+    security_opt:
+      - no-new-privileges:true
+    cap_drop:
+      - ALL
     restart: unless-stopped
 
 volumes:

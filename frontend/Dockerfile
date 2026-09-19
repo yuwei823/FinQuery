@@ -21,3 +21,8 @@ COPY nginx.conf /etc/nginx/conf.d/default.conf
 COPY --from=build /app/dist /usr/share/nginx/html
 
 EXPOSE 80
+
+FROM production AS public-preview
+
+COPY nginx.public.conf /etc/nginx/conf.d/default.conf
+COPY proxy-common.conf /etc/nginx/snippets/proxy-common.conf

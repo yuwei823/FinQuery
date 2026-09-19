@@ -624,80 +624,202 @@ Docker Compose
 - [SLS Docker 日志采集](https://www.alibabacloud.com/help/en/sls/collect-docker-container-text-logs)
 - [ICP 备案与 DNS](https://www.alibabacloud.com/help/en/dns/icp-and-dns)
 
+## 19. 上云前过渡方案：本机通过域名提供外部访问
 
-是的，第一步是 Docker。但当前机器还没有安装 Docker，WSL 似乎也未启用。
+### 19.1 定位与适用范围
 
-  ## 现在先做这件事
+在正式迁移 ECS、RDS、OSS 和托管分析数据库之前，可以暂时把当前 Windows 电脑作为
+FinQuery 服务器，通过安全隧道绑定自有域名，为自己、同事或少量测试用户提供访问。
 
-  ### 1. 安装 WSL 2
+该方案适用于：
 
-  使用管理员 PowerShell：
+- 内部试用、Demo 和产品早期验证。
+- 少量受控用户，且没有严格 SLA。
+- 可以接受家庭断网、停电、Windows 更新或 Docker Desktop 重启造成短暂不可用。
+- 行情数据仍保存在本机，并由现有日更任务生成查询用 Parquet。
 
-  wsl --install
+它不适合作为长期生产方案，也不适合高并发、严格审计、多副本、异地容灾或面向大量
+公众用户的服务。
 
-  完成后重启 Windows，再检查：
+### 19.2 推荐架构
 
-  wsl --status
-  wsl --version
+推荐使用 Cloudflare Tunnel 和 Cloudflare Access，不使用 DDNS 或路由器端口转发：
 
-  ### 2. 安装 Docker Desktop
+```text
+外部用户
+   │ HTTPS + finquery.dev
+   ▼
+Cloudflare DNS / Access
+   │ 身份验证、访问策略、TLS
+   ▼
+Cloudflare Tunnel
+   │ 本机主动建立的出站连接
+   ▼
+Docker Compose（本机 Windows）
+   │
+   └── gateway（Caddy 或 Nginx）
+       ├── /       → 生产构建后的 Vue 静态文件
+       └── /api/*  → backend:8000
+                         │
+                         └── DuckDB → D:\trade_data_curated\trade_data\*.parquet
+```
 
-  安装 Docker Desktop for Windows，配置时选择：
+`cloudflared` 从本机主动连接 Cloudflare，不需要公网 IPv4、固定 IP、家庭路由器端口转发，
+也可以在大多数 CGNAT 网络中工作。公网只看到 Cloudflare，不能直接连接本机的 FastAPI、
+Vite、Docker daemon 或数据目录。
 
-  - 使用 WSL 2 backend
-  - 启用 WSL integration
-  - 使用 Linux containers
+参考资料：
 
-  Docker Desktop 已包含 Docker Engine 和 Docker Compose，不需要单独安装 Compose。Docker 官方说明
+- [Cloudflare Tunnel](https://developers.cloudflare.com/cloudflare-one/networks/connectors/cloudflare-tunnel/)
+- [发布并保护自托管应用](https://developers.cloudflare.com/cloudflare-one/access-controls/applications/http-apps/self-hosted-public-app/)
 
-  ### 3. 验证安装
+### 19.3 本地 Compose 改造
 
-  重启终端后运行：
+保留现有服务：
 
-  docker version
-  docker compose version
-  docker run --rm hello-world
+```text
+backend
+frontend                  # 本地开发使用
+stock-daily-data-prep
+index-daily-data-prep
+```
 
-  然后验证容器能只读访问行情目录：
+增加仅用于外部访问的服务：
 
-  docker run --rm `
-    --mount 'type=bind,source=D:\trade_data,target=/data,readonly' `
-    alpine ls -la /data
+```text
+backend-public            # 公网模式 Backend，关闭 API 文档并强制安全密码
+public-gateway            # 构建 Vue dist，对内统一提供 / 和 /api
+cloudflared               # 建立到 Cloudflare 的出站隧道
+```
 
-  ## Docker 安装后的第一个开发任务
+约束如下：
 
-  暂时不要迁移 OSS、ClickHouse 或 PostgreSQL。先完成一个不改变业务功能的容器化基线：
+- `cloudflared` 只连接 `public-gateway`，不直接连接 Backend。
+- `public-gateway` 将 `/api` 反向代理到 `backend-public:8000`，其余路径返回 Vue 静态文件。
+- Backend、Vite 和 Gateway 不绑定公网网卡；本地调试端口继续限制在 `127.0.0.1`。
+- `D:\trade_data` 只读挂载；只有数据准备容器可以写入 `D:\trade_data_curated`。
+- Tunnel token 通过忽略提交的 `.env` 或 Docker secret 注入，不写入 Compose、镜像或 Git。
+- 所有长期运行服务设置 `restart: unless-stopped`。
+- Docker Desktop 设置为 Windows 登录后自动启动。
 
-  D:\FinQuery\
-  ├── backend\Dockerfile
-  ├── frontend\Dockerfile
-  ├── compose.yaml
-  ├── .dockerignore
-  └── .env.docker.example
+建议为外部入口使用独立 Compose profile，例如：
 
-  第一版 Compose 只包含：
+```powershell
+Copy-Item .env.public.example .env.public
+docker compose --env-file .env.public --profile public-preview up -d --build `
+  backend-public public-gateway
 
-  frontend
-  backend
+# 本机验证成功且 Cloudflare Access 已配置后，再启动 Tunnel
+docker compose --env-file .env.public --profile public-preview up -d cloudflared
+```
 
-  并把 D:\trade_data 只读挂载给后端。先验证：
+日常数据更新仍通过独立工具 profile 执行：
 
-  - docker compose up --build 能启动。
-  - 前端可以访问。
-  - FastAPI /api/health 正常。
-  - 登录和股票、指数行情查询正常。
-  - 容器能够看到 D:\trade_data。
-  - 镜像中没有 .env、API Key 和原始行情数据。
-  - 停止并重建容器后功能仍正常。
+```powershell
+docker compose --profile tools run --rm stock-daily-data-prep
+docker compose --profile tools run --rm stock-daily-data-prep `
+  python scripts/stock_daily_pipeline.py validate `
+  --output /data/curated/trade_data
+docker compose --profile tools run --rm stock-daily-data-prep `
+  python scripts/stock_daily_pipeline.py compact `
+  --output /data/curated/trade_data
 
-  达成这个基线后，再按顺序加入：
+docker compose --profile tools run --rm index-daily-data-prep
+docker compose --profile tools run --rm index-daily-data-prep `
+  python scripts/index_daily_pipeline.py validate `
+  --output /data/curated/trade_data
+docker compose --profile tools run --rm index-daily-data-prep `
+  python scripts/index_daily_pipeline.py compact `
+  --output /data/curated/trade_data
+```
 
-  1. 交易数据转换器与 Parquet。
-  2. PostgreSQL。
-  3. Redis 和异步 Worker。
-  4. OSS 数据发布。
-  5. 云上 ECS。
-  6. GitHub Actions CI/CD。
-  7. 最后根据并发决定是否上 ClickHouse。
+### 19.4 域名和访问控制
 
-  所以你现在的下一步是：安装 WSL 2 和 Docker Desktop。完成后，我可以直接为这个仓库创建 Dockerfile、Compose 配置及健康检查。
+实施步骤：
+
+1. 已注册 `finquery.dev`，并已使用 Cloudflare 权威 DNS（2026-09-19 已验证）。
+2. 在 Zero Trust → Access controls → Applications 创建 Self-hosted application：
+   - Application name：`FinQuery`
+   - Public hostname：`finquery.dev`
+   - Policy action：`Allow`
+   - Include selector：`Emails`，仅填写明确获准的邮箱，不使用 `Everyone`。
+3. 在 Networking → Tunnels 创建 remotely-managed Tunnel，建议命名 `finquery-home`。
+4. 在 Tunnel 的 Routes 中添加 Published application：
+   - Hostname：`finquery.dev`
+   - Service URL：`http://public-gateway:80`
+5. 从 Tunnel 的 Add a replica 页面复制 Docker 命令中的 `eyJ...` token，只把 token 写入
+   忽略提交的 `.env.public` 中的 `CLOUDFLARE_TUNNEL_TOKEN`。
+6. 设置不同的强应用密码，先启动 `backend-public` 与 `public-gateway` 完成本机健康检查，
+   最后才启动 `cloudflared`。
+7. 使用无 Cloudflare 会话的浏览器验证会先出现 Access 登录，再使用手机移动网络验证 TLS、
+   应用登录、查询和断线恢复。
+
+不建议使用 Tailscale Funnel 作为自有域名入口，因为其公开地址使用 tailnet 的
+`*.ts.net` 域名，并存在端口和带宽限制。若访问者都是团队成员并愿意安装客户端，
+可以使用 Tailscale Serve 建立完全私有的访问方式。
+
+### 19.5 必须完成的安全门槛
+
+当前 Mock 登录不能作为唯一公网认证。在开放域名前至少完成：
+
+- Cloudflare Access 覆盖整个 hostname，并使用邮箱白名单或企业身份源。
+- 更换或移除 `admin/admin123`、`market/market123` 默认密码。
+- 限制 `/docs`、`/openapi.json`、Schema 重建和管理接口。
+- 为查询接口增加用户级限流、并发限制、超时和最大扫描量。
+- LLM Key、Tunnel token 和其他密钥只保存在忽略提交的配置中。
+- 防火墙不开放 5173、8000、Docker API、RDP 或数据目录对应服务。
+- 日志不记录 bearer token、密码、API Key 或完整敏感查询。
+- 定期备份 Compose 配置、Schema、manifest 和必要的应用状态。
+- 确认行情数据授权允许远程访问、团队共享或对外展示。
+
+Cloudflare Access 是外层准入控制，FinQuery 自身登录仍承担应用内身份和表级权限；两层
+认证不能互相替代。正式上云前应把 Mock 登录迁移到 PostgreSQL 用户体系或 OIDC。
+
+### 19.6 可用性与运维
+
+本机服务的可用性依赖：
+
+- Windows 主机持续开机且没有休眠。
+- 家庭网络上行带宽和稳定性。
+- Docker Desktop、Backend、Gateway 和 Tunnel 正常运行。
+- 每日数据准备任务没有占满 CPU、内存或磁盘 I/O。
+- Windows 更新后容器能够自动恢复。
+
+建议增加：
+
+- 禁用主机自动休眠，但保留显示器节能。
+- 使用 UPS，避免短时停电导致文件损坏。
+- 对 `/api/health` 配置外部可用性监控。
+- 对磁盘空间、Tunnel 离线、数据最大交易日和管道失败设置告警。
+- 数据转换完成并校验成功后再原子替换压实 Parquet，避免查询半成品。
+- 每月执行一次 Windows 重启后的自动恢复演练。
+
+### 19.7 上云退出条件
+
+满足以下任一条件时，应停止扩大本机暴露范围并迁移云端：
+
+- 需要稳定的 7×24 小时服务或明确 SLA。
+- 出现持续多用户并发，家庭上行或本机资源成为瓶颈。
+- 需要正式用户注册、审计、任务持久化或多实例。
+- 本机存储故障会造成不可接受的数据或服务中断。
+- 需要企业网络、私网数据库、高可用和异地容灾。
+- 数据许可或合规要求不允许从个人电脑提供服务。
+
+迁移时保持域名不变，只需把 Cloudflare 的源站从本地 Tunnel 切换到云上 ALB、ECS 或
+ACK；应用镜像、环境变量和 Parquet 数据版本沿用前述发布流程。这样外部用户无需更换
+访问地址，本机方案可以平滑退出。
+
+### 19.8 推荐执行顺序
+
+```text
+1. 生产化前端静态构建
+2. 增加 Caddy/Nginx Gateway
+3. 本地验证同源 /api 代理
+4. 增加 cloudflared Compose 服务
+5. 配置域名和 Tunnel
+6. 先配置 Access，再开放 hostname
+7. 加固默认账号、管理接口和限流
+8. 使用外部网络完成安全和功能验收
+9. 增加自动启动、监控和备份
+10. 小范围试运行，并按退出条件规划正式上云
+```

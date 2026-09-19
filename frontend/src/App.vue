@@ -60,8 +60,8 @@ const conversationScroll = ref<HTMLElement | null>(null)
 const authUser = ref<AuthUser | null>(null)
 const authReady = ref(false)
 const loginLoading = ref(false)
-const loginUsername = ref("admin")
-const loginPassword = ref("admin123")
+const loginUsername = ref("")
+const loginPassword = ref("")
 
 const activeConversation = computed(() =>
   conversations.value.find((item) => item.id === activeConversationId.value),
@@ -207,12 +207,6 @@ async function initializeUserWorkspace() {
   } catch (caught) {
     error.value = caught instanceof Error ? caught.message : "工作区加载失败"
   }
-}
-
-function useMockAccount(username: string, password: string) {
-  loginUsername.value = username
-  loginPassword.value = password
-  error.value = ""
 }
 
 async function loginUser() {
@@ -492,20 +486,7 @@ function clarificationHint(result: QueryResult) {
           {{ loginLoading ? "正在登录…" : "登录" }}
         </button>
 
-        <div class="mock-accounts">
-          <p>演示账号</p>
-          <button type="button" @click="useMockAccount('admin', 'admin123')">
-            <span class="account-icon admin">管</span>
-            <span><strong>admin</strong><small>管理员 · 全部数据</small></span>
-            <code>admin123</code>
-          </button>
-          <button type="button" @click="useMockAccount('market', 'market123')">
-            <span class="account-icon mock">行</span>
-            <span><strong>market</strong><small>行情分析 · 股票日行情</small></span>
-            <code>market123</code>
-          </button>
-        </div>
-        <small class="login-note">Mock 登录仅用于本地学习，不适合生产环境。</small>
+        <small class="login-note">请输入管理员分配的账号和密码。</small>
       </form>
     </section>
   </main>

@@ -13,6 +13,13 @@ def parse_string_set(value: str) -> set[str]:
     return {item.strip() for item in value.split(",") if item.strip()}
 
 
+def env_flag(name: str, default: bool = False) -> bool:
+    raw = os.getenv(name)
+    if raw is None:
+        return default
+    return raw.strip().lower() in {"1", "true", "yes", "on"}
+
+
 def _database_switches_from_env() -> set[str]:
     raw = os.getenv("DATABASE_SWITCHES")
     return {"trade_data"} if raw is None else parse_string_set(raw)
@@ -36,6 +43,9 @@ load_env()
 
 @dataclass(frozen=True)
 class Settings:
+    public_mode: bool = field(
+        default_factory=lambda: env_flag("FINQUERY_PUBLIC_MODE")
+    )
     database_switches: set[str] = field(default_factory=_database_switches_from_env)
     trade_data_root: str = field(
         default_factory=lambda: os.getenv("TRADE_DATA_ROOT", "").strip()
@@ -135,6 +145,7 @@ class Settings:
 
     def public_status(self) -> dict[str, object]:
         return {
+            "public_mode": self.public_mode,
             "database_switches": sorted(self.database_switches),
             "trade_data": self.trade_data_status(),
             "curated_data": self.curated_data_status(),
