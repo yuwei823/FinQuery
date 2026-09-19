@@ -487,7 +487,7 @@ function clarificationHint(result: QueryResult) {
 
   <main v-else-if="!authUser" class="login-page">
     <section class="login-intro">
-      <div class="login-brand"><span>A</span><strong>FinQuery</strong></div>
+      <div class="brand-lockup brand-lockup-intro"><span class="brand-mark">FinQ</span><strong>FinQuery</strong></div>
       <div>
         <p class="kicker">AI DATA ASSISTANT</p>
         <h1>用自然语言，<br>读懂金融数据。</h1>
@@ -498,7 +498,7 @@ function clarificationHint(result: QueryResult) {
 
     <section class="login-side">
       <form class="login-card" @submit.prevent="loginUser">
-        <header><span class="login-mark">A</span><div><h2>欢迎回来</h2><p>登录 FinQuery Studio</p></div></header>
+        <header class="brand-lockup brand-lockup-login"><span class="brand-mark brand-mark-dark">FinQ</span><div><h2>欢迎回来</h2><p>登录 FinQuery Studio</p></div></header>
         <label>
           <span>账号</span>
           <input v-model="loginUsername" autocomplete="username" placeholder="请输入账号">
@@ -527,8 +527,8 @@ function clarificationHint(result: QueryResult) {
 
   <div v-else class="app-layout">
     <aside class="history-sidebar" :class="{ open: leftOpen }">
-      <div class="brand-row">
-        <span class="brand-symbol">FinQ</span>
+      <div class="brand-lockup brand-lockup-sidebar">
+        <span class="brand-mark brand-mark-dark">FinQ</span>
         <div><strong>FinQuery</strong><small>AI 数据分析</small></div>
       </div>
 
@@ -576,7 +576,7 @@ function clarificationHint(result: QueryResult) {
         <div v-if="!activeConversation?.turns.length && !loading" class="welcome-panel">
           <div class="welcome-copy">
             <span class="welcome-mark">✦</span>
-            <p class="kicker">ASKDATA STUDIO</p>
+            <p class="kicker">FINQUERY STUDIO</p>
             <h1>想从数据里了解什么？</h1>
             <p>查询结果会以清晰的表格卡片展示，并支持分页和Excel导出。</p>
             <div class="prompt-list">

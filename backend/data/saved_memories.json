@@ -1,1 +1,152 @@
-[]
+[
+  {
+    "id": "field:trade_data.stock_daily.total_market_cap",
+    "user_id": "demo_admin",
+    "kind": "schema_field",
+    "table_id": "trade_data.stock_daily",
+    "name": "total_market_cap",
+    "label": "总市值",
+    "field_type": "数值",
+    "created_at": "2026-09-19T14:46:51"
+  },
+  {
+    "id": "result:dfabbc169da3",
+    "user_id": "demo_admin",
+    "kind": "result_table",
+    "task_id": "dfabbc169da3",
+    "query": "按申万一级行业统计最新交易日的总市值",
+    "summary": "数据显示电子行业总市值最高，达24057912677158.18元，其次是银行（16140337967207.68元）和通信（7605685378714.148元），综合行业市值最低。",
+    "title": "最新交易日申万一级行业总市值统计",
+    "columns": [
+      "industry_level_1",
+      "total_market_cap"
+    ],
+    "rows": [
+      {
+        "industry_level_1": "电子",
+        "total_market_cap": 24057912677158.18
+      },
+      {
+        "industry_level_1": "银行",
+        "total_market_cap": 16140337967207.68
+      },
+      {
+        "industry_level_1": "通信",
+        "total_market_cap": 7605685378714.148
+      },
+      {
+        "industry_level_1": "电力设备",
+        "total_market_cap": 7190012709838.9795
+      },
+      {
+        "industry_level_1": "机械设备",
+        "total_market_cap": 6691418711022.16
+      },
+      {
+        "industry_level_1": "医药生物",
+        "total_market_cap": 6566338507269.152
+      },
+      {
+        "industry_level_1": "非银金融",
+        "total_market_cap": 6477755370316.109
+      },
+      {
+        "industry_level_1": "有色金属",
+        "total_market_cap": 5340238628275.831
+      },
+      {
+        "industry_level_1": "石油石化",
+        "total_market_cap": 5022664440835.09
+      },
+      {
+        "industry_level_1": "基础化工",
+        "total_market_cap": 4540123012663.04
+      },
+      {
+        "industry_level_1": "汽车",
+        "total_market_cap": 4199138870975.1606
+      },
+      {
+        "industry_level_1": "公用事业",
+        "total_market_cap": 4166304749992.4707
+      },
+      {
+        "industry_level_1": "计算机",
+        "total_market_cap": 4007730832317.1104
+      },
+      {
+        "industry_level_1": "食品饮料",
+        "total_market_cap": 3647592685414.8896
+      },
+      {
+        "industry_level_1": "交通运输",
+        "total_market_cap": 3191841876035.5596
+      },
+      {
+        "industry_level_1": "国防军工",
+        "total_market_cap": 2939660371999.5703
+      },
+      {
+        "industry_level_1": "煤炭",
+        "total_market_cap": 2205221576977.48
+      },
+      {
+        "industry_level_1": "家用电器",
+        "total_market_cap": 1934126071410.83
+      },
+      {
+        "industry_level_1": "建筑装饰",
+        "total_market_cap": 1695089105858.77
+      },
+      {
+        "industry_level_1": "传媒",
+        "total_market_cap": 1443082066744.21
+      },
+      {
+        "industry_level_1": "农林牧渔",
+        "total_market_cap": 1267465901354.4
+      },
+      {
+        "industry_level_1": "建筑材料",
+        "total_market_cap": 1154256681976.0798
+      },
+      {
+        "industry_level_1": "轻工制造",
+        "total_market_cap": 957100249548.9602
+      },
+      {
+        "industry_level_1": "房地产",
+        "total_market_cap": 934658649034.1001
+      },
+      {
+        "industry_level_1": "商贸零售",
+        "total_market_cap": 881709362570.9299
+      },
+      {
+        "industry_level_1": "钢铁",
+        "total_market_cap": 837395223380.8999
+      },
+      {
+        "industry_level_1": "环保",
+        "total_market_cap": 824431659331.73
+      },
+      {
+        "industry_level_1": "纺织服饰",
+        "total_market_cap": 598790835956.34
+      },
+      {
+        "industry_level_1": "社会服务",
+        "total_market_cap": 473606445507.77
+      },
+      {
+        "industry_level_1": "美容护理",
+        "total_market_cap": 244461296610.30997
+      },
+      {
+        "industry_level_1": "综合",
+        "total_market_cap": 192127627315.87
+      }
+    ],
+    "created_at": "2026-09-19T14:46:36"
+  }
+]

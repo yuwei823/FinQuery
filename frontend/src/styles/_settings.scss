@@ -1,0 +1,101 @@
+$font-sans: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
+$font-serif: Georgia, "Noto Serif SC", serif;
+
+// Color palette
+// Neutral colors cover text, borders, and layered surfaces.
+$color-neutral-950: #17221c;
+$color-neutral-900: #25342c;
+$color-neutral-800: #39463f;
+$color-neutral-700: #5d504c;
+$color-neutral-600: #6c5f5a;
+$color-neutral-500: #7b6f6a;
+$color-neutral-400: #8d827d;
+$color-neutral-300: #9f9691;
+$color-neutral-200: #cfd8d2;
+$color-neutral-150: #dce2dd;
+$color-neutral-100: #e6e9e5;
+$color-neutral-75: #edf0ed;
+$color-neutral-50: #f7f9f7;
+$color-neutral-25: #fbfcfa;
+$color-white: #fff;
+$color-transparent: transparent;
+
+// Brand red-browns progress from emphasis to tinted surfaces.
+$color-brand-950: #351b18;
+$color-brand-mark-dark: #6f312a;
+$color-brand-900: #4b231f;
+$color-brand-800: #62302a;
+$color-brand-700: #7a3b32;
+$color-brand-600: #914c40;
+$color-brand-500: #a96558;
+$color-brand-400: #c18476;
+$color-brand-300: #d8ada4;
+$color-brand-200: #e7cbc5;
+$color-brand-150: #eedbd7;
+$color-brand-100: #f5e8e5;
+$color-brand-50: #fbf5f3;
+
+// Supporting data, warning, and destructive states.
+$color-info-700: #3f506e;
+$color-info-500: #64738e;
+$color-info-200: #c5d0e2;
+$color-info-100: #e9eef7;
+$color-info-50: #f7f9fd;
+$color-success-600: #2c8a62;
+$color-success-500: #36a96f;
+$color-warning-700: #71541b;
+$color-warning-600: #b07b18;
+$color-warning-100: #f6edd9;
+$color-danger-700: #9f493c;
+$color-danger-600: #b94646;
+$color-danger-200: #f0d5cf;
+$color-danger-50: #fff6f4;
+
+// Alpha colors are centralized so shadows and overlays remain themeable.
+$color-white-a10: rgba(255, 255, 255, .1);
+$color-white-a90: rgba(255, 255, 255, .9);
+$color-white-a96: rgba(255, 255, 255, .96);
+$color-ink-a055: rgba(34, 57, 45, .055);
+$color-ink-a06: rgba(34, 57, 45, .06);
+$color-ink-a07: rgba(35, 75, 54, .07);
+$color-ink-a09: rgba(33, 59, 45, .09);
+$color-ink-a10: rgba(19, 67, 49, .1);
+$color-ink-a12: rgba(25, 42, 33, .12);
+$color-ink-a16: rgba(25, 42, 33, .16);
+$color-brand-a10: rgba(122, 59, 50, .1);
+$color-brand-a16: rgba($color-brand-700, .16);
+$color-brand-a18: rgba(122, 59, 50, .18);
+
+// Backward-compatible semantic aliases used by the layout modules.
+$ink: $color-neutral-950;
+$muted: $color-neutral-500;
+$brand: $color-brand-700;
+$brand-dark: $color-brand-900;
+$brand-soft: $color-brand-100;
+$line: $color-neutral-100;
+$panel: $color-white;
+$sidebar: $color-neutral-75;
+
+$desktop-narrow: 1100px;
+$mobile: 720px;
+
+@mixin flex-center {
+  display: flex;
+  align-items: center;
+}
+
+@mixin grid-center {
+  display: grid;
+  place-items: center;
+}
+
+@mixin truncate {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+@mixin button-reset {
+  border: 0;
+  background: $color-transparent;
+}

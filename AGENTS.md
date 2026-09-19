@@ -16,6 +16,7 @@ frontend/
   src/api.ts                  HTTP client and session token handling
   src/types.ts                Frontend API contracts
   src/components/             Result tables, reports, markdown, and charts
+  src/styles/                 SCSS tokens, mixins, feature modules, responsive rules
   vite.config.ts              Dev server on 127.0.0.1:5173; proxies /api to :8000
 
 backend/

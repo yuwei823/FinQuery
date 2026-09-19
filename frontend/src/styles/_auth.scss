@@ -1,0 +1,194 @@
+@use "settings" as *;
+
+.auth-loading {
+  display: grid;
+  place-content: center;
+  justify-items: center;
+  width: 100vw;
+  height: 100vh;
+  color: $color-neutral-500;
+  background: $color-neutral-50;
+
+  span {
+    width: 25px;
+    height: 25px;
+    border: 2px solid $color-neutral-150;
+    border-top-color: $brand;
+    border-radius: 50%;
+    animation: spin .8s linear infinite;
+  }
+
+  p { margin: 12px 0 0; font-size: 12px; }
+}
+
+.login-page {
+  display: grid;
+  grid-template-columns: minmax(360px, .9fr) minmax(460px, 1.1fr);
+  width: 100vw;
+  min-height: 100vh;
+  background: $color-neutral-50;
+}
+
+.login-intro {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  min-height: 100vh;
+  padding: 44px 7vw 42px;
+  overflow: hidden;
+  color: $color-brand-50;
+  background: linear-gradient(145deg, $color-brand-950 0%, $color-brand-900 58%, $color-brand-700 100%);
+
+  &::before,
+  &::after {
+    position: absolute;
+    content: "";
+    border: 1px solid $color-white-a10;
+    border-radius: 50%;
+  }
+
+  &::before { right: -180px; bottom: -110px; width: 470px; height: 470px; }
+  &::after { right: -70px; bottom: 0; width: 260px; height: 260px; }
+
+  > div:nth-child(2) { position: relative; z-index: 1; max-width: 500px; }
+
+  .kicker { color: $color-brand-300; font-size: 10px; letter-spacing: 2px; }
+
+  h1 {
+    margin: 18px 0 24px;
+    font-size: clamp(38px, 4.6vw, 66px);
+    line-height: 1.13;
+    letter-spacing: -2px;
+
+    + p { max-width: 430px; margin: 0; color: $color-brand-200; font-size: 13px; line-height: 1.9; }
+  }
+
+  > small { position: relative; z-index: 1; color: $color-brand-300; font-size: 10px; letter-spacing: .6px; }
+}
+
+.login-side { @include grid-center; padding: 40px; }
+
+.login-card {
+  width: min(410px, 100%);
+  padding: 38px;
+  border: 1px solid $color-brand-150;
+  border-radius: 18px;
+  background: $color-white-a96;
+  box-shadow: 0 24px 65px $color-ink-a09;
+
+  h2,
+  header p { margin: 0; }
+
+  h2 { font-size: 19px; }
+  header p { margin-top: 4px; color: $color-neutral-400; font-size: 10px; }
+
+  > label {
+    display: block;
+    margin-top: 16px;
+
+    > span { display: block; margin: 0 0 7px 2px; color: $color-neutral-700; font-size: 10px; font-weight: 700; }
+  }
+
+  input {
+    width: 100%;
+    height: 43px;
+    padding: 0 13px;
+    border: 1px solid $color-neutral-150;
+    border-radius: 9px;
+    outline: none;
+    color: $color-neutral-900;
+    background: $color-neutral-25;
+    font-size: 12px;
+    transition: border-color .18s, box-shadow .18s, background .18s;
+
+    &:focus { border-color: $color-brand-400; background: $color-white; box-shadow: 0 0 0 3px $color-brand-a10; }
+  }
+}
+
+.login-error { margin: 11px 0 -3px; color: $color-danger-600; font-size: 10px; }
+
+.login-submit,
+.guest-login {
+  width: 100%;
+  height: 43px;
+  border-radius: 9px;
+  font-size: 12px;
+  font-weight: 700;
+
+  &:disabled { cursor: wait; opacity: .65; }
+}
+
+.login-submit {
+  margin-top: 20px;
+  border: 0;
+  color: $color-white;
+  background: $color-brand-700;
+  transition: transform .15s, background .15s, box-shadow .15s;
+
+  &:hover:not(:disabled) { transform: translateY(-1px); background: $color-brand-900; box-shadow: 0 9px 18px $color-brand-a18; }
+}
+
+.guest-login-area {
+  position: relative;
+  margin-top: 24px;
+  padding-top: 20px;
+  border-top: 1px solid $color-neutral-100;
+
+  > span { position: absolute; top: -7px; left: 50%; padding: 0 9px; color: $color-neutral-300; background: $color-white; font-size: 9px; transform: translateX(-50%); }
+  small { display: block; margin-top: 9px; color: $color-neutral-400; font-size: 8px; text-align: center; }
+}
+
+.guest-login {
+  border: 1px solid $color-brand-300;
+  color: $color-brand-700;
+  background: $color-brand-50;
+
+  &:hover:not(:disabled) { border-color: $color-brand-400; background: $color-brand-100; }
+}
+
+.mock-accounts {
+  margin-top: 25px;
+  padding-top: 20px;
+  border-top: 1px solid $color-neutral-75;
+
+  > p { margin: 0 0 9px; color: $color-neutral-400; font-size: 9px; font-weight: 700; }
+
+  > button {
+    display: grid;
+    grid-template-columns: 30px minmax(0, 1fr) auto;
+    align-items: center;
+    gap: 9px;
+    width: 100%;
+    margin-top: 7px;
+    padding: 9px;
+    border: 1px solid $color-neutral-100;
+    border-radius: 9px;
+    color: $color-neutral-800;
+    background: $color-neutral-25;
+    text-align: left;
+
+    &:hover { border-color: $color-brand-200; background: $color-neutral-50; }
+  }
+
+  strong,
+  small { display: block; }
+  strong { font-size: 10px; }
+  small { margin-top: 2px; color: $color-neutral-400; font-size: 8px; }
+  code { color: $color-neutral-600; font-size: 9px; }
+}
+
+.account-icon {
+  @include grid-center;
+  width: 28px;
+  height: 28px;
+  border-radius: 7px;
+  font-size: 9px;
+  font-weight: 700;
+
+  &.admin { color: $color-warning-700; background: $color-warning-100; }
+  &.user { color: $color-brand-700; background: $color-brand-100; }
+  &.mock { color: $color-info-500; background: $color-info-100; }
+}
+
+.login-note { display: block; margin-top: 17px; color: $color-neutral-300; font-size: 8px; text-align: center; }

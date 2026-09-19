@@ -1,0 +1,232 @@
+@use "settings" as *;
+
+.report-card { margin-top: 8px; overflow: hidden; border: 1px solid $color-brand-150; border-radius: 14px; background: $color-white; box-shadow: 0 12px 35px $color-ink-a055; }
+
+.report-header {
+  @include flex-center;
+  justify-content: space-between;
+  gap: 18px;
+  padding: 18px 20px;
+  border-bottom: 1px solid $color-neutral-75;
+  background: linear-gradient(135deg, $color-neutral-25, $color-brand-50);
+
+  small { display: block; color: $color-neutral-500; font-size: 7px; font-weight: 700; letter-spacing: 1.4px; }
+  h2 { margin: 5px 0 0; color: $color-neutral-900; font-family: $font-serif; font-size: 19px; font-weight: 500; }
+
+  button {
+    flex: none;
+    padding: 7px 10px;
+    border: 1px solid $color-neutral-150;
+    border-radius: 8px;
+    color: $color-brand-800;
+    background: $color-white;
+    font-size: 9px;
+    font-weight: 600;
+
+    &:hover { border-color: $color-brand-300; background: $color-neutral-50; transform: translateY(-1px); }
+    span { margin-right: 3px; font-size: 12px; }
+  }
+
+  .pdf-export {
+    color: $color-white;
+    border-color: $color-brand-700;
+    background: $color-brand-700;
+
+    &:hover { color: $color-white; border-color: $color-brand-800; background: $color-brand-800; }
+  }
+}
+
+.report-actions { display: flex; flex: none; gap: 7px; }
+.report-charts { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 10px; padding: 14px 16px 0; }
+
+.analysis-chart {
+  min-width: 0;
+  padding: 14px;
+  border: 1px solid $color-neutral-100;
+  border-radius: 11px;
+  background: $color-neutral-25;
+
+  > header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 10px;
+    margin-bottom: 14px;
+  }
+
+  header {
+    small,
+    strong { display: block; }
+
+    small { margin-bottom: 3px; color: $color-neutral-400; font-size: 7px; }
+    strong { color: $color-neutral-800; font-size: 10px; }
+
+    > span { @include truncate; color: $color-neutral-300; font-size: 7px; }
+  }
+}
+
+.chart-empty { padding: 28px 8px; color: $color-neutral-300; font-size: 9px; text-align: center; }
+.bar-chart { display: grid; gap: 8px; }
+
+.bar-row {
+  display: grid;
+  grid-template-columns: 60px minmax(70px, 1fr) 62px;
+  align-items: center;
+  gap: 8px;
+
+  > span { @include truncate; color: $color-neutral-600; font-size: 8px; }
+
+  > div { height: 8px; overflow: hidden; border-radius: 999px; background: $color-neutral-75; }
+
+  i { display: block; height: 100%; min-width: 2px; border-radius: inherit; background: linear-gradient(90deg, $color-brand-700, $color-brand-400); }
+  strong { color: $color-neutral-700; font-size: 8px; text-align: right; }
+}
+
+.pie-chart { display: grid; grid-template-columns: 116px minmax(0, 1fr); align-items: center; gap: 18px; }
+
+.pie-disc {
+  @include grid-center;
+  width: 112px;
+  height: 112px;
+  border-radius: 50%;
+
+  &::before { grid-area: 1 / 1; width: 58px; height: 58px; border-radius: 50%; background: $color-white; content: ""; }
+
+  > span { z-index: 1; grid-area: 1 / 1; color: $color-neutral-800; font-size: 16px; font-weight: 700; }
+  small { display: block; color: $color-neutral-400; font-size: 7px; font-weight: 500; text-align: center; }
+}
+
+.pie-legend {
+  display: grid;
+  gap: 7px;
+  min-width: 0;
+
+  > div { display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; align-items: center; gap: 6px; }
+  i { width: 7px; height: 7px; border-radius: 2px; }
+  span { @include truncate; color: $color-neutral-600; font-size: 8px; }
+  strong { color: $color-neutral-700; font-size: 8px; }
+}
+
+.markdown-body {
+  padding: 20px;
+  color: $color-neutral-800;
+  font-size: 11px;
+  line-height: 1.8;
+
+  h1,
+  h2,
+  h3 { color: $color-neutral-900; font-family: $font-serif; font-weight: 500; line-height: 1.4; }
+
+  h1 { margin: 0 0 16px; font-size: 21px; }
+  h2 { margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid $color-neutral-75; font-size: 15px; }
+  h3 { margin: 17px 0 6px; font-size: 12px; }
+  p { margin: 7px 0; }
+
+  ul,
+  ol { margin: 7px 0; padding-left: 21px; }
+
+  li + li { margin-top: 3px; }
+  blockquote { margin: 12px 0; padding: 9px 12px; border-left: 3px solid $color-neutral-300; color: $color-neutral-700; background: $color-neutral-50; }
+  hr { margin: 18px 0; border: 0; border-top: 1px solid $color-neutral-100; }
+  code { padding: 2px 4px; border-radius: 4px; color: $color-brand-600; background: $color-neutral-75; font-size: .92em; }
+  table { font-size: 9px; }
+
+  th,
+  td { padding: 8px 10px; }
+}
+
+.markdown-table-wrap { margin: 12px 0; overflow-x: auto; border: 1px solid $color-neutral-100; border-radius: 9px; }
+
+@media print {
+  @page { size: A4 portrait; margin: 12mm; }
+
+  html,
+  body { width: auto !important; height: auto !important; overflow: visible !important; background: $color-white !important; }
+
+  body.printing-report {
+    > *:not(.pdf-print-root) { display: none !important; }
+
+    .pdf-print-root {
+      display: block !important;
+      width: 100% !important;
+      margin: 0 !important;
+      overflow: visible !important;
+      border: 0 !important;
+      border-radius: 0 !important;
+      box-shadow: none !important;
+      color: $color-neutral-900 !important;
+      background: $color-white !important;
+      -webkit-print-color-adjust: exact;
+      print-color-adjust: exact;
+    }
+  }
+
+  .pdf-print-root {
+    .report-header {
+      padding: 7mm 8mm;
+      border: 1px solid $color-brand-150;
+      background: $color-brand-50 !important;
+      break-after: avoid;
+
+      h2 { font-size: 20pt; }
+      small { font-size: 7pt; }
+    }
+
+    .report-actions { display: none !important; }
+
+    .report-charts { display: grid; grid-template-columns: 1fr; gap: 5mm; padding: 6mm 8mm 0; }
+
+    .analysis-chart {
+      padding: 5mm;
+      border-color: $color-brand-150;
+      break-inside: avoid;
+      page-break-inside: avoid;
+
+      header {
+        small,
+        > span { font-size: 8pt; }
+
+        strong { font-size: 10pt; }
+      }
+    }
+
+    .bar-row {
+      grid-template-columns: 28mm minmax(45mm, 1fr) 30mm;
+
+      > span,
+      strong { font-size: 8pt; }
+
+      > div { height: 3mm; }
+    }
+
+    .pie-legend {
+      span,
+      strong { font-size: 8pt; }
+    }
+
+    .markdown-body {
+      padding: 7mm 8mm;
+      font-size: 10pt;
+      line-height: 1.7;
+
+      h1,
+      h2,
+      h3 { break-after: avoid; page-break-after: avoid; }
+
+      h2 { margin-top: 7mm; font-size: 15pt; }
+      h3 { font-size: 12pt; }
+
+      p,
+      li { orphans: 3; widows: 3; }
+    }
+
+    .markdown-table-wrap {
+      orphans: 3;
+      widows: 3;
+      break-inside: avoid;
+      page-break-inside: avoid;
+    }
+
+    blockquote { break-inside: avoid; page-break-inside: avoid; }
+  }
+}
