@@ -1,5 +1,62 @@
-$font-sans: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
-$font-serif: Georgia, "Noto Serif SC", serif;
+$font-family-sans: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
+$font-family-serif: Georgia, "Noto Serif SC", serif;
+
+// Interface type scale: dense data UI from micro metadata to report titles.
+$font-size-2xs: 6px;
+$font-size-xs: 7px;
+$font-size-sm: 8px;
+$font-size-md: 9px;
+$font-size-lg: 10px;
+$font-size-body-sm: 11px;
+$font-size-body: 12px;
+$font-size-body-lg: 13px;
+$font-size-subtitle: 14px;
+$font-size-heading-sm: 15px;
+$font-size-heading-md: 16px;
+$font-size-icon-lg: 17px;
+$font-size-heading-lg: 18px;
+$font-size-title: 19px;
+$font-size-title-lg: 21px;
+
+// Responsive display sizes stay separate from the fixed interface scale.
+$font-size-display-login: clamp(38px, 4.6vw, 66px);
+$font-size-display-welcome: clamp(27px, 3vw, 38px);
+$font-size-display-mobile: 34px;
+$font-size-code-inline: .92em;
+
+// Print typography uses physical point units for predictable PDF output.
+$font-size-print-xs: 7pt;
+$font-size-print-sm: 8pt;
+$font-size-print-body: 10pt;
+$font-size-print-subtitle: 12pt;
+$font-size-print-heading: 15pt;
+$font-size-print-title: 20pt;
+
+// Weight, vertical rhythm, and tracking scales.
+$font-weight-regular: 400;
+$font-weight-medium: 500;
+$font-weight-semibold: 600;
+$font-weight-bold: 700;
+$font-weight-extrabold: 800;
+$font-style-normal: normal;
+$font-synthesis-disabled: none;
+
+$line-height-solid: 1;
+$line-height-tight: 1.15;
+$line-height-heading: 1.4;
+$line-height-compact: 1.5;
+$line-height-body: 1.6;
+$line-height-relaxed: 1.75;
+$line-height-loose: 1.85;
+
+$letter-spacing-display: -2px;
+$letter-spacing-heading: -1px;
+$letter-spacing-brand: -.15px;
+$letter-spacing-normal: .2px;
+$letter-spacing-wide: .6px;
+$letter-spacing-wider: 1px;
+$letter-spacing-label: 1.5px;
+$letter-spacing-widest: 2px;
 
 // Color palette
 // Neutral colors cover text, borders, and layered surfaces.
@@ -93,6 +150,24 @@ $mobile: 720px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+@mixin serif-heading($size: null) {
+  font-family: $font-family-serif;
+  font-weight: $font-weight-medium;
+
+  @if $size {
+    font-size: $size;
+  }
+}
+
+@mixin type-label($size: $font-size-md, $tracking: null) {
+  font-size: $size;
+  font-weight: $font-weight-bold;
+
+  @if $tracking {
+    letter-spacing: $tracking;
+  }
 }
 
 @mixin button-reset {

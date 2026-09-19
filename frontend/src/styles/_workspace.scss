@@ -14,8 +14,8 @@
   justify-content: space-between;
 
   .kicker { margin: 0 0 4px; }
-  h2 { margin: 0; font-size: 15px; }
-  button { @include button-reset; color: $color-neutral-400; font-size: 9px; }
+  h2 { margin: 0; font-size: $font-size-heading-sm; }
+  button { @include button-reset; color: $color-neutral-400; font-size: $font-size-md; }
 }
 
 .context-block { margin: 16px 0 0; padding: 11px; border: 1px solid $color-neutral-100; border-radius: 11px; background: $color-neutral-25; }
@@ -28,9 +28,9 @@
   strong,
   small { display: block; }
 
-  strong { color: $color-neutral-800; font-size: 11px; }
-  small { margin-top: 2px; color: $color-neutral-400; font-size: 8px; }
-  em { color: $color-neutral-600; font-size: 9px; font-style: normal; }
+  strong { color: $color-neutral-800; font-size: $font-size-body-sm; }
+  small { margin-top: 2px; color: $color-neutral-400; font-size: $font-size-sm; }
+  em { color: $color-neutral-600; font-size: $font-size-md; font-style: $font-style-normal; }
 }
 
 .analysis-context-block { background: $color-neutral-25; }
@@ -60,9 +60,9 @@
   strong,
   small { display: block; @include truncate; }
 
-  strong { color: $color-info-700; font-size: 9px; }
-  small { margin-top: 3px; color: $color-neutral-300; font-size: 7px; }
-  button { @include button-reset; color: $color-neutral-300; font-size: 13px; }
+  strong { color: $color-info-700; font-size: $font-size-md; }
+  small { margin-top: 3px; color: $color-neutral-300; font-size: $font-size-xs; }
+  button { @include button-reset; color: $color-neutral-300; font-size: $font-size-body-lg; }
 }
 
 .control-label {
@@ -70,10 +70,9 @@
   justify-content: space-between;
   margin: 15px 2px 6px;
   color: $color-neutral-800;
-  font-size: 9px;
-  font-weight: 700;
+  @include type-label;
 
-  small { color: $color-neutral-300; font-size: 7px; letter-spacing: .7px; font-weight: 500; }
+  small { color: $color-neutral-300; font-size: $font-size-xs; letter-spacing: $letter-spacing-wide; font-weight: $font-weight-medium; }
 }
 
 .confirmed-tables-zone,
@@ -111,9 +110,9 @@
   strong,
   small { display: block; @include truncate; }
 
-  strong { color: $color-neutral-800; font-size: 8px; }
-  small { margin-top: 2px; color: $color-neutral-300; font-size: 6px; }
-  button { @include button-reset; color: $color-neutral-400; font-size: 12px; }
+  strong { color: $color-neutral-800; font-size: $font-size-sm; }
+  small { margin-top: 2px; color: $color-neutral-300; font-size: $font-size-2xs; }
+  button { @include button-reset; color: $color-neutral-400; font-size: $font-size-body; }
 }
 
 .table-mark,
@@ -123,8 +122,8 @@
   background: $color-brand-100;
 }
 
-.table-mark { width: 22px; height: 22px; border-radius: 6px; color: $color-brand-600; background: $color-brand-100; font-size: 9px; }
-.field-badge { width: 22px; height: 22px; border-radius: 5px; font-size: 8px; font-weight: 700; }
+.table-mark { width: 22px; height: 22px; border-radius: 6px; color: $color-brand-600; background: $color-brand-100; font-size: $font-size-md; }
+.field-badge { width: 22px; height: 22px; border-radius: 5px; @include type-label($font-size-sm); }
 
 .confirmed-fields-zone { min-height: 86px; }
 
@@ -146,9 +145,9 @@
     > span { margin: 0; }
   }
 
-  > span { @include grid-center; width: 25px; height: 25px; margin-bottom: 6px; border-radius: 8px; color: $color-brand-600; background: $color-brand-100; font-size: 14px; }
-  strong { color: $color-neutral-600; font-size: 9px; font-weight: 600; }
-  small { margin-top: 3px; font-size: 7px; }
+  > span { @include grid-center; width: 25px; height: 25px; margin-bottom: 6px; border-radius: 8px; color: $color-brand-600; background: $color-brand-100; font-size: $font-size-subtitle; }
+  strong { color: $color-neutral-600; font-size: $font-size-md; font-weight: $font-weight-semibold; }
+  small { margin-top: 3px; font-size: $font-size-xs; }
 }
 
 .confirmed-field {
@@ -169,8 +168,8 @@
   strong,
   small { display: block; @include truncate; }
 
-  strong { color: $color-neutral-800; font-size: 9px; }
-  small { margin-top: 2px; color: $color-neutral-300; font-size: 7px; }
+  strong { color: $color-neutral-800; font-size: $font-size-md; }
+  small { margin-top: 2px; color: $color-neutral-300; font-size: $font-size-xs; }
 }
 
 .save-field {
@@ -181,14 +180,14 @@
   border-radius: 6px;
   color: $color-neutral-300;
   background: $color-transparent;
-  font-size: 14px;
+  font-size: $font-size-subtitle;
   transition: color .16s, background .16s, transform .16s;
 
   &:hover { color: $color-warning-600; background: $color-neutral-75; transform: translateY(-1px); }
   &.saved { color: $color-warning-600; }
 }
 
-.remove-field { @include button-reset; color: $color-neutral-400; font-size: 13px; }
+.remove-field { @include button-reset; color: $color-neutral-400; font-size: $font-size-body-lg; }
 
 .selected-summary {
   display: flex;
@@ -199,8 +198,8 @@
   color: $color-neutral-500;
   background: $color-brand-50;
 
-  > span { @include grid-center; width: 17px; height: 17px; flex: none; border-radius: 50%; color: $color-neutral-700; background: $color-brand-150; font-size: 8px; font-weight: 700; }
-  p { margin: 0; font-size: 8px; line-height: 1.55; }
+  > span { @include grid-center; width: 17px; height: 17px; flex: none; border-radius: 50%; color: $color-neutral-700; background: $color-brand-150; @include type-label($font-size-sm); }
+  p { margin: 0; font-size: $font-size-sm; line-height: $line-height-compact; }
 }
 
 .recent-library { margin-top: 20px; padding-top: 17px; border-top: 1px solid $color-neutral-100; }
@@ -214,8 +213,8 @@
   strong,
   small { display: block; }
 
-  strong { font-size: 10px; }
-  small { margin-top: 3px; color: $color-neutral-300; font-size: 7px; }
+  strong { font-size: $font-size-lg; }
+  small { margin-top: 3px; color: $color-neutral-300; font-size: $font-size-xs; }
 }
 
 .recent-columns { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-top: 12px; }
@@ -227,10 +226,10 @@
   border-radius: 9px;
   background: $color-neutral-25;
 
-  > p { margin: 0 4px 6px; color: $color-neutral-500; font-size: 7px; font-weight: 700; letter-spacing: .6px; }
+  > p { margin: 0 4px 6px; color: $color-neutral-500; @include type-label($font-size-xs, $letter-spacing-wide); }
 }
 
-.library-empty { min-height: 56px; padding: 12px 5px; color: $color-neutral-300; font-size: 7px; line-height: 1.5; text-align: center; }
+.library-empty { min-height: 56px; padding: 12px 5px; color: $color-neutral-300; font-size: $font-size-xs; line-height: $line-height-compact; text-align: center; }
 
 .recent-card {
   display: grid;
@@ -251,9 +250,9 @@
   strong,
   small { display: block; @include truncate; }
 
-  strong { font-size: 8px; }
-  small { margin-top: 2px; color: $color-neutral-300; font-size: 6px; }
-  em { color: $color-neutral-300; font-size: 8px; font-style: normal; }
+  strong { font-size: $font-size-sm; }
+  small { margin-top: 2px; color: $color-neutral-300; font-size: $font-size-2xs; }
+  em { color: $color-neutral-300; font-size: $font-size-sm; font-style: $font-style-normal; }
 }
 
 .field-library-row {
@@ -277,8 +276,8 @@
   border-radius: 8px;
   color: $color-info-500;
   background: $color-info-50;
-  font-size: 8px;
+  font-size: $font-size-sm;
 
-  strong { margin-right: 3px; color: $color-info-700; font-size: 8px; }
+  strong { margin-right: 3px; color: $color-info-700; font-size: $font-size-sm; }
   span { padding: 3px 6px; border-radius: 6px; background: $color-info-100; }
 }

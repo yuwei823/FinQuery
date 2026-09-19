@@ -26,13 +26,13 @@
   border-radius: 9px;
   color: $color-neutral-900;
   background: $color-white;
-  font-size: 12px;
-  font-weight: 600;
+  font-size: $font-size-body;
+  font-weight: $font-weight-semibold;
 
   &:hover { border-color: $color-brand-300; background: $color-neutral-25; }
   &:disabled { cursor: default; opacity: .48; }
 
-  span { color: $brand; font-size: 17px; font-weight: 400; }
+  span { color: $brand; font-size: $font-size-icon-lg; font-weight: $font-weight-regular; }
 }
 
 .history-list {
@@ -43,7 +43,7 @@
   section {
     + section { margin-top: 22px; }
 
-    > p { margin: 0 10px 7px; color: $color-neutral-400; font-size: 9px; font-weight: 700; letter-spacing: 1px; }
+    > p { margin: 0 10px 7px; color: $color-neutral-400; @include type-label($font-size-md, $letter-spacing-wider); }
   }
 }
 
@@ -75,11 +75,11 @@
   strong,
   small { display: block; @include truncate; }
 
-  strong { font-size: 11px; font-weight: 500; }
-  small { margin-top: 3px; color: $color-neutral-300; font-size: 8px; }
+  strong { font-size: $font-size-body-sm; font-weight: $font-weight-medium; }
+  small { margin-top: 3px; color: $color-neutral-300; font-size: $font-size-sm; }
 }
 
-.chat-icon { color: $color-neutral-500; font-size: 16px; }
+.chat-icon { color: $color-neutral-500; font-size: $font-size-heading-md; }
 
 .history-remove {
   @include button-reset;
@@ -88,7 +88,7 @@
   right: 7px;
   display: none;
   color: $color-neutral-400;
-  font-size: 15px;
+  font-size: $font-size-heading-sm;
 }
 
 .history-footer {
@@ -100,8 +100,8 @@
   strong,
   small { display: block; }
 
-  strong { font-size: 10px; }
-  small { margin-top: 3px; color: $color-neutral-400; font-size: 8px; }
+  strong { font-size: $font-size-lg; }
+  small { margin-top: 3px; color: $color-neutral-400; font-size: $font-size-sm; }
 
   i {
     display: inline-block;
@@ -119,7 +119,7 @@
   @include button-reset;
   padding: 4px;
   color: $color-neutral-400;
-  font-size: 9px;
+  font-size: $font-size-md;
 
   &:hover { color: $color-danger-700; }
 }
@@ -131,7 +131,7 @@
   border-radius: 50%;
   color: $color-white;
   background: $color-neutral-700;
-  font-size: 10px;
+  font-size: $font-size-lg;
 }
 
 .chat-column {
@@ -154,8 +154,8 @@
     strong,
     span { display: block; }
 
-    strong { max-width: 320px; font-size: 12px; @include truncate; }
-    span { margin-top: 2px; color: $color-neutral-300; font-size: 8px; }
+    strong { max-width: 320px; font-size: $font-size-body; @include truncate; }
+    span { margin-top: 2px; color: $color-neutral-300; font-size: $font-size-sm; }
   }
 }
 
@@ -165,7 +165,7 @@
   border-radius: 999px;
   color: $color-neutral-700;
   background: $color-brand-50;
-  font-size: 9px;
+  font-size: $font-size-md;
 
   i { display: inline-block; width: 5px; height: 5px; margin-right: 5px; border-radius: 50%; background: $color-success-500; }
 }
@@ -202,10 +202,8 @@
 
   h1 {
     margin: 0;
-    font-family: $font-serif;
-    font-size: clamp(27px, 3vw, 38px);
-    font-weight: 500;
-    letter-spacing: -1px;
+    @include serif-heading($font-size-display-welcome);
+    letter-spacing: $letter-spacing-heading;
   }
 }
 
@@ -213,7 +211,7 @@
   max-width: 650px;
   margin: 0 auto;
 
-  > p:not(.kicker) { margin: 12px 0 24px; color: $muted; font-size: 11px; }
+  > p:not(.kicker) { margin: 12px 0 24px; color: $muted; font-size: $font-size-body-sm; }
 }
 
 .welcome-mark {
@@ -225,10 +223,10 @@
   border-radius: 14px;
   color: $brand;
   background: $color-brand-50;
-  font-size: 18px;
+  font-size: $font-size-heading-lg;
 }
 
-.kicker { margin: 16px 0 7px; color: $color-neutral-600; font-size: 8px; font-weight: 700; letter-spacing: 1.7px; }
+.kicker { margin: 16px 0 7px; color: $color-neutral-600; @include type-label($font-size-sm, $letter-spacing-label); }
 
 .prompt-list {
   display: grid;
@@ -243,8 +241,8 @@
     color: $color-neutral-700;
     background: $color-white;
     text-align: left;
-    font-size: 10px;
-    line-height: 1.5;
+    font-size: $font-size-lg;
+    line-height: $line-height-compact;
 
     &:hover { border-color: $color-brand-300; box-shadow: 0 8px 22px $color-ink-a07; }
   }

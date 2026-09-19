@@ -18,7 +18,7 @@
     animation: spin .8s linear infinite;
   }
 
-  p { margin: 12px 0 0; font-size: 12px; }
+  p { margin: 12px 0 0; font-size: $font-size-body; }
 }
 
 .login-page {
@@ -53,18 +53,18 @@
 
   > div:nth-child(2) { position: relative; z-index: 1; max-width: 500px; }
 
-  .kicker { color: $color-brand-300; font-size: 10px; letter-spacing: 2px; }
+  .kicker { color: $color-brand-300; font-size: $font-size-lg; letter-spacing: $letter-spacing-widest; }
 
   h1 {
     margin: 18px 0 24px;
-    font-size: clamp(38px, 4.6vw, 66px);
-    line-height: 1.13;
-    letter-spacing: -2px;
+    font-size: $font-size-display-login;
+    line-height: $line-height-tight;
+    letter-spacing: $letter-spacing-display;
 
-    + p { max-width: 430px; margin: 0; color: $color-brand-200; font-size: 13px; line-height: 1.9; }
+    + p { max-width: 430px; margin: 0; color: $color-brand-200; font-size: $font-size-body-lg; line-height: $line-height-loose; }
   }
 
-  > small { position: relative; z-index: 1; color: $color-brand-300; font-size: 10px; letter-spacing: .6px; }
+  > small { position: relative; z-index: 1; color: $color-brand-300; font-size: $font-size-lg; letter-spacing: $letter-spacing-wide; }
 }
 
 .login-side { @include grid-center; padding: 40px; }
@@ -80,14 +80,14 @@
   h2,
   header p { margin: 0; }
 
-  h2 { font-size: 19px; }
-  header p { margin-top: 4px; color: $color-neutral-400; font-size: 10px; }
+  h2 { font-size: $font-size-title; }
+  header p { margin-top: 4px; color: $color-neutral-400; font-size: $font-size-lg; }
 
   > label {
     display: block;
     margin-top: 16px;
 
-    > span { display: block; margin: 0 0 7px 2px; color: $color-neutral-700; font-size: 10px; font-weight: 700; }
+    > span { display: block; margin: 0 0 7px 2px; color: $color-neutral-700; @include type-label($font-size-lg); }
   }
 
   input {
@@ -99,22 +99,22 @@
     outline: none;
     color: $color-neutral-900;
     background: $color-neutral-25;
-    font-size: 12px;
+    font-size: $font-size-body;
     transition: border-color .18s, box-shadow .18s, background .18s;
 
     &:focus { border-color: $color-brand-400; background: $color-white; box-shadow: 0 0 0 3px $color-brand-a10; }
   }
 }
 
-.login-error { margin: 11px 0 -3px; color: $color-danger-600; font-size: 10px; }
+.login-error { margin: 11px 0 -3px; color: $color-danger-600; font-size: $font-size-lg; }
 
 .login-submit,
 .guest-login {
   width: 100%;
   height: 43px;
   border-radius: 9px;
-  font-size: 12px;
-  font-weight: 700;
+  font-size: $font-size-body;
+  font-weight: $font-weight-bold;
 
   &:disabled { cursor: wait; opacity: .65; }
 }
@@ -135,8 +135,8 @@
   padding-top: 20px;
   border-top: 1px solid $color-neutral-100;
 
-  > span { position: absolute; top: -7px; left: 50%; padding: 0 9px; color: $color-neutral-300; background: $color-white; font-size: 9px; transform: translateX(-50%); }
-  small { display: block; margin-top: 9px; color: $color-neutral-400; font-size: 8px; text-align: center; }
+  > span { position: absolute; top: -7px; left: 50%; padding: 0 9px; color: $color-neutral-300; background: $color-white; font-size: $font-size-md; transform: translateX(-50%); }
+  small { display: block; margin-top: 9px; color: $color-neutral-400; font-size: $font-size-sm; text-align: center; }
 }
 
 .guest-login {
@@ -152,7 +152,7 @@
   padding-top: 20px;
   border-top: 1px solid $color-neutral-75;
 
-  > p { margin: 0 0 9px; color: $color-neutral-400; font-size: 9px; font-weight: 700; }
+  > p { margin: 0 0 9px; color: $color-neutral-400; @include type-label; }
 
   > button {
     display: grid;
@@ -173,9 +173,9 @@
 
   strong,
   small { display: block; }
-  strong { font-size: 10px; }
-  small { margin-top: 2px; color: $color-neutral-400; font-size: 8px; }
-  code { color: $color-neutral-600; font-size: 9px; }
+  strong { font-size: $font-size-lg; }
+  small { margin-top: 2px; color: $color-neutral-400; font-size: $font-size-sm; }
+  code { color: $color-neutral-600; font-size: $font-size-md; }
 }
 
 .account-icon {
@@ -183,12 +183,12 @@
   width: 28px;
   height: 28px;
   border-radius: 7px;
-  font-size: 9px;
-  font-weight: 700;
+  font-size: $font-size-md;
+  font-weight: $font-weight-bold;
 
   &.admin { color: $color-warning-700; background: $color-warning-100; }
   &.user { color: $color-brand-700; background: $color-brand-100; }
   &.mock { color: $color-info-500; background: $color-info-100; }
 }
 
-.login-note { display: block; margin-top: 17px; color: $color-neutral-300; font-size: 8px; text-align: center; }
+.login-note { display: block; margin-top: 17px; color: $color-neutral-300; font-size: $font-size-sm; text-align: center; }

@@ -15,7 +15,7 @@
     &.open { transform: translateX(0); }
   }
 
-  .config-trigger { display: block; margin-left: auto; padding: 6px 9px; border-radius: 7px; color: $color-neutral-700; background: $color-neutral-75; font-size: 9px; }
+  .config-trigger { display: block; margin-left: auto; padding: 6px 9px; border-radius: 7px; color: $color-neutral-700; background: $color-neutral-75; font-size: $font-size-md; }
   .model-state { margin-left: 0; }
 }
 
@@ -27,7 +27,7 @@
     padding: 26px;
 
     > div:nth-child(2) { margin: 44px 0 28px; }
-    h1 { margin: 10px 0 14px; font-size: 34px; letter-spacing: -1px; }
+    h1 { margin: 10px 0 14px; font-size: $font-size-display-mobile; letter-spacing: $letter-spacing-heading; }
     > small { display: none; }
   }
 

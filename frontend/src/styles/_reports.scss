@@ -10,8 +10,8 @@
   border-bottom: 1px solid $color-neutral-75;
   background: linear-gradient(135deg, $color-neutral-25, $color-brand-50);
 
-  small { display: block; color: $color-neutral-500; font-size: 7px; font-weight: 700; letter-spacing: 1.4px; }
-  h2 { margin: 5px 0 0; color: $color-neutral-900; font-family: $font-serif; font-size: 19px; font-weight: 500; }
+  small { display: block; color: $color-neutral-500; @include type-label($font-size-xs, $letter-spacing-label); }
+  h2 { margin: 5px 0 0; color: $color-neutral-900; @include serif-heading($font-size-title); }
 
   button {
     flex: none;
@@ -20,11 +20,11 @@
     border-radius: 8px;
     color: $color-brand-800;
     background: $color-white;
-    font-size: 9px;
-    font-weight: 600;
+    font-size: $font-size-md;
+    font-weight: $font-weight-semibold;
 
     &:hover { border-color: $color-brand-300; background: $color-neutral-50; transform: translateY(-1px); }
-    span { margin-right: 3px; font-size: 12px; }
+    span { margin-right: 3px; font-size: $font-size-body; }
   }
 
   .pdf-export {
@@ -58,14 +58,14 @@
     small,
     strong { display: block; }
 
-    small { margin-bottom: 3px; color: $color-neutral-400; font-size: 7px; }
-    strong { color: $color-neutral-800; font-size: 10px; }
+    small { margin-bottom: 3px; color: $color-neutral-400; font-size: $font-size-xs; }
+    strong { color: $color-neutral-800; font-size: $font-size-lg; }
 
-    > span { @include truncate; color: $color-neutral-300; font-size: 7px; }
+    > span { @include truncate; color: $color-neutral-300; font-size: $font-size-xs; }
   }
 }
 
-.chart-empty { padding: 28px 8px; color: $color-neutral-300; font-size: 9px; text-align: center; }
+.chart-empty { padding: 28px 8px; color: $color-neutral-300; font-size: $font-size-md; text-align: center; }
 .bar-chart { display: grid; gap: 8px; }
 
 .bar-row {
@@ -74,12 +74,12 @@
   align-items: center;
   gap: 8px;
 
-  > span { @include truncate; color: $color-neutral-600; font-size: 8px; }
+  > span { @include truncate; color: $color-neutral-600; font-size: $font-size-sm; }
 
   > div { height: 8px; overflow: hidden; border-radius: 999px; background: $color-neutral-75; }
 
   i { display: block; height: 100%; min-width: 2px; border-radius: inherit; background: linear-gradient(90deg, $color-brand-700, $color-brand-400); }
-  strong { color: $color-neutral-700; font-size: 8px; text-align: right; }
+  strong { color: $color-neutral-700; font-size: $font-size-sm; text-align: right; }
 }
 
 .pie-chart { display: grid; grid-template-columns: 116px minmax(0, 1fr); align-items: center; gap: 18px; }
@@ -92,8 +92,8 @@
 
   &::before { grid-area: 1 / 1; width: 58px; height: 58px; border-radius: 50%; background: $color-white; content: ""; }
 
-  > span { z-index: 1; grid-area: 1 / 1; color: $color-neutral-800; font-size: 16px; font-weight: 700; }
-  small { display: block; color: $color-neutral-400; font-size: 7px; font-weight: 500; text-align: center; }
+  > span { z-index: 1; grid-area: 1 / 1; color: $color-neutral-800; font-size: $font-size-heading-md; font-weight: $font-weight-bold; }
+  small { display: block; color: $color-neutral-400; font-size: $font-size-xs; font-weight: $font-weight-medium; text-align: center; }
 }
 
 .pie-legend {
@@ -103,23 +103,23 @@
 
   > div { display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; align-items: center; gap: 6px; }
   i { width: 7px; height: 7px; border-radius: 2px; }
-  span { @include truncate; color: $color-neutral-600; font-size: 8px; }
-  strong { color: $color-neutral-700; font-size: 8px; }
+  span { @include truncate; color: $color-neutral-600; font-size: $font-size-sm; }
+  strong { color: $color-neutral-700; font-size: $font-size-sm; }
 }
 
 .markdown-body {
   padding: 20px;
   color: $color-neutral-800;
-  font-size: 11px;
-  line-height: 1.8;
+  font-size: $font-size-body-sm;
+  line-height: $line-height-relaxed;
 
   h1,
   h2,
-  h3 { color: $color-neutral-900; font-family: $font-serif; font-weight: 500; line-height: 1.4; }
+  h3 { color: $color-neutral-900; @include serif-heading; line-height: $line-height-heading; }
 
-  h1 { margin: 0 0 16px; font-size: 21px; }
-  h2 { margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid $color-neutral-75; font-size: 15px; }
-  h3 { margin: 17px 0 6px; font-size: 12px; }
+  h1 { margin: 0 0 16px; font-size: $font-size-title-lg; }
+  h2 { margin: 22px 0 8px; padding-bottom: 6px; border-bottom: 1px solid $color-neutral-75; font-size: $font-size-heading-sm; }
+  h3 { margin: 17px 0 6px; font-size: $font-size-body; }
   p { margin: 7px 0; }
 
   ul,
@@ -128,8 +128,8 @@
   li + li { margin-top: 3px; }
   blockquote { margin: 12px 0; padding: 9px 12px; border-left: 3px solid $color-neutral-300; color: $color-neutral-700; background: $color-neutral-50; }
   hr { margin: 18px 0; border: 0; border-top: 1px solid $color-neutral-100; }
-  code { padding: 2px 4px; border-radius: 4px; color: $color-brand-600; background: $color-neutral-75; font-size: .92em; }
-  table { font-size: 9px; }
+  code { padding: 2px 4px; border-radius: 4px; color: $color-brand-600; background: $color-neutral-75; font-size: $font-size-code-inline; }
+  table { font-size: $font-size-md; }
 
   th,
   td { padding: 8px 10px; }
@@ -168,8 +168,8 @@
       background: $color-brand-50 !important;
       break-after: avoid;
 
-      h2 { font-size: 20pt; }
-      small { font-size: 7pt; }
+      h2 { font-size: $font-size-print-title; }
+      small { font-size: $font-size-print-xs; }
     }
 
     .report-actions { display: none !important; }
@@ -184,9 +184,9 @@
 
       header {
         small,
-        > span { font-size: 8pt; }
+        > span { font-size: $font-size-print-sm; }
 
-        strong { font-size: 10pt; }
+        strong { font-size: $font-size-print-body; }
       }
     }
 
@@ -194,27 +194,27 @@
       grid-template-columns: 28mm minmax(45mm, 1fr) 30mm;
 
       > span,
-      strong { font-size: 8pt; }
+      strong { font-size: $font-size-print-sm; }
 
       > div { height: 3mm; }
     }
 
     .pie-legend {
       span,
-      strong { font-size: 8pt; }
+      strong { font-size: $font-size-print-sm; }
     }
 
     .markdown-body {
       padding: 7mm 8mm;
-      font-size: 10pt;
-      line-height: 1.7;
+      font-size: $font-size-print-body;
+      line-height: $line-height-relaxed;
 
       h1,
       h2,
       h3 { break-after: avoid; page-break-after: avoid; }
 
-      h2 { margin-top: 7mm; font-size: 15pt; }
-      h3 { font-size: 12pt; }
+      h2 { margin-top: 7mm; font-size: $font-size-print-heading; }
+      h3 { font-size: $font-size-print-subtitle; }
 
       p,
       li { orphans: 3; widows: 3; }
