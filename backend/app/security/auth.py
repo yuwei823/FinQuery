@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import os
 import secrets
+from hashlib import sha256
+from pathlib import Path
 from dataclasses import dataclass
+
+from .guest_quota import GuestQueryQuota
 
 
 @dataclass(frozen=True)
@@ -11,6 +15,7 @@ class AuthUser:
     username: str
     display_name: str
     role: str
+    quota_key: str | None = None
 
     def public(self) -> dict[str, str]:
         return {
@@ -26,6 +31,7 @@ class AuthService:
 
     DEFAULT_ADMIN_PASSWORD = "admin123"
     DEFAULT_MARKET_PASSWORD = "market123"
+    DEFAULT_GUEST_DAILY_QUERY_LIMIT = 5
 
     def __init__(self) -> None:
         public_mode = os.getenv("FINQUERY_PUBLIC_MODE", "").strip().lower() in {
@@ -71,6 +77,34 @@ class AuthService:
             },
         }
         self._tokens: dict[str, AuthUser] = {}
+        self._guest_enabled = os.getenv("ENABLE_GUEST", "").strip().lower() in {
+            "1",
+            "true",
+            "yes",
+            "on",
+        }
+        self._guest_daily_query_limit = int(
+            os.getenv(
+                "GUEST_DAILY_QUERY_LIMIT",
+                str(self.DEFAULT_GUEST_DAILY_QUERY_LIMIT),
+            )
+        )
+        self._guest_quota = (
+            GuestQueryQuota(
+                Path(os.getenv("GUEST_USAGE_PATH", "data/guest_usage.db")),
+                self._guest_daily_query_limit,
+            )
+            if self._guest_enabled
+            else None
+        )
+
+    @property
+    def guest_enabled(self) -> bool:
+        return self._guest_enabled
+
+    @property
+    def guest_daily_query_limit(self) -> int:
+        return self._guest_daily_query_limit
 
     def login(self, username: str, password: str) -> tuple[str, AuthUser] | None:
         account = self._accounts.get(username.strip())
@@ -80,6 +114,28 @@ class AuthService:
         user = account["user"]
         self._tokens[token] = user
         return token, user
+
+    def guest_login(self, guest_id: str, quota_key: str) -> tuple[str, AuthUser] | None:
+        if not self._guest_enabled:
+            return None
+        identity_hash = sha256(guest_id.encode("utf-8")).hexdigest()
+        user = AuthUser(
+            user_id=f"guest_{identity_hash[:24]}",
+            username="guest",
+            display_name=f"游客 {identity_hash[:4].upper()}",
+            role="guest",
+            quota_key=quota_key,
+        )
+        token = secrets.token_urlsafe(32)
+        self._tokens[token] = user
+        return token, user
+
+    def consume_guest_query(self, user: AuthUser) -> int | None:
+        if user.role != "guest":
+            return None
+        if not self._guest_quota or not user.quota_key:
+            raise RuntimeError("游客查询额度服务未启用")
+        return self._guest_quota.consume(user.quota_key)
 
     def authenticate(self, authorization: str | None) -> AuthUser | None:
         if not authorization:

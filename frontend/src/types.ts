@@ -243,3 +243,12 @@ export interface LoginResponse {
   token_type: "bearer"
   user: AuthUser
 }
+
+export interface GuestLoginResponse extends LoginResponse {
+  daily_query_limit: number
+}
+
+export interface PublicConfig {
+  guest_enabled: boolean
+  guest_daily_query_limit: number
+}

@@ -60,6 +60,9 @@ const conversationScroll = ref<HTMLElement | null>(null)
 const authUser = ref<AuthUser | null>(null)
 const authReady = ref(false)
 const loginLoading = ref(false)
+const guestLoading = ref(false)
+const guestEnabled = ref(false)
+const guestDailyQueryLimit = ref(5)
 const loginUsername = ref("")
 const loginPassword = ref("")
 
@@ -177,11 +180,18 @@ const historyGroups = computed(() => {
 })
 const userRoleLabel = computed(() => {
   if (authUser.value?.role === "admin") return "全部数据权限"
-  if (authUser.value?.role === "analyst") return "仅 Mock 数据"
-  return "电商运营数据"
+  if (authUser.value?.role === "guest") return `游客 · 每日 ${guestDailyQueryLimit.value} 次`
+  return "金融市场数据"
 })
 
 onMounted(async () => {
+  try {
+    const publicConfig = await api.publicConfig()
+    guestEnabled.value = publicConfig.guest_enabled
+    guestDailyQueryLimit.value = publicConfig.guest_daily_query_limit
+  } catch {
+    guestEnabled.value = false
+  }
   if (api.hasSession()) {
     try {
       authUser.value = await api.me()
@@ -210,7 +220,7 @@ async function initializeUserWorkspace() {
 }
 
 async function loginUser() {
-  if (!loginUsername.value.trim() || !loginPassword.value || loginLoading.value) return
+  if (!loginUsername.value.trim() || !loginPassword.value || loginLoading.value || guestLoading.value) return
   loginLoading.value = true
   error.value = ""
   try {
@@ -220,6 +230,22 @@ async function loginUser() {
     error.value = caught instanceof Error ? caught.message : "登录失败"
   } finally {
     loginLoading.value = false
+  }
+}
+
+async function loginAsGuest() {
+  if (!guestEnabled.value || loginLoading.value || guestLoading.value) return
+  guestLoading.value = true
+  error.value = ""
+  try {
+    const result = await api.guestLogin()
+    authUser.value = result.user
+    guestDailyQueryLimit.value = result.daily_query_limit
+    await initializeUserWorkspace()
+  } catch (caught) {
+    error.value = caught instanceof Error ? caught.message : "游客登录失败"
+  } finally {
+    guestLoading.value = false
   }
 }
 
@@ -482,9 +508,17 @@ function clarificationHint(result: QueryResult) {
           <input v-model="loginPassword" type="password" autocomplete="current-password" placeholder="请输入密码">
         </label>
         <p v-if="error" class="login-error">{{ error }}</p>
-        <button class="login-submit" :disabled="loginLoading" type="submit">
+        <button class="login-submit" :disabled="loginLoading || guestLoading" type="submit">
           {{ loginLoading ? "正在登录…" : "登录" }}
         </button>
+
+        <div v-if="guestEnabled" class="guest-login-area">
+          <span>或</span>
+          <button class="guest-login" :disabled="loginLoading || guestLoading" type="button" @click="loginAsGuest">
+            {{ guestLoading ? "正在进入…" : "游客体验" }}
+          </button>
+          <small>无需账号，每位游客每日最多查询 {{ guestDailyQueryLimit }} 次</small>
+        </div>
 
         <small class="login-note">请输入管理员分配的账号和密码。</small>
       </form>

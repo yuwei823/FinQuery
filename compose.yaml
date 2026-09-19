@@ -42,6 +42,9 @@ services:
     environment:
       PYTHONUNBUFFERED: "1"
       FINQUERY_PUBLIC_MODE: "true"
+      ENABLE_GUEST: ${ENABLE_GUEST:-false}
+      GUEST_DAILY_QUERY_LIMIT: "5"
+      GUEST_USAGE_PATH: /data/runtime/guest_usage.db
       FINQUERY_ADMIN_PASSWORD: ${FINQUERY_ADMIN_PASSWORD:-}
       FINQUERY_MARKET_PASSWORD: ${FINQUERY_MARKET_PASSWORD:-}
       TRADE_DATA_ROOT: /data/raw
@@ -55,6 +58,7 @@ services:
         source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
         target: /data/curated
         read_only: true
+      - guest_runtime:/data/runtime
     healthcheck:
       test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://127.0.0.1:8000/api/health', timeout=5)"]
       interval: 10s
@@ -168,3 +172,4 @@ services:
 
 volumes:
   frontend_node_modules:
+  guest_runtime:

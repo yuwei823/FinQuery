@@ -356,6 +356,8 @@ Copy-Item .env.public.example .env.public
 编辑忽略提交的 `.env.public`：
 
 - 为 `FINQUERY_ADMIN_PASSWORD` 和 `FINQUERY_MARKET_PASSWORD` 设置不同的随机密码，长度至少 16 位。
+- 设置 `ENABLE_GUEST=true` 时，登录页显示“游客体验”；游客复用只读行情权限，每个来源身份
+  每个 UTC 自然日最多提交 5 个新问题。设置为 `false` 可立即关闭游客入口。
 - 先在 Cloudflare Zero Trust 为 `finquery.dev` 创建 Access Self-hosted Application，只允许指定邮箱。
 - 再创建 remotely-managed Tunnel（建议命名 `finquery-home`），把 token 填入 `CLOUDFLARE_TUNNEL_TOKEN`。
 - 在 Tunnel 中添加 Published application：Hostname 为 `finquery.dev`，Service 为 `http://public-gateway:80`。

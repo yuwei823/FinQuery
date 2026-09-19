@@ -1,10 +1,13 @@
 from __future__ import annotations
 
-from fastapi import APIRouter, Depends, Header, HTTPException
+from hashlib import sha256
+
+from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
 
 from ..errors import PipelineStageError
 from ..models import (
     ClarificationRequest,
+    GuestLoginRequest,
     LoginRequest,
     QueryRequest,
     QueryResult,
@@ -41,6 +44,14 @@ def health() -> dict:
     return {"status": "ok", **service.status()}
 
 
+@router.get("/public-config")
+def public_config() -> dict[str, bool | int]:
+    return {
+        "guest_enabled": auth_service.guest_enabled,
+        "guest_daily_query_limit": auth_service.guest_daily_query_limit,
+    }
+
+
 @router.post("/auth/login")
 def login(payload: LoginRequest) -> dict:
     result = auth_service.login(payload.username, payload.password)
@@ -48,6 +59,27 @@ def login(payload: LoginRequest) -> dict:
         raise HTTPException(status_code=401, detail="账号或密码错误")
     token, user = result
     return {"access_token": token, "token_type": "bearer", "user": user.public()}
+
+
+@router.post("/auth/guest")
+def guest_login(payload: GuestLoginRequest, request: Request) -> dict:
+    if not auth_service.guest_enabled:
+        raise HTTPException(status_code=404, detail="游客体验未启用")
+    source = (
+        request.headers.get("x-real-ip", "").split(",", 1)[0].strip()
+        or (request.client.host if request.client else "unknown")
+    )
+    quota_key = sha256(source.encode("utf-8")).hexdigest()
+    result = auth_service.guest_login(str(payload.guest_id), quota_key)
+    if not result:
+        raise HTTPException(status_code=404, detail="游客体验未启用")
+    token, user = result
+    return {
+        "access_token": token,
+        "token_type": "bearer",
+        "user": user.public(),
+        "daily_query_limit": auth_service.guest_daily_query_limit,
+    }
 
 
 @router.get("/auth/me")
@@ -123,8 +155,17 @@ def skills(_: AuthUser = Depends(require_user)) -> list[dict]:
 @router.post("/query", response_model=QueryResult)
 def query(
     payload: QueryRequest,
+    response: Response,
     user: AuthUser = Depends(require_user),
 ) -> QueryResult:
+    remaining = auth_service.consume_guest_query(user)
+    if user.role == "guest":
+        if remaining is None:
+            raise HTTPException(
+                status_code=429,
+                detail=f"游客每日最多查询{auth_service.guest_daily_query_limit}次，请明天再试",
+            )
+        response.headers["X-Guest-Queries-Remaining"] = str(remaining)
     workspace = payload.workspace.model_dump(exclude_none=True) if payload.workspace else None
     return service.submit(payload.query, payload.session_id, workspace, user.user_id)
 

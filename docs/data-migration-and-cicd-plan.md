@@ -775,6 +775,17 @@ docker compose --profile tools run --rm index-daily-data-prep `
 Cloudflare Access 是外层准入控制，FinQuery 自身登录仍承担应用内身份和表级权限；两层
 认证不能互相替代。正式上云前应把 Mock 登录迁移到 PostgreSQL 用户体系或 OIDC。
 
+实验展示阶段可以在 Cloudflare Access 使用 `Everyone`，并在 `.env.public` 设置
+`ENABLE_GUEST=true`。此模式下任何互联网用户都能到达应用，必须保留以下应用层约束：
+
+- 游客使用浏览器持久化 UUID 形成稳定应用身份，后端签发独立 Token。
+- 游客只继承 `market_analyst` 的只读数据范围，不能使用管理员接口。
+- 后端使用持久化 SQLite 配额记录，按来源身份每个 Asia/Shanghai 自然日最多接受 5 个新问题；
+  澄清同一任务不重复计数。
+- Compose named volume `guest_runtime` 保存配额，容器重启不会清零。
+- 关闭公开演示时设置 `ENABLE_GUEST=false` 并重启 `backend-public`，或者直接停止
+  `cloudflared`。
+
 ### 19.6 可用性与运维
 
 本机服务的可用性依赖：

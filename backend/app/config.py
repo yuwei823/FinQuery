@@ -46,6 +46,7 @@ class Settings:
     public_mode: bool = field(
         default_factory=lambda: env_flag("FINQUERY_PUBLIC_MODE")
     )
+    guest_enabled: bool = field(default_factory=lambda: env_flag("ENABLE_GUEST"))
     database_switches: set[str] = field(default_factory=_database_switches_from_env)
     trade_data_root: str = field(
         default_factory=lambda: os.getenv("TRADE_DATA_ROOT", "").strip()
@@ -146,6 +147,7 @@ class Settings:
     def public_status(self) -> dict[str, object]:
         return {
             "public_mode": self.public_mode,
+            "guest_enabled": self.guest_enabled,
             "database_switches": sorted(self.database_switches),
             "trade_data": self.trade_data_status(),
             "curated_data": self.curated_data_status(),

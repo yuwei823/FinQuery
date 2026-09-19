@@ -1,10 +1,20 @@
-import type { AuthUser, LoginResponse, QueryResult, SavedMemory, SchemaField, SchemaTable, WorkspaceConfig } from "./types"
+import type { AuthUser, GuestLoginResponse, LoginResponse, PublicConfig, QueryResult, SavedMemory, SchemaField, SchemaTable, WorkspaceConfig } from "./types"
 
 const API_BASE = import.meta.env.VITE_API_BASE ?? ""
 const TOKEN_KEY = "finquery_access_token"
+const GUEST_ID_KEY = "finquery_guest_id"
 
 function token() {
   return sessionStorage.getItem(TOKEN_KEY)
+}
+
+function guestId() {
+  let value = localStorage.getItem(GUEST_ID_KEY)
+  if (!value) {
+    value = crypto.randomUUID()
+    localStorage.setItem(GUEST_ID_KEY, value)
+  }
+  return value
 }
 
 async function request<T>(path: string, options?: RequestInit, timeoutMs = 90_000): Promise<T> {
@@ -38,6 +48,7 @@ async function request<T>(path: string, options?: RequestInit, timeoutMs = 90_00
 
 export const api = {
   hasSession: () => Boolean(token()),
+  publicConfig: () => request<PublicConfig>("/api/public-config"),
   login: async (username: string, password: string) => {
     const result = await request<LoginResponse>("/api/auth/login", {
       method: "POST",
@@ -45,6 +56,14 @@ export const api = {
     })
     sessionStorage.setItem(TOKEN_KEY, result.access_token)
     return result.user
+  },
+  guestLogin: async () => {
+    const result = await request<GuestLoginResponse>("/api/auth/guest", {
+      method: "POST",
+      body: JSON.stringify({ guest_id: guestId() }),
+    })
+    sessionStorage.setItem(TOKEN_KEY, result.access_token)
+    return result
   },
   me: () => request<AuthUser>("/api/auth/me"),
   logout: async () => {

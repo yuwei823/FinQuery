@@ -123,6 +123,30 @@ button { cursor: pointer; }
 }
 .login-submit:hover:not(:disabled) { transform: translateY(-1px); background: #195f46; box-shadow: 0 9px 18px rgba(31, 114, 84, .18); }
 .login-submit:disabled { cursor: wait; opacity: .65; }
+.guest-login-area { position: relative; margin-top: 24px; padding-top: 20px; border-top: 1px solid #e7ece8; }
+.guest-login-area > span {
+  position: absolute;
+  top: -7px;
+  left: 50%;
+  padding: 0 9px;
+  color: #9aa39e;
+  background: #fff;
+  font-size: 9px;
+  transform: translateX(-50%);
+}
+.guest-login {
+  width: 100%;
+  height: 43px;
+  border: 1px solid #9fc4b2;
+  border-radius: 9px;
+  color: #1f7254;
+  background: #f4faf6;
+  font-size: 12px;
+  font-weight: 700;
+}
+.guest-login:hover:not(:disabled) { border-color: #6da58b; background: #eaf5ee; }
+.guest-login:disabled { cursor: wait; opacity: .65; }
+.guest-login-area small { display: block; margin-top: 9px; color: #8c9891; font-size: 8px; text-align: center; }
 .mock-accounts { margin-top: 25px; padding-top: 20px; border-top: 1px solid #edf0ed; }
 .mock-accounts > p { margin: 0 0 9px; color: #8b958f; font-size: 9px; font-weight: 700; }
 .mock-accounts > button {
