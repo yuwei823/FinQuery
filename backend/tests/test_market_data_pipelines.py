@@ -18,6 +18,7 @@ from scripts.stock_daily_pipeline import (
     validate_dataset,
 )
 from scripts.index_daily_pipeline import SPEC as INDEX_SPEC
+from scripts.etf_daily_pipeline import SPEC as ETF_SPEC
 from scripts.financial_statement_pipeline import SPEC as FINANCIAL_SPEC
 from scripts.csv_parquet_pipeline import (
     compact_dataset as compact_configured_dataset,
@@ -63,6 +64,15 @@ class TradeDataPipelineTest(unittest.TestCase):
             [column.target for column in FINANCIAL_SPEC.columns],
         )
         self.assertIn("financial_statement", schema["role_tables"]["market_analyst"])
+
+        etf_table = next(
+            table for table in schema["tables"] if table["name"] == "stock_etf_trading_data"
+        )
+        self.assertEqual(
+            [field["name"] for field in etf_table["fields"]],
+            [column.target for column in ETF_SPEC.columns],
+        )
+        self.assertIn("stock_etf_trading_data", schema["role_tables"]["market_analyst"])
 
     def test_schema_only_index_does_not_scan_full_parquet_table(self) -> None:
         schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -234,6 +244,51 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(str(row[1]), "2025-12-31")
             self.assertEqual(str(row[2]), "2026-03-31")
             self.assertEqual(row[3], 1.0)
+
+    def test_etf_pipeline_supports_both_adjustment_columns(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "raw"
+            output = root / "trade_data"
+            source.mkdir()
+            defaults = {column.source: "" for column in ETF_SPEC.columns}
+            defaults.update({
+                "交易日期": "2026-09-17", "基金名称": "ETF测试基金",
+                "前收盘价": "1", "开盘价": "1", "最高价": "1.1",
+                "最低价": "0.9", "收盘价": "1.05", "成交量": "100",
+                "成交额": "105", "累计单位净值": "1.2", "单位净值": "1.1",
+                "换手率": "2", "基金分类": "股票型基金", "详细分类": "指数型",
+                "基金份额合计": "1000", "场内流通份额": "900",
+            })
+            for code, optional_name, optional_value in (
+                ("510001.SH", "后复权因子", "1.3"),
+                ("sh510002", "复权单位净值", "1.4"),
+            ):
+                header = [
+                    column.source for column in ETF_SPEC.columns
+                    if column.required or column.source == optional_name
+                ]
+                values = {**defaults, "基金代码": code, optional_name: optional_value}
+                with (source / f"{code}.csv").open("w", encoding="gb18030", newline="") as handle:
+                    writer = csv.writer(handle)
+                    writer.writerow(["数据说明", *([""] * (len(header) - 1))])
+                    writer.writerow(header)
+                    writer.writerow([values[name] for name in header])
+
+            report = inventory_configured_dataset(ETF_SPEC, source)
+            self.assertEqual(report["invalid_header_count"], 0)
+            convert_configured_dataset(ETF_SPEC, source, output, workers=2)
+            validation = validate_configured_dataset(ETF_SPEC, output)
+            self.assertEqual(validation["errors"], [])
+            compact_configured_dataset(ETF_SPEC, output)
+
+            engine = DuckDbEngine(database_root=root)
+            with engine.connect("trade_data") as connection:
+                rows = connection.execute(
+                    "SELECT fund_code, backward_adjustment_factor, adjusted_nav "
+                    "FROM stock_etf_trading_data ORDER BY fund_code"
+                ).fetchall()
+            self.assertEqual(rows, [("510001.SH", 1.3, None), ("sh510002", None, 1.4)])
 
     @staticmethod
     def _write_source(path: Path, *, reordered: bool = False) -> None:

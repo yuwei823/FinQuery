@@ -17,6 +17,12 @@
       "script": "scripts/financial_statement_pipeline.py",
       "source_subdir": "stock-fin-data-xbx",
       "database": "trade_data"
+    },
+    {
+      "name": "stock_etf_trading_data",
+      "script": "scripts/etf_daily_pipeline.py",
+      "source_subdir": "stock-etf-trading-data",
+      "database": "trade_data"
     }
   ]
 }

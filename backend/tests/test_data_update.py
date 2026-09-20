@@ -23,7 +23,7 @@ class DataUpdateTests(unittest.TestCase):
         )
         self.assertEqual(
             [job.name for job in jobs],
-            ["stock_daily", "index_daily", "stock_fin_data_xbx"],
+            ["stock_daily", "index_daily", "stock_fin_data_xbx", "stock_etf_trading_data"],
         )
         self.assertEqual(jobs[0].source, Path("D:/raw/stock-trading-data-pro"))
         self.assertEqual(jobs[1].output, Path("D:/curated/trade_data"))

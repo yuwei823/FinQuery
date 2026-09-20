@@ -17,6 +17,7 @@ class ColumnSpec:
     source: str
     target: str
     kind: str
+    required: bool = True
 
 
 @dataclass(frozen=True)
@@ -52,13 +53,14 @@ def _safe_path(path: Path) -> str:
 
 
 def _header_error(spec: DatasetSpec, header: tuple[str, ...]) -> str | None:
-    expected = spec.expected_header
-    if not spec.allow_extra_columns and len(header) != len(expected):
-        return f"expected {len(expected)} columns, found {len(header)}"
     if len(set(header)) != len(header):
         return "duplicate column names"
-    missing = sorted(set(expected) - set(header))
-    extra = [] if spec.allow_extra_columns else sorted(set(header) - set(expected))
+    required = {column.source for column in spec.columns if column.required}
+    accepted = set(spec.expected_header)
+    if not spec.allow_extra_columns and not len(required) <= len(header) <= len(accepted):
+        return f"expected {len(required)}-{len(accepted)} columns, found {len(header)}"
+    missing = sorted(required - set(header))
+    extra = [] if spec.allow_extra_columns else sorted(set(header) - accepted)
     if missing or extra:
         return f"missing={missing}, extra={extra}"
     return None
@@ -90,10 +92,10 @@ def _expected_identity(spec: DatasetSpec, path: Path) -> str:
 
 
 def _header_is_reordered(spec: DatasetSpec, header: tuple[str, ...]) -> bool:
-    if not spec.allow_extra_columns:
-        return header != spec.expected_header
-    expected = set(spec.expected_header)
-    return tuple(column for column in header if column in expected) != spec.expected_header
+    present = set(header) & set(spec.expected_header)
+    expected = tuple(column for column in spec.expected_header if column in present)
+    actual = tuple(column for column in header if column in present)
+    return actual != expected
 
 
 def inventory(spec: DatasetSpec, source: Path) -> dict[str, Any]:

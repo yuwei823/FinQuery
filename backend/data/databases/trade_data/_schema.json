@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "database": "trade_data",
   "scenario": "中国股票和主要指数的日线行情、资金流、财务快照和行业分类",
-  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement"]},
+  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "stock_etf_trading_data"]},
   "tables": [
     {
       "id": "trade_data.stock_daily",
@@ -107,6 +107,38 @@
         {"name": "turnover", "label": "成交额", "type": "数值", "source_type": "DOUBLE", "description": "指数覆盖证券的当日成交金额", "aliases": ["交易额", "amount"], "role": "metric", "aggregation": "sum"},
         {"name": "volume", "label": "成交量", "type": "数值", "source_type": "DOUBLE", "description": "指数覆盖证券的当日成交数量", "aliases": ["交易量"], "role": "metric", "aggregation": "sum"},
         {"name": "index_code", "label": "指数代码", "type": "文本", "source_type": "VARCHAR", "description": "带市场前缀的指数代码，例如 sh000001、sh000300 或 sz399006", "aliases": ["代码", "证券代码", "大盘代码"], "role": "identifier", "aggregation": "none"}
+      ]
+    },
+    {
+      "id": "trade_data.stock_etf_trading_data",
+      "name": "stock_etf_trading_data",
+      "label": "ETF基金日行情",
+      "database": "trade_data",
+      "domain": "ETF行情",
+      "description": "按ETF基金和交易日记录价格、成交、净值、复权口径、分类与基金份额数据。",
+      "business_terms": ["ETF", "ETF基金", "基金日线", "ETF行情", "基金净值", "基金份额"],
+      "profile_mode": "schema_only",
+      "primary_key": ["fund_code", "trade_date"],
+      "fields": [
+        {"name": "trade_date", "label": "交易日期", "type": "日期", "source_type": "DATE", "description": "ETF行情所属交易日", "aliases": ["交易日", "日期"], "role": "time", "aggregation": "none"},
+        {"name": "fund_name", "label": "基金名称", "type": "文本", "source_type": "VARCHAR", "description": "ETF基金名称", "aliases": ["ETF名称"], "role": "entity_name", "aggregation": "none"},
+        {"name": "fund_code", "label": "基金代码", "type": "文本", "source_type": "VARCHAR", "description": "带交易所后缀的ETF代码", "aliases": ["ETF代码", "证券代码"], "role": "identifier", "aggregation": "none"},
+        {"name": "previous_close", "label": "前收盘价", "type": "数值", "source_type": "DOUBLE", "description": "前一交易日收盘价格", "aliases": ["昨收价"], "role": "metric", "aggregation": "avg"},
+        {"name": "open", "label": "开盘价", "type": "数值", "source_type": "DOUBLE", "description": "当日开盘价格", "aliases": [], "role": "metric", "aggregation": "avg"},
+        {"name": "high", "label": "最高价", "type": "数值", "source_type": "DOUBLE", "description": "当日最高价格", "aliases": [], "role": "metric", "aggregation": "max"},
+        {"name": "low", "label": "最低价", "type": "数值", "source_type": "DOUBLE", "description": "当日最低价格", "aliases": [], "role": "metric", "aggregation": "min"},
+        {"name": "close", "label": "收盘价", "type": "数值", "source_type": "DOUBLE", "description": "当日收盘价格", "aliases": [], "role": "metric", "aggregation": "avg"},
+        {"name": "volume", "label": "成交量", "type": "数值", "source_type": "DOUBLE", "description": "当日成交数量", "aliases": ["交易量"], "role": "metric", "aggregation": "sum"},
+        {"name": "turnover", "label": "成交额", "type": "数值", "source_type": "DOUBLE", "description": "当日成交金额", "aliases": ["交易额"], "role": "metric", "aggregation": "sum"},
+        {"name": "cumulative_nav", "label": "累计单位净值", "type": "数值", "source_type": "DOUBLE", "description": "基金累计单位净值", "aliases": ["累计净值"], "role": "metric", "aggregation": "avg"},
+        {"name": "unit_nav", "label": "单位净值", "type": "数值", "source_type": "DOUBLE", "description": "基金单位净值", "aliases": ["基金净值"], "role": "metric", "aggregation": "avg"},
+        {"name": "backward_adjustment_factor", "label": "后复权因子", "type": "数值", "source_type": "DOUBLE", "description": "旧版数据中的后复权因子", "aliases": ["复权因子"], "role": "metric", "aggregation": "avg"},
+        {"name": "adjusted_nav", "label": "复权单位净值", "type": "数值", "source_type": "DOUBLE", "description": "新版数据中的复权单位净值", "aliases": ["复权净值"], "role": "metric", "aggregation": "avg"},
+        {"name": "turnover_rate", "label": "换手率", "type": "数值", "source_type": "DOUBLE", "description": "ETF当日换手率", "aliases": [], "role": "metric", "aggregation": "avg"},
+        {"name": "fund_category", "label": "基金分类", "type": "文本", "source_type": "VARCHAR", "description": "基金一级分类", "aliases": ["基金类型"], "role": "dimension", "aggregation": "none"},
+        {"name": "detailed_category", "label": "详细分类", "type": "文本", "source_type": "VARCHAR", "description": "基金细分类别", "aliases": ["细分类型"], "role": "dimension", "aggregation": "none"},
+        {"name": "total_fund_shares", "label": "基金份额合计", "type": "数值", "source_type": "DOUBLE", "description": "基金份额总量", "aliases": ["总份额"], "role": "metric", "aggregation": "sum"},
+        {"name": "exchange_tradable_shares", "label": "场内流通份额", "type": "数值", "source_type": "DOUBLE", "description": "可在交易所流通的基金份额", "aliases": ["流通份额"], "role": "metric", "aggregation": "sum"}
       ]
     }
   ],

@@ -340,6 +340,21 @@ docker compose --env-file .env.docker --profile tools run --rm financial-stateme
 `publish_date` 判断当时是否已经披露，避免使用未来才发布的财报。该任务已经注册到每日
 自动更新配置，无需单独修改计划任务。
 
+ETF 日线原始目录为 `TRADE_DATA_ROOT/stock-etf-trading-data`，在现有 `trade_data`
+数据库中注册为表 `stock_etf_trading_data`。运行：
+
+```powershell
+Set-Location backend
+.\.venv\Scripts\python.exe scripts\etf_daily_pipeline.py inventory
+.\.venv\Scripts\python.exe scripts\etf_daily_pipeline.py convert
+.\.venv\Scripts\python.exe scripts\etf_daily_pipeline.py validate
+.\.venv\Scripts\python.exe scripts\etf_daily_pipeline.py compact
+```
+
+也可以使用 `docker compose --env-file .env.docker --profile tools run --rm etf-daily-data-prep`。
+产物为 `trade_data/stock_etf_trading_data/`、压实文件
+`trade_data/stock_etf_trading_data.parquet` 和独立增量清单。该任务已加入每日更新配置。
+
 ### 每日自动更新行情数据
 
 仓库提供统一更新入口，按数据源依次执行 `convert`、`validate`、`compact`。某个数据源失败时不会执行它的压实发布步骤，但会继续处理其他数据源；只要有一个任务失败，脚本就以非零状态结束：
@@ -644,6 +659,7 @@ Set-Location D:\FinQuery\backend
 .\.venv\Scripts\python.exe -m unittest discover -s tests -p "test_*.py"
 .\.venv\Scripts\python.exe scripts\stock_daily_pipeline.py validate
 .\.venv\Scripts\python.exe scripts\index_daily_pipeline.py validate
+.\.venv\Scripts\python.exe scripts\etf_daily_pipeline.py validate
 ```
 
 前端类型检查和生产构建：

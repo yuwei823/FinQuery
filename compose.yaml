@@ -139,6 +139,30 @@ services:
         source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
         target: /data/curated
 
+  etf-daily-data-prep:
+    profiles: ["tools"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:
+      - python
+      - scripts/etf_daily_pipeline.py
+      - convert
+      - --source
+      - /data/raw/stock-etf-trading-data
+      - --output
+      - /data/curated/trade_data
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - type: bind
+        source: ${TRADE_DATA_HOST_PATH:-D:/trade_data}
+        target: /data/raw
+        read_only: true
+      - type: bind
+        source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
+        target: /data/curated
+
 
   frontend:
     build:
