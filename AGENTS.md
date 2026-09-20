@@ -89,6 +89,7 @@ Set-Location backend
 # Dataset/schema integrity
 .venv/Scripts/python.exe scripts/stock_daily_pipeline.py validate
 .venv/Scripts/python.exe scripts/index_daily_pipeline.py validate
+.venv/Scripts/python.exe scripts/financial_statement_pipeline.py validate
 
 # Frontend type-check and production build
 Set-Location ../frontend

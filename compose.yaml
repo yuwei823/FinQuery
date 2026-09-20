@@ -115,6 +115,30 @@ services:
         source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
         target: /data/curated
 
+  financial-statement-data-prep:
+    profiles: ["tools"]
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    command:
+      - python
+      - scripts/financial_statement_pipeline.py
+      - convert
+      - --source
+      - /data/raw/stock-fin-data-xbx
+      - --output
+      - /data/curated/trade_data
+    environment:
+      PYTHONUNBUFFERED: "1"
+    volumes:
+      - type: bind
+        source: ${TRADE_DATA_HOST_PATH:-D:/trade_data}
+        target: /data/raw
+        read_only: true
+      - type: bind
+        source: ${TRADE_DATA_CURATED_HOST_PATH:-D:/trade_data_curated}
+        target: /data/curated
+
 
   frontend:
     build:

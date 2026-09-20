@@ -21,9 +21,13 @@ class DataUpdateTests(unittest.TestCase):
             Path("D:/raw"),
             Path("D:/curated"),
         )
-        self.assertEqual([job.name for job in jobs], ["stock_daily", "index_daily"])
+        self.assertEqual(
+            [job.name for job in jobs],
+            ["stock_daily", "index_daily", "stock_fin_data_xbx"],
+        )
         self.assertEqual(jobs[0].source, Path("D:/raw/stock-trading-data-pro"))
         self.assertEqual(jobs[1].output, Path("D:/curated/trade_data"))
+        self.assertEqual(jobs[2].source, Path("D:/raw/stock-fin-data-xbx"))
 
     def test_failed_validation_skips_compact_but_continues_next_job(self) -> None:
         existing_source = Path(__file__).parent

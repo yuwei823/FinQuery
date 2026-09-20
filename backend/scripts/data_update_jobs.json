@@ -11,6 +11,12 @@
       "script": "scripts/index_daily_pipeline.py",
       "source_subdir": "stock-main-index-data",
       "database": "trade_data"
+    },
+    {
+      "name": "stock_fin_data_xbx",
+      "script": "scripts/financial_statement_pipeline.py",
+      "source_subdir": "stock-fin-data-xbx",
+      "database": "trade_data"
     }
   ]
 }

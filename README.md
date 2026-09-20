@@ -320,6 +320,26 @@ docker compose --env-file .env.docker --profile tools run --rm index-daily-data-
 `trade_data/index_daily.parquet` 和独立增量清单
 `trade_data/_pipeline_manifest.index_daily.json`。原始 CSV 首行就是英文表头，因此该配置不会跳过说明行。
 
+邢不行财务数据产品名为 `stock-fin-data-xbx-daily`，其完整数据实际落在
+`TRADE_DATA_ROOT/stock-fin-data-xbx`。源文件按股票代码分目录，记录粒度为财报披露，
+并非日频行情。运行增量构建：
+
+```powershell
+docker compose --env-file .env.docker --profile tools run --rm financial-statement-data-prep
+
+docker compose --env-file .env.docker --profile tools run --rm financial-statement-data-prep `
+  python scripts/financial_statement_pipeline.py validate `
+  --output /data/curated/trade_data
+
+docker compose --env-file .env.docker --profile tools run --rm financial-statement-data-prep `
+  python scripts/financial_statement_pipeline.py compact `
+  --output /data/curated/trade_data
+```
+
+输出表为 `financial_statement`，主键是股票代码、报告期和披露日期。查询财务数据时应以
+`publish_date` 判断当时是否已经披露，避免使用未来才发布的财报。该任务已经注册到每日
+自动更新配置，无需单独修改计划任务。
+
 ### 每日自动更新行情数据
 
 仓库提供统一更新入口，按数据源依次执行 `convert`、`validate`、`compact`。某个数据源失败时不会执行它的压实发布步骤，但会继续处理其他数据源；只要有一个任务失败，脚本就以非零状态结束：

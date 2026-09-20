@@ -2,7 +2,7 @@
   "schema_version": "1.0.0",
   "database": "trade_data",
   "scenario": "中国股票和主要指数的日线行情、资金流、财务快照和行业分类",
-  "role_tables": {"market_analyst": ["stock_daily", "index_daily"]},
+  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement"]},
   "tables": [
     {
       "id": "trade_data.stock_daily",
@@ -53,6 +53,39 @@
         {"name": "close_0935", "label": "09:35收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:35时点价格", "aliases": ["九点三十五价格"], "role": "metric", "aggregation": "avg"},
         {"name": "close_0945", "label": "09:45收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:45时点价格", "aliases": ["九点四十五价格"], "role": "metric", "aggregation": "avg"},
         {"name": "close_0955", "label": "09:55收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:55时点价格", "aliases": ["九点五十五价格"], "role": "metric", "aggregation": "avg"}
+      ]
+    },
+    {
+      "id": "trade_data.financial_statement",
+      "name": "financial_statement",
+      "label": "股票财务报表",
+      "database": "trade_data",
+      "domain": "公司财务",
+      "description": "按股票、报告期和披露日期记录资产负债表、利润表与现金流量表核心指标。产品每日更新，但数据粒度是财报披露记录；利润及现金流指标采用源报表口径，不等同于单季度值。",
+      "business_terms": ["财务报表", "财报", "资产负债表", "利润表", "现金流量表", "业绩"],
+      "profile_mode": "schema_only",
+      "primary_key": ["symbol", "report_date", "publish_date"],
+      "fields": [
+        {"name": "symbol", "label": "股票代码", "type": "文本", "source_type": "VARCHAR", "description": "包含交易所前缀的股票代码", "aliases": ["证券代码", "代码"], "role": "identifier", "aggregation": "none"},
+        {"name": "statement_format", "label": "报表类型", "type": "文本", "source_type": "VARCHAR", "description": "一般企业、银行、保险或证券等财务报表格式", "aliases": ["公司类型", "财报格式"], "role": "dimension", "aggregation": "none"},
+        {"name": "report_date", "label": "报告期", "type": "日期", "source_type": "DATE", "description": "财务报表所属报告期截止日", "aliases": ["财报日期", "报告日期"], "role": "time", "aggregation": "none"},
+        {"name": "publish_date", "label": "披露日期", "type": "日期", "source_type": "DATE", "description": "财务报表公开披露日期，可用于避免未来数据泄露", "aliases": ["公告日期", "发布日期"], "role": "time", "aggregation": "none"},
+        {"name": "total_assets", "label": "资产总计", "type": "数值", "source_type": "DOUBLE", "description": "报告期末资产总额", "aliases": ["总资产"], "role": "metric", "aggregation": "sum"},
+        {"name": "total_liabilities", "label": "负债合计", "type": "数值", "source_type": "DOUBLE", "description": "报告期末负债总额", "aliases": ["总负债"], "role": "metric", "aggregation": "sum"},
+        {"name": "parent_equity", "label": "归母股东权益", "type": "数值", "source_type": "DOUBLE", "description": "归属于母公司所有者的权益", "aliases": ["归母净资产"], "role": "metric", "aggregation": "sum"},
+        {"name": "total_owner_equity", "label": "所有者权益合计", "type": "数值", "source_type": "DOUBLE", "description": "报告期末所有者权益总额", "aliases": ["净资产", "股东权益"], "role": "metric", "aggregation": "sum"},
+        {"name": "operating_revenue", "label": "营业收入", "type": "数值", "source_type": "DOUBLE", "description": "源财报口径的营业收入", "aliases": ["营收"], "role": "metric", "aggregation": "sum"},
+        {"name": "operating_profit", "label": "营业利润", "type": "数值", "source_type": "DOUBLE", "description": "源财报口径的营业利润", "aliases": [], "role": "metric", "aggregation": "sum"},
+        {"name": "total_profit", "label": "利润总额", "type": "数值", "source_type": "DOUBLE", "description": "源财报口径的利润总额", "aliases": [], "role": "metric", "aggregation": "sum"},
+        {"name": "net_profit", "label": "净利润", "type": "数值", "source_type": "DOUBLE", "description": "源财报口径的净利润", "aliases": [], "role": "metric", "aggregation": "sum"},
+        {"name": "parent_net_profit", "label": "归母净利润", "type": "数值", "source_type": "DOUBLE", "description": "归属于母公司股东的净利润", "aliases": ["归属于母公司净利润"], "role": "metric", "aggregation": "sum"},
+        {"name": "basic_eps", "label": "基本每股收益", "type": "数值", "source_type": "DOUBLE", "description": "基本每股收益", "aliases": ["EPS"], "role": "metric", "aggregation": "avg"},
+        {"name": "diluted_eps", "label": "稀释每股收益", "type": "数值", "source_type": "DOUBLE", "description": "稀释每股收益", "aliases": ["稀释EPS"], "role": "metric", "aggregation": "avg"},
+        {"name": "operating_cash_flow", "label": "经营活动现金流净额", "type": "数值", "source_type": "DOUBLE", "description": "经营活动产生的现金流量净额", "aliases": ["经营现金流"], "role": "metric", "aggregation": "sum"},
+        {"name": "investing_cash_flow", "label": "投资活动现金流净额", "type": "数值", "source_type": "DOUBLE", "description": "投资活动产生的现金流量净额", "aliases": ["投资现金流"], "role": "metric", "aggregation": "sum"},
+        {"name": "financing_cash_flow", "label": "筹资活动现金流净额", "type": "数值", "source_type": "DOUBLE", "description": "筹资活动产生的现金流量净额", "aliases": ["筹资现金流"], "role": "metric", "aggregation": "sum"},
+        {"name": "net_cash_increase", "label": "现金净增加额", "type": "数值", "source_type": "DOUBLE", "description": "现金及现金等价物净增加额", "aliases": [], "role": "metric", "aggregation": "sum"},
+        {"name": "ending_cash_balance", "label": "期末现金余额", "type": "数值", "source_type": "DOUBLE", "description": "期末现金及现金等价物余额", "aliases": [], "role": "metric", "aggregation": "sum"}
       ]
     },
     {

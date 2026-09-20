@@ -29,6 +29,10 @@ class DatasetSpec:
     columns: tuple[ColumnSpec, ...]
     key_fields: tuple[str, ...]
     identity_field: str
+    recursive: bool = False
+    identity_from_parent: bool = False
+    shard_from_parent: bool = False
+    allow_extra_columns: bool = False
 
     @property
     def expected_header(self) -> tuple[str, ...]:
@@ -49,12 +53,12 @@ def _safe_path(path: Path) -> str:
 
 def _header_error(spec: DatasetSpec, header: tuple[str, ...]) -> str | None:
     expected = spec.expected_header
-    if len(header) != len(expected):
+    if not spec.allow_extra_columns and len(header) != len(expected):
         return f"expected {len(expected)} columns, found {len(header)}"
     if len(set(header)) != len(header):
         return "duplicate column names"
     missing = sorted(set(expected) - set(header))
-    extra = sorted(set(header) - set(expected))
+    extra = [] if spec.allow_extra_columns else sorted(set(header) - set(expected))
     if missing or extra:
         return f"missing={missing}, extra={extra}"
     return None
@@ -68,18 +72,46 @@ def _read_header(spec: DatasetSpec, path: Path) -> tuple[str, ...]:
         return tuple(next(reader, ()))
 
 
+def _source_files(spec: DatasetSpec, source: Path) -> list[Path]:
+    pattern = "**/*.csv" if spec.recursive else "*.csv"
+    return sorted(source.glob(pattern))
+
+
+def _source_key(source_root: Path, path: Path) -> str:
+    return path.relative_to(source_root).as_posix()
+
+
+def _shard_stem(spec: DatasetSpec, path: Path) -> str:
+    return path.parent.name if spec.shard_from_parent else path.stem
+
+
+def _expected_identity(spec: DatasetSpec, path: Path) -> str:
+    return path.parent.name if spec.identity_from_parent else path.stem
+
+
+def _header_is_reordered(spec: DatasetSpec, header: tuple[str, ...]) -> bool:
+    if not spec.allow_extra_columns:
+        return header != spec.expected_header
+    expected = set(spec.expected_header)
+    return tuple(column for column in header if column in expected) != spec.expected_header
+
+
 def inventory(spec: DatasetSpec, source: Path) -> dict[str, Any]:
     if not source.is_dir():
         raise FileNotFoundError(f"source directory does not exist: {source}")
-    files = sorted(source.glob("*.csv"))
+    files = _source_files(spec, source)
     if not files:
         raise ValueError(f"source directory has no CSV files: {source}")
 
     invalid_headers: list[dict[str, Any]] = []
     reordered_headers: list[str] = []
+    shard_sources: dict[str, list[str]] = {}
     total_bytes = 0
     latest_mtime_ns = 0
     for path in files:
+        shard_sources.setdefault(_shard_stem(spec, path), []).append(
+            _source_key(source, path)
+        )
         stat = path.stat()
         total_bytes += stat.st_size
         latest_mtime_ns = max(latest_mtime_ns, stat.st_mtime_ns)
@@ -88,21 +120,26 @@ def inventory(spec: DatasetSpec, source: Path) -> dict[str, Any]:
         if error:
             invalid_headers.append(
                 {
-                    "file": path.name,
+                    "file": _source_key(source, path),
                     "error": error,
                     "column_count": len(header),
                     "columns": list(header),
                 }
             )
-        elif header != spec.expected_header:
-            reordered_headers.append(path.name)
+        elif _header_is_reordered(spec, header):
+            reordered_headers.append(_source_key(source, path))
 
+    duplicate_shards = {
+        shard: paths for shard, paths in shard_sources.items() if len(paths) > 1
+    }
+    identity_count = len({_expected_identity(spec, path) for path in files})
     return {
         "dataset": spec.dataset,
         "database": spec.database,
         "table": spec.table,
         "encoding": spec.encoding,
         "file_count": len(files),
+        "identity_count": identity_count,
         "total_bytes": total_bytes,
         "latest_mtime_ns": latest_mtime_ns,
         "expected_column_count": len(spec.expected_header),
@@ -110,6 +147,8 @@ def inventory(spec: DatasetSpec, source: Path) -> dict[str, Any]:
         "invalid_headers": invalid_headers[:100],
         "reordered_header_count": len(reordered_headers),
         "reordered_header_examples": reordered_headers[:100],
+        "duplicate_shard_count": len(duplicate_shards),
+        "duplicate_shards": dict(list(duplicate_shards.items())[:100]),
     }
 
 
@@ -130,6 +169,10 @@ def _projection_sql(spec: DatasetSpec) -> str:
             expression = f"NULLIF(TRIM({quoted}), '')::VARCHAR"
         elif column.kind == "date":
             expression = f"CAST(NULLIF({quoted}, '') AS DATE)"
+        elif column.kind == "compact_date":
+            expression = (
+                f"CAST(STRPTIME(NULLIF({quoted}, ''), '%Y%m%d') AS DATE)"
+            )
         elif column.kind == "number":
             expression = f"CAST(NULLIF({quoted}, '') AS DOUBLE)"
         elif column.kind == "boolean":
@@ -167,7 +210,8 @@ def _normalize_csv(spec: DatasetSpec, source: Path, destination: Path) -> int:
                 if not any(value.strip() for value in values):
                     continue
                 identity_index = spec.target_header.index(spec.identity_field)
-                if values[identity_index].strip() != source.stem:
+                expected_identity = _expected_identity(spec, source)
+                if values[identity_index].strip() != expected_identity:
                     raise ValueError(
                         f"{source.name}:{line_number} identity does not match filename"
                     )
@@ -185,9 +229,10 @@ def _convert_file(
     staging_dir: Path,
     table_dir: Path,
 ) -> dict[str, Any]:
-    normalized_csv = staging_dir / f"{source.stem}.csv"
-    temporary_parquet = staging_dir / f"{source.stem}.parquet"
-    final_parquet = table_dir / f"{source.stem}.parquet"
+    shard_stem = _shard_stem(spec, source)
+    normalized_csv = staging_dir / f"{shard_stem}.csv"
+    temporary_parquet = staging_dir / f"{shard_stem}.parquet"
+    final_parquet = table_dir / f"{shard_stem}.parquet"
     normalized_rows = _normalize_csv(spec, source, normalized_csv)
     try:
         connection.execute(
@@ -262,6 +307,10 @@ def convert_dataset(
     report = inventory(spec, source)
     if report["invalid_header_count"]:
         raise ValueError(f"{report['invalid_header_count']} source files have invalid headers")
+    if report["duplicate_shard_count"]:
+        raise ValueError(
+            f"{report['duplicate_shard_count']} shard names map to multiple source files"
+        )
     if workers < 1:
         raise ValueError("workers must be greater than zero")
 
@@ -275,10 +324,11 @@ def convert_dataset(
     records: dict[str, dict[str, Any]] = manifest.setdefault("files", {})
     pending: list[Path] = []
     skipped = 0
-    for path in sorted(source.glob("*.csv")):
+    for path in _source_files(spec, source):
         stat = path.stat()
-        existing = records.get(path.name)
-        final_path = table_dir / f"{path.stem}.parquet"
+        source_key = _source_key(source, path)
+        existing = records.get(source_key)
+        final_path = table_dir / f"{_shard_stem(spec, path)}.parquet"
         unchanged = (
             existing
             and existing.get("source_size") == stat.st_size
@@ -302,7 +352,7 @@ def convert_dataset(
     try:
         with ThreadPoolExecutor(max_workers=workers) as executor:
             for path, result in executor.map(convert_one, pending):
-                records[path.name] = result
+                records[_source_key(source, path)] = result
                 converted += 1
                 if progress:
                     print(f"converted={converted}/{len(pending)} skipped={skipped}", flush=True)
@@ -315,6 +365,7 @@ def convert_dataset(
             "table": spec.table,
             "source_encoding": spec.encoding,
             "file_count": len(records),
+            "identity_count": report["identity_count"],
             "row_count": sum(int(item.get("rows", 0)) for item in records.values()),
             "converted_this_run": converted,
             "skipped_this_run": skipped,
@@ -357,7 +408,12 @@ def validate_dataset(spec: DatasetSpec, output: Path) -> dict[str, Any]:
             """
         ).fetchone()[0]
         date_field = next(
-            (column.target for column in spec.columns if column.kind == "date"), None
+            (
+                column.target
+                for column in spec.columns
+                if column.kind in {"date", "compact_date"}
+            ),
+            None,
         )
         min_date = max_date = None
         if date_field:
@@ -373,8 +429,11 @@ def validate_dataset(spec: DatasetSpec, output: Path) -> dict[str, Any]:
         errors.append("Parquet shard count does not match manifest")
     if row_count != int(manifest.get("row_count", -1)):
         errors.append("Parquet row count does not match manifest")
-    if identity_count != len(parquet_files):
-        errors.append("identity count does not match shard count")
+    expected_identity_count = int(
+        manifest.get("identity_count", manifest.get("file_count", -1))
+    )
+    if identity_count != expected_identity_count:
+        errors.append("identity count does not match manifest")
     if null_key_count:
         errors.append(f"{null_key_count} rows have null keys")
     if duplicate_key_groups:

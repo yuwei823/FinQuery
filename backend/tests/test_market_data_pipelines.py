@@ -18,6 +18,7 @@ from scripts.stock_daily_pipeline import (
     validate_dataset,
 )
 from scripts.index_daily_pipeline import SPEC as INDEX_SPEC
+from scripts.financial_statement_pipeline import SPEC as FINANCIAL_SPEC
 from scripts.csv_parquet_pipeline import (
     compact_dataset as compact_configured_dataset,
     convert_dataset as convert_configured_dataset,
@@ -53,6 +54,15 @@ class TradeDataPipelineTest(unittest.TestCase):
             [column.target for column in INDEX_SPEC.columns],
         )
         self.assertIn("index_daily", schema["role_tables"]["market_analyst"])
+
+        financial_table = next(
+            table for table in schema["tables"] if table["name"] == "financial_statement"
+        )
+        self.assertEqual(
+            [field["name"] for field in financial_table["fields"]],
+            [column.target for column in FINANCIAL_SPEC.columns],
+        )
+        self.assertIn("financial_statement", schema["role_tables"]["market_analyst"])
 
     def test_schema_only_index_does_not_scan_full_parquet_table(self) -> None:
         schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -176,6 +186,54 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(len(rows), 4)
             self.assertEqual(rows[0][0], "sh000001")
             self.assertEqual(rows[-1][2], 103.0)
+
+    def test_financial_statement_pipeline_supports_nested_source_files(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            root = Path(temp_dir)
+            source = root / "stock-fin-data-xbx"
+            company = source / "sh600000"
+            output = root / "trade_data"
+            company.mkdir(parents=True)
+            path = company / "sh600000_一般企业.csv"
+            header = [column.source for column in FINANCIAL_SPEC.columns]
+            header.insert(4, "抓取时间")
+            values = {column.source: "1" for column in FINANCIAL_SPEC.columns}
+            values.update(
+                {
+                    "stock_code": "sh600000",
+                    "statement_format": "一般企业",
+                    "report_date": "20251231",
+                    "publish_date": "2026-03-31",
+                }
+            )
+            with path.open("w", encoding="gb18030", newline="") as handle:
+                writer = csv.writer(handle)
+                writer.writerow(["数据说明"])
+                writer.writerow(header)
+                writer.writerow(
+                    ["2026-04-01 01:00:00" if name == "抓取时间" else values[name] for name in header]
+                )
+
+            report = inventory_configured_dataset(FINANCIAL_SPEC, source)
+            self.assertEqual(report["file_count"], 1)
+            self.assertEqual(report["invalid_header_count"], 0)
+            self.assertEqual(report["duplicate_shard_count"], 0)
+            converted = convert_configured_dataset(FINANCIAL_SPEC, source, output)
+            self.assertEqual(converted["converted_this_run"], 1)
+            validation = validate_configured_dataset(FINANCIAL_SPEC, output)
+            self.assertEqual(validation["errors"], [])
+            compact_configured_dataset(FINANCIAL_SPEC, output)
+
+            engine = DuckDbEngine(database_root=root)
+            with engine.connect("trade_data") as connection:
+                row = connection.execute(
+                    "SELECT symbol, report_date, publish_date, total_assets "
+                    "FROM financial_statement"
+                ).fetchone()
+            self.assertEqual(row[0], "sh600000")
+            self.assertEqual(str(row[1]), "2025-12-31")
+            self.assertEqual(str(row[2]), "2026-03-31")
+            self.assertEqual(row[3], 1.0)
 
     @staticmethod
     def _write_source(path: Path, *, reordered: bool = False) -> None:
