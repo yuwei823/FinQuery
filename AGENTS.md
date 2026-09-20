@@ -113,16 +113,24 @@ Live model calls can incur cost, so do not run them unless the task explicitly r
 
 ## Adding or changing a database
 
-Follow the detailed checklist in `README.md`. In summary:
+Follow the detailed guide in `README.md`. Use this repository-level checklist when adding or changing a database:
 
-1. Add `backend/data/databases/<database_key>/_schema.json` and matching CSV/Parquet tables, or configure a separate `DatabaseSource.data_folder`.
-2. Add a module under `backend/app/database_sources/` with `DATABASE_ID` and fully qualified field `SYNONYMS`.
-3. Register it in `backend/app/database_sources/__init__.py`, including the query-data folder when it is separate from the schema folder.
-4. Add `role_tables` in the schema and update mock accounts/access policy only if introducing roles.
-5. Add frontend examples in `promptsByDatabase` when useful.
-6. Add database-switch, schema, synonym, permission, and data-integrity tests.
+1. Choose a safe database key containing only letters, digits, and underscores, starting with a letter or underscore.
+2. Add `backend/data/databases/<database_key>/_schema.json`. Its top-level `database` must equal the key. Table IDs must be globally unique and use `<database>.<table>`; table `name` values must be safe SQL identifiers matching the CSV/Parquet filename or Parquet partition-directory name; field names must match the physical data columns.
+3. Define valid `relations` using real table IDs and field names. Add `role_tables` using physical table names; tables omitted from business roles are admin-only. Use `profile_mode: "schema_only"` when schema indexing must not scan the underlying data, otherwise provide or allow generation of `data_profile` and `index_content`.
+4. Put matching `*.csv`, `*.parquet`, or same-named Parquet partition directories beside the schema, or configure a separate read-only query-data directory through `DatabaseSource.data_folder`. Do not commit large generated market-data files; add/update a pipeline and manifest when the source requires curation.
+5. Add `backend/app/database_sources/<database_key>.py` with `DATABASE_ID = "<database_key>"` and `SYNONYMS`. Synonym keys must be fully qualified `<database>.<table>.<field>` IDs that exist in the schema; define an empty dictionary when no extra synonyms are needed.
+6. Import and register the source in `backend/app/database_sources/__init__.py`. Set `folder` to the schema directory and set `data_folder` when query data is stored elsewhere. Only registered keys may be enabled.
+7. Enable the database in the ignored runtime environment with comma-separated `DATABASE_SWITCHES`, for example `DATABASE_SWITCHES=trade_data,fund_data`, and update the relevant `.env.*.example`/Compose mount documentation when deployment needs a new host path. Restart the backend after changing the switch.
+8. Configure access. Prefer listing tables under an existing role in the schema's `role_tables`; when adding a role or test account, update `backend/app/security/auth.py` and `backend/app/security/access_control.py` together. Preserve database and table authorization through schema visibility, retrieval, MCP discovery, and execution.
+9. Add database-specific example questions to `promptsByDatabase` in `frontend/src/App.vue` when useful.
+10. Add or extend tests for registry validation, database switches, schema and relation integrity, fully qualified synonyms, permissions, CSV/Parquet registration, and source-data integrity. Add a validation pipeline for primary keys, dates, duplicates, nulls, and manifests when applicable.
 
-`DATABASE_SWITCHES` is a comma-separated set. Changing it requires a backend restart. Schema caches are generated as `backend/data/schema_store.<sorted-database-signature>.json` and are ignored by Git; do not hand-edit or commit them.
+Database MCP tools do not need a separate manual registration. `backend/app/mcp_runtime/server.py` derives the enabled databases from the loaded schema and registers an authorized `query_<database_key>` tool automatically. Do not add a one-off MCP tool for a normal database; change `mcp_runtime` only if the tool contract or execution behavior itself must change.
+
+`DATABASE_SWITCHES` is a comma-separated, deduplicated set. The current workflow may load several databases, but a single query spanning multiple databases still enters the unimplemented multi-database handoff path. Schema caches are generated as `backend/data/schema_store.<sorted-database-signature>.json`; they are ignored by Git and must not be hand-edited or committed. A missing or mismatched cache rebuilds on first use, and an administrator can force rebuilding through `POST /api/schema/index/rebuild`.
+
+After registration, run the relevant data-integrity validator plus the backend unit suite and frontend production build. Confirm `/api/schema` exposes only authorized tables and `/api/mcp/tools` exposes the expected authorized `query_<database_key>` tool. Do not make live model calls merely to validate database registration.
 
 ## Generated and persistent files
 
