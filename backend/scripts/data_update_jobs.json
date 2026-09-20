@@ -1,0 +1,16 @@
+{
+  "jobs": [
+    {
+      "name": "stock_daily",
+      "script": "scripts/stock_daily_pipeline.py",
+      "source_subdir": "stock-trading-data-pro",
+      "database": "trade_data"
+    },
+    {
+      "name": "index_daily",
+      "script": "scripts/index_daily_pipeline.py",
+      "source_subdir": "stock-main-index-data",
+      "database": "trade_data"
+    }
+  ]
+}

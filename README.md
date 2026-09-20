@@ -320,6 +320,34 @@ docker compose --env-file .env.docker --profile tools run --rm index-daily-data-
 `trade_data/index_daily.parquet` 和独立增量清单
 `trade_data/_pipeline_manifest.index_daily.json`。原始 CSV 首行就是英文表头，因此该配置不会跳过说明行。
 
+### 每日自动更新行情数据
+
+仓库提供统一更新入口，按数据源依次执行 `convert`、`validate`、`compact`。某个数据源失败时不会执行它的压实发布步骤，但会继续处理其他数据源；只要有一个任务失败，脚本就以非零状态结束：
+
+```powershell
+Set-Location D:\FinQuery\backend
+.\.venv\Scripts\python.exe -m scripts.update_curated_data
+```
+
+脚本依次读取当前进程环境变量、`backend/.env` 和默认路径来确定 `TRADE_DATA_ROOT` 与 `CURATED_DATA_ROOT`。运行日志写入 `backend/logs/curated-data-update.log`，每天轮转并保留 30 份；转换器输出、验证错误、Python 异常和退出码都会进入日志。
+
+在 Windows 上以管理员身份打开 PowerShell，然后安装每天凌晨 3 时运行的计划任务。管理员权限用于注册在用户注销后仍能运行的 S4U 任务：
+
+```powershell
+Set-Location D:\FinQuery
+powershell -ExecutionPolicy Bypass -File backend\scripts\install_data_update_task.ps1
+```
+
+安装后可在“任务计划程序”中找到 `FinQuery Daily Data Update`。任务使用当前用户的 S4U 身份运行，不要求用户保持登录；电脑在 03:00 睡眠或关机时，会在下次可运行时补跑。S4U 任务适合这里使用的本机磁盘路径，但不能访问需要用户凭据的网络共享。可以先手动验证计划任务：
+
+```powershell
+Start-ScheduledTask -TaskName "FinQuery Daily Data Update"
+Get-ScheduledTaskInfo -TaskName "FinQuery Daily Data Update"
+Get-Content backend\logs\curated-data-update.log -Tail 100
+```
+
+增加新的数据源时，实现与现有脚本一致的 `convert`、`validate`、`compact` 命令接口，然后在 `backend/scripts/data_update_jobs.json` 的 `jobs` 数组中增加任务。`source_subdir` 相对于 `TRADE_DATA_ROOT`，`database` 是 `CURATED_DATA_ROOT` 下的目标数据库目录。计划任务和日志逻辑不需要修改。
+
 转换完成后把 `backend/.env` 改为以下配置并重启后端：
 
 ```env
