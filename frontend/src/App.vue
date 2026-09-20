@@ -34,8 +34,9 @@ const promptsByDatabase: Record<string, string[]> = {
     "查询浦发银行最近20个交易日的收盘价和成交额",
     "按申万一级行业统计最新交易日的总市值",
     "查询最近交易日成交额最高的20只股票",
-    "查询上证指数最近20个交易日的收盘点位和成交额",
     "比较沪深300、中证500和中证1000最近一个月的涨跌幅",
+    "以最新交易日为截止日，计算每只 ETF 最近20个交易日的收益率、平均换手率和份额变化率。按详细分类分组，仅保留至少10只基金的分类，返回每类收益率最高的3只 ETF。",
+    "分析最新交易日的沪深300成分股，关联当日之前已披露的最新财报，计算最近20日涨跌幅、机构净流入、资产负债率和经营现金流/净利润。按申万一级行业汇总并返回表现最好的10个行业。"
   ],
 }
 const input = ref("")
@@ -53,7 +54,7 @@ const savedMemories = ref<SavedMemory[]>([])
 const workspace = ref<WorkspaceConfig>({})
 const conversations = ref<ConversationRecord[]>([])
 const activeConversationId = ref("")
-const expandedSql = ref<string | null>(null)
+const collapsedSqlTaskIds = ref<Set<string>>(new Set())
 const leftOpen = ref(false)
 const rightOpen = ref(false)
 const conversationScroll = ref<HTMLElement | null>(null)
@@ -480,6 +481,13 @@ function clarificationHint(result: QueryResult) {
   return result.clarification?.options.map((option) => option.label).join("、") ?? ""
 }
 
+function toggleSql(taskId: string) {
+  const next = new Set(collapsedSqlTaskIds.value)
+  if (next.has(taskId)) next.delete(taskId)
+  else next.add(taskId)
+  collapsedSqlTaskIds.value = next
+}
+
 </script>
 
 <template>
@@ -660,11 +668,11 @@ function clarificationHint(result: QueryResult) {
                   :rows="turn.result.rows"
                 >
                   <template #actions>
-                      <button v-if="turn.result.sql" @click="expandedSql = expandedSql === turn.result.task_id ? null : turn.result.task_id">SQL</button>
+                      <button v-if="turn.result.sql" @click="toggleSql(turn.result.task_id)">SQL</button>
                       <button class="save-result" :disabled="turn.result.saved" @click="saveResult(turn.result)">{{ turn.result.saved ? "已保存" : "保存" }}</button>
                   </template>
                   <template #details>
-                    <pre v-if="expandedSql === turn.result.task_id && turn.result.sql"><code>{{ turn.result.sql }}</code></pre>
+                    <pre v-if="turn.result.sql && !collapsedSqlTaskIds.has(turn.result.task_id)"><code>{{ turn.result.sql }}</code></pre>
                   </template>
                 </ResultTableCard>
 
