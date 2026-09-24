@@ -1,11 +1,202 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Workflow</title>
-  </head>
-  <body>
-    <!-- 在这里添加项目流程图内容。 -->
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta
+    name="viewport"
+    content="width=device-width, initial-scale=1.0"
+  >
+  <title>FinQuery 查询流程图</title>
+
+  <script
+    type="module"
+    src="https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs"
+  ></script>
+
+  <style>
+    body {
+      margin: 0;
+      padding: 32px;
+      background: #f5f7fa;
+      font-family:
+        "Microsoft YaHei",
+        "PingFang SC",
+        sans-serif;
+    }
+
+    h1 {
+      margin: 0 0 24px;
+      text-align: center;
+      font-size: 24px;
+    }
+
+    .diagram-container {
+      overflow-x: auto;
+      padding: 24px;
+      background: white;
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgb(0 0 0 / 8%);
+    }
+
+    .mermaid {
+      min-width: 1000px;
+      display: flex;
+      justify-content: center;
+    }
+  </style>
+</head>
+
+<body>
+  <h1>FinQuery：从用户登录到查询结束</h1>
+
+  <main class="diagram-container">
+    <pre class="mermaid">
+flowchart TD
+    A["用户打开 FinQuery"] --> B{"选择登录方式"}
+
+    subgraph AUTH["一、用户认证"]
+        B -->|账号登录| C["POST /api/auth/login"]
+        C --> D["AuthService.login()"]
+        D --> E{"用户名和密码正确？"}
+        E -->|否| F["返回 HTTP 401"]
+        E -->|是| G["生成 Bearer Token"]
+
+        B -->|游客登录| H["读取 localStorage 中的 guest_id"]
+        H --> I{"guest_id 是否存在？"}
+        I -->|否| J["生成 UUID 并保存"]
+        I -->|是| K["使用原 guest_id"]
+
+        J --> L["POST /api/auth/guest"]
+        K --> L
+        L --> M["AuthService.guest_login()"]
+        M --> N["哈希 guest_id，生成 user_id"]
+        N --> G
+
+        G --> O["后端保存 token 和 AuthUser"]
+        O --> P["前端将 Token 保存到 sessionStorage"]
+    end
+
+    P --> Q["用户输入查询问题"]
+
+    subgraph FRONTEND["二、前端提交查询"]
+        Q --> R["App.vue：submit()"]
+        R --> S["组装 query、session_id、workspace"]
+        S --> T["读取 sessionStorage 中的 Token"]
+        T --> U["POST /api/query"]
+        U --> V["请求头携带 Bearer Token"]
+    end
+
+    subgraph API["三、后端认证和请求准备"]
+        V --> W["Depends(require_user)"]
+        W --> X["AuthService.authenticate()"]
+        X --> Y{"Token 是否有效？"}
+
+        Y -->|否| Z["返回 HTTP 401"]
+        Y -->|是| AA["得到 AuthUser"]
+
+        AA --> AB{"是否为游客？"}
+        AB -->|是| AC["检查来源 IP 的每日额度"]
+        AC --> AD{"额度是否足够？"}
+        AD -->|否| AE["返回 HTTP 429"]
+        AD -->|是| AF["FinQueryService.submit()"]
+        AB -->|否| AF
+
+        AF --> AG["组合 user_id 和 session_id"]
+        AG --> AH["生成 task_id"]
+        AH --> AI["生成路由和记忆上下文"]
+        AI --> AJ["构造 QueryState"]
+    end
+
+    subgraph GRAPH["四、LangGraph 执行"]
+        AJ --> AK["graph.invoke(QueryState)"]
+        AK --> AL["_preprocess()"]
+        AL --> AM["RequestPreprocessor.prepare()"]
+        AM --> AN{"intent.action"}
+
+        AN -->|direct_response| AO["_respond_directly()"]
+        AO --> AP["ResultBuilder.direct_response()"]
+
+        AN -->|data_qa| AQ["_answer_qa()"]
+        AQ --> AR["DataQaAgent.run()"]
+        AR --> AS["ResultBuilder.qa()"]
+
+        AN -->|database_query| AT["_retrieve_schema()"]
+        AT --> AU["BM25 关键词召回"]
+        AT --> AV["Embedding 向量召回"]
+
+        AU --> AW["RRF 融合"]
+        AV --> AW
+        AW --> AX["模型 Rerank"]
+        AX --> AY["SchemaGraphBuilder.build()"]
+        AY --> AZ["生成最小 Schema 图"]
+
+        AZ --> BA{"涉及几个数据库？"}
+
+        BA -->|多个| BB["_run_multi_database()"]
+        BB --> BC["返回多库暂未启用"]
+
+        BA -->|单个| BD["_prepare_single_database()"]
+        BD --> BE["SingleDatabaseAgent.prepare()"]
+        BE --> BF["MCP：list_tools()"]
+        BF --> BG["模型生成工具调用或澄清"]
+        BG --> BH{"Agent 决策"}
+
+        BH -->|clarify| BI["_human_clarification()"]
+        BI --> BJ["interrupt() 暂停工作流"]
+        BJ --> BK["返回澄清问题"]
+        BK --> BL["用户选择选项"]
+        BL --> BM["Command resume"]
+        BM --> AT
+
+        BH -->|call_tool| BN["MCP：call_tool()"]
+        BN --> BO["query_trade_data"]
+        BO --> BP["DuckDbEngine.execute()"]
+        BP --> BQ["校验只读 SQL、表和权限"]
+        BQ --> BR{"SQL 执行成功？"}
+
+        BR -->|否| BS{"Agent 是否还能重试？"}
+        BS -->|是| BG
+        BS -->|否| BT["ResultBuilder.failed()"]
+
+        BR -->|是| BU["_execute_single_database()"]
+        BU --> BV["ResponseGenerator.finalize()"]
+        BV --> BW["模型生成标题和结果分析"]
+        BW --> BX["ResultBuilder.completed()"]
+    end
+
+    AP --> CA
+    AS --> CA
+    BC --> CA
+    BT --> CA
+    BX --> CA
+
+    subgraph RESULT["五、结果返回和记忆"]
+        CA["生成 QueryResult"]
+        CA --> CB["SessionContext.remember()"]
+        CB --> CC["记录 tasks 和 session_tasks"]
+        CC --> CD["必要时触发短期记忆总结"]
+        CD --> CE["FastAPI 返回结果"]
+        CE --> CF["前端展示回答、表格或图表"]
+    end
+
+    CF --> CG["本次查询结束"]
+    </pre>
+  </main>
+
+  <script type="module">
+    import mermaid from
+      "https://cdn.jsdelivr.net/npm/mermaid@11/dist/mermaid.esm.min.mjs";
+
+    mermaid.initialize({
+      startOnLoad: true,
+      theme: "default",
+      securityLevel: "strict",
+      flowchart: {
+        curve: "basis",
+        htmlLabels: true,
+        useMaxWidth: false
+      }
+    });
+  </script>
+</body>
 </html>

@@ -1,11 +1,213 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="zh-CN">
-  <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Developer Resume</title>
-  </head>
-  <body>
-    <!-- 在这里添加个人简历内容。 -->
-  </body>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>王雨薇 - 简历</title>
+  <style>
+    * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+    :root {
+      --accent: #a93f45;
+      --accent-soft: #fbf2f3;
+      --text: #292929;
+      --muted: #555;
+      --line: #e7dfe0;
+    }
+    html, body { margin: 0; padding: 0; background: #fff; }
+    body {
+      width: 210mm;
+      min-height: 297mm;
+      margin: 0 auto;
+      padding: 8mm 13mm 8mm;
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      font-size: 12.5px;
+      line-height: 1.36;
+    }
+    header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-end;
+      gap: 18px;
+      padding-bottom: 5px;
+      border-bottom: 1.5px solid var(--accent);
+    }
+    h1 { margin: 0; font-size: 30px; line-height: 1.15; letter-spacing: .2px; }
+    .headline { margin-top: 4px; color: var(--accent); font-weight: 650; font-size: 13.5px; }
+    .contact { text-align: right; color: var(--muted); font-size: 14px; line-height: 1.5; white-space: nowrap; }
+    .contact a { color: inherit; text-decoration: none; }
+    .header-left { display: flex; align-items: flex-end; gap: 14px; }
+    .avatar { display: block; width: 80px; height: 80px; flex-shrink: 0; object-fit: cover; border-radius: 999px; }
+    section { margin-top: 10px; }
+    .section-title {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      margin: 0 0 4px;
+      padding: 3px 7px;
+      color: var(--accent);
+      background: var(--accent-soft);
+      font-size: 14px;
+      line-height: 1.25;
+    }
+    .section-title::before { content: ""; width: 3px; height: 14px; background: var(--accent); }
+    .summary { margin: 0; color: var(--muted); }
+    .summary strong { color: var(--text); }
+    .capabilities { display: flex; flex-wrap: wrap; gap: 4px 7px; }
+    .capabilities span {
+      padding: 2px 7px;
+      border: 1px solid var(--line);
+      border-radius: 2px;
+      color: #444;
+      background: #fff;
+      font-size: 12.5px;
+    }
+    .entry { margin-bottom: 14px; break-inside: avoid; }
+    .entry:last-child { margin-bottom: 0; }
+    .entry-head { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
+    .entry-title { margin: 0; font-size: 13.5px; font-weight: 700; }
+    .project-link { color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
+    .entry-meta { flex: 0 0 auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
+    .role { margin: 1px 0 2px; color: #761212; font-size: 12.5px; font-weight: 600; }
+    ul { margin: 0; padding-left: 18px; }
+    li { margin: 1px 0; color: var(--muted); }
+    li strong { color: var(--text); }
+    .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 20px; }
+    .education-item { break-inside: avoid; }
+    .education-item p { margin: 1px 0 0; color: var(--muted); font-size: 12.5px; }
+    .skills { break-inside: avoid; }
+    .skills p { margin: 2px 0; color: var(--muted); }
+    .skills strong { color: var(--text); }
+    @page { size: A4; margin: 0; }
+    @media print {
+      body { margin: 0; }
+      a { color: inherit; }
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="header-left">
+      <img class="avatar" src="头像.png" alt="王雨薇头像" width="80" height="80">
+      <div>
+        <h1>王雨薇</h1>
+        <div class="headline">企业级数据平台 · 平台工程 · 技术产品交付</div>
+      </div>
+    </div>
+    <div class="contact">
+      13962202918<br>
+      <a href="mailto:yuweiw823@outlook.com">yuweiw823@outlook.com</a><br>
+      北京
+    </div>
+  </header>
+
+  <main>
+    <section>
+      <div class="section-title-wrapper">
+          <div class="title-bar"></div>
+          <h2 class="section-title">专业概述</h2>
+      </div>
+      <ul class="section-content">
+        <li>拥有 <strong>9 年以上微软软件工程经验</strong>，具备扎实的平台工程与前端技术能力以及 SDK 开发、复杂系统集成和跨团队交付经验。</li>
+        <li>长期参与 Power BI / Microsoft Fabric、Azure Portal 及 Azure Synapse Analytics 等企业级数据云平台的核心网页端建设。</li>
+        <li>了解 LLM 与 AI Agent 的典型应用场景和技术原理；能够运用 AI 工具辅助分析、开发与验证，并应用于实际工程交付。</li>
+      </ul>
+    </section>
+
+    <section>
+      <h2 class="section-title">工作经历</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">微软 · Power BI / Microsoft Fabric Shell 数据平台团队</h3>
+          <div class="entry-meta">2021.11 – 2026.07 · 北京</div>
+        </div>
+        <p class="role">高级软件工程师 / Senior Software Engineer</p>
+        <ul>
+          <li><strong>平台建设：</strong>参与从零构建 Microsoft Fabric Shell 数据平台、工作区、数据开发体验，开发者 AI Copilot 等多个核心功能模块。负责用户创建、管理和访问 Fabric 项目的核心界面，<strong>整体产品 MAU 达 2700 万，工作区界面 MAU 达 400 万级别</strong>。</li>
+          <li><strong>SDK 与生态：</strong>参与构建并发布 <strong>10+ npm SDK</strong>，建立 Shell 与 iframe 工作负载的通信机制及 CI/CD 发布流程，支持 <strong>50+ Fabric 工作负载</strong>的独立集成与发布。</li>
+          <li><strong>复杂产品交付：</strong>端到端交付工作区固定与筛选、创建面板改版、实时任务状态及子文件夹同步等功能，覆盖状态管理、交互、测试与上线迭代。</li>
+          <li><strong>AI Agent 开发：</strong>参与构建 Unified Copilot Pane，覆盖会话生命周期管理、上下文状态同步、工具调用编排及流式响应链路，实现统一业务上下文感知与跨 iframe 工具调用。</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">微软 · Azure Synapse Analytics 数据平台团队</h3>
+          <div class="entry-meta">2019.03 – 2021.11 · 北京</div>
+        </div>
+        <p class="role">软件工程师 II / Software Engineer II</p>
+        <ul>
+          <li>参与从零构建 Azure Synapse Analytics 在线门户，设计并实现数据库、表和存储过程对象资源管理器，以及工作区权限及 RBAC 管理界面。</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">微软 · Azure Portal Shell 平台团队</h3>
+          <div class="entry-meta">2016.12 – 2019.03 · 美国雷德蒙德</div>
+        </div>
+        <p class="role">软件工程师 II / Software Engineer II</p>
+        <ul>
+          <li>开发并维护 Azure Portal SDK 及可复用交互组件，为 <strong>150+ Azure 扩展合作团队</strong>提供 UX 技术支持与集成指导，推动门户交互一致性。</li>
+        </ul>
+      </article>
+    </section>
+
+    <section>
+      <h2 class="section-title">个人项目</h2>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">FinQuery Data Agent · 金融市场自然语言问数与分析系统智能体<a class="project-link" href="https://finquery.dev/" target="_blank" rel="noopener noreferrer">（https://finquery.dev）</a></h3>
+          <div class="entry-meta">2026.08</div>
+        </div>
+        <p class="role">后端开发 / AI Agent 应用</p>
+        <ul>
+          <li><strong>项目定位：</strong>面向股票与主要指数日行情构建中文自然语言问数智能体，基于 Vue 3、FastAPI、LangGraph 与 DuckDB 打通用户提问、SQL 生成与执行、已有结果分析及可视化报告链路。</li>
+          <li><strong>Agent 与检索：</strong>实现直接回答、已有结果分析和数据库查询的意图路由；融合 BM25、向量检索、RRF 与重排序完成字段级 Schema 召回和关系图构建，并通过 LangGraph 中断与恢复机制支持人工澄清。</li>
+          <li><strong>数据工程：</strong>构建股票与主要指数独立增量管道，将外部 CSV 标准化为分片 Parquet；通过增量清单、完整性校验及文件压实支持每日更新，并统一注册 CSV、Parquet 文件或分片目录为只读查询视图。</li>
+          <li><strong>安全与部署：</strong>将数据库能力封装为进程内 MCP 工具，通过用户级数据权限和 DuckDB 校验限制单条只读查询及显式字段投影；使用 Docker Compose 编排独立的生产环境后端服务和 Nginx 网关，并配置密码校验、API 限流和游客日配额。</li>
+        </ul>
+      </article>
+    </section>
+
+    <section>
+      <h2 class="section-title">认证证书</h2>
+      <div class="compact-grid">
+        <div class="education-item">
+          <div class="entry-head"><strong>OceanBase OBCA 分布式数据库专员认证</strong><span class="entry-meta">2026.09</span></div>
+          <p>成绩：89 / 100</p>
+        </div>
+        <div class="education-item">
+          <div class="entry-head"><strong>数据合规与保护专业能力评价证书</strong><span class="entry-meta">2026.09</span></div>
+          <p>成绩待公布</p>
+        </div>
+      </div>
+    </section>
+
+    <section>
+      <h2 class="section-title">教育背景</h2>
+      <div class="compact-grid">
+        <div class="education-item">
+          <div class="entry-head"><strong>华盛顿大学</strong><span class="entry-meta">2013.09 – 2015.06</span></div>
+          <p class="entry-head"><span>工业与系统工程 · 硕士</span><span class="entry-meta">美国西雅图</span></p>
+        </div>
+        <div class="education-item">
+          <div class="entry-head"><strong>南开大学</strong><span class="entry-meta">2009.09 – 2013.06</span></div>
+          <p class="entry-head"><span>工业工程 · 学士</span><span class="entry-meta">天津</span></p>
+        </div>
+      </div>
+    </section>
+
+    <section class="skills">
+      <h2 class="section-title">专业技能</h2>
+      <p><strong>企业级前端与平台工程：</strong>TypeScript、HTML/CSS、Angular；RxJS、NgRx；iframe 微前端、Shell 与 SDK 集成</p>
+      <p><strong>数据查询与检索：</strong>Python、FastAPI、SQL、DuckDB</p>
+      <p><strong>AI Agent 与 LLM 应用：</strong>意图路由、人工澄清、会话与上下文管理、工具调用 / MCP、流式响应</p>
+      <p><strong>工程质量与协作：</strong>Git、Playwright、Docker、CI/CD；跨团队平台交付与中英文技术沟通</p>
+      <p><strong>个人兴趣与爱好：</strong>个人硬件开发、PCB 设计与 3D 打印；哈利波特英文同人作品翻译（逾百万字）</p>
+    </section>
+  </main>
+</body>
 </html>
