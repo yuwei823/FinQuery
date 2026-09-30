@@ -1,0 +1,68 @@
+sequenceDiagram
+    autonumber
+    actor U as 用户
+    participant FE as 前端 App.vue
+    participant API as FastAPI /api/query
+    participant SVC as FinQueryService
+    participant WF as LangGraph 工作流
+    participant LLM as LLM 模型
+    participant IDX as SchemaIndex 检索
+    participant DB as MCP + DuckDB
+    participant QA as DataQa Agent
+
+    U->>FE: 输入问题并提交
+    FE->>API: POST /api/query（SSE 长连接）
+    API->>SVC: submit（认证 · 游客配额）
+    SVC-->>FE: SSE：已提交
+    SVC->>WF: invoke(state)
+    WF-->>FE: SSE：正在理解问题
+    WF->>LLM: 预处理：路由+改写+检索词+presentation（注入能力清单）
+    LLM-->>WF: direct_response / data_qa / database_query
+
+    opt 路由 = direct_response
+        WF-->>FE: SSE：正在生成回答
+        WF-->>SVC: QueryResult（直接回答）
+    end
+
+    opt 路由 = data_qa
+        WF->>QA: 分析已有结果（可调展示工具）
+        QA->>LLM: 生成回答 / Markdown 报告
+        WF-->>SVC: QueryResult（回答 / 报告）
+    end
+
+    opt 路由 = database_query 主链路
+        WF-->>FE: SSE：正在检索相关数据表
+        WF->>IDX: retrieve(query, 检索词)
+        IDX->>LLM: embed + rerank
+        IDX-->>WF: hits → 构建 Schema 图
+
+        opt 信息不足，需要澄清
+            WF-->>FE: interrupt：waiting_clarification
+            U->>FE: 补充说明
+            FE->>WF: Command(resume=...)
+        end
+
+        WF-->>FE: SSE：正在生成 SQL → SQL 已生成 → 正在执行查询
+        WF->>DB: Agent 循环：LLM 决策 → query_trade_data(SQL)
+        DB-->>WF: 结果行（只读校验，≤200 行）
+
+        loop SQL 失败自动修正
+            WF->>LLM: 携带错误的修正决策
+            LLM-->>DB: 修正 SQL 重新执行
+        end
+
+        WF-->>FE: SSE：正在整理结果
+        WF->>LLM: ResponseGenerator：标题 + 结果说明
+
+        opt presentation ≠ none
+            WF-->>FE: SSE：正在生成图表
+            WF->>QA: 以本轮结果为数据源生成图表
+            QA-->>WF: report（可视化规格）
+        end
+
+        WF-->>SVC: QueryResult（表格 + SQL + 说明 [+ 图表]）
+    end
+
+    SVC-->>FE: SSE：result 事件
+    FE-->>U: 渲染表格 / 结果说明 / 图表
+    SVC->>SVC: 异步归档 + 短期记忆摘要

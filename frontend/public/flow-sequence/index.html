@@ -1,0 +1,183 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>FinQuery 查询全流程时序图</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  body {
+    background: #fbfaf7;
+    color: #17221c;
+    font-family: "Microsoft YaHei", "PingFang SC", sans-serif;
+    padding: 48px 24px 64px;
+  }
+  .page { max-width: 1560px; margin: 0 auto; }
+  header { text-align: center; margin-bottom: 32px; }
+  .kicker {
+    color: #5c6a61; font-size: 12px; letter-spacing: 2px; margin-bottom: 10px;
+  }
+  h1 { font-size: 30px; font-weight: 700; letter-spacing: -0.5px; }
+  .sub { margin-top: 10px; color: #5c6a61; font-size: 14px; line-height: 1.7; }
+  .canvas {
+    background: #ffffff;
+    border: 1px solid #dfe6e0;
+    border-radius: 14px;
+    padding: 28px 20px;
+    box-shadow: 0 10px 30px rgba(19, 67, 49, .06);
+    overflow-x: auto;
+  }
+  footer {
+    margin-top: 22px; text-align: center; color: #5c6a61; font-size: 12.5px;
+  }
+  footer a { color: #6f312a; text-decoration: none; border-bottom: 1px solid #d8c4c0; }
+  footer a:hover { color: #24714f; border-color: #24714f; }
+</style>
+</head>
+<body>
+<div class="page">
+  <header>
+    <p class="kicker">FINQUERY STUDIO</p>
+    <h1>用户查询全流程时序图</h1>
+    <p class="sub">
+      从提问到最终结果：意图路由 → Schema 检索 → SQL 生成与只读执行 → 结果整理 → 图表衔接，<br>
+      绿色虚线为 SSE 进度事件，对应前端展示的阶段清单。
+    </p>
+  </header>
+  <div class="canvas">
+<svg xmlns="http://www.w3.org/2000/svg" width="1506" height="1829" viewBox="0 0 1506 1829" font-family="Microsoft YaHei, PingFang SC, sans-serif">
+<defs>
+<marker id="arrow" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#39463f"/></marker>
+<marker id="arrowGreen" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#24714f"/></marker>
+<marker id="arrowGray" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="8" markerHeight="8" orient="auto-start-reverse"><path d="M 0 0 L 10 5 L 0 10 z" fill="#5c6a61"/></marker>
+</defs>
+<rect width="1506" height="1829" fill="#fbfaf7"/>
+<line x1="100" y1="105" x2="100" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="262" y1="105" x2="262" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="424" y1="105" x2="424" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="586" y1="105" x2="586" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="748" y1="105" x2="748" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="910" y1="105" x2="910" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="1072" y1="105" x2="1072" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="1234" y1="105" x2="1234" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<line x1="1396" y1="105" x2="1396" y2="1769" stroke="#c9d4cc" stroke-dasharray="5 5"/>
+<rect x="207" y="503.0" width="596" height="154.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="207" y="503.0" width="338" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="219" y="517.0" font-size="11" font-weight="bold" fill="#6f312a">opt [路由 = direct_response]</text>
+<rect x="531" y="595.0" width="920" height="200.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="531" y="595.0" width="242" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="543" y="609.0" font-size="11" font-weight="bold" fill="#6f312a">opt [路由 = data_qa]</text>
+<rect x="45" y="917.0" width="758" height="200.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="45" y="917.0" width="206" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="57" y="931.0" font-size="11" font-weight="bold" fill="#6f312a">opt [信息不足，需要澄清]</text>
+<rect x="693" y="1193.0" width="596" height="154.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="693" y="1193.0" width="230" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="705" y="1207.0" font-size="11" font-weight="bold" fill="#6f312a">loop [SQL 失败自动修正]</text>
+<rect x="207" y="1377.0" width="1244" height="200.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="207" y="1377.0" width="326" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="219" y="1391.0" font-size="11" font-weight="bold" fill="#6f312a">opt [presentation ≠ none]</text>
+<rect x="30" y="733.0" width="1436" height="890.0" rx="8" fill="none" stroke="#b9c4bb" stroke-width="1.2"/>
+<rect x="30" y="733.0" width="374" height="20" rx="4" fill="#fbfaf7" stroke="#b9c4bb"/>
+<text x="42" y="747.0" font-size="11" font-weight="bold" fill="#6f312a">opt [路由 = database_query 主链路]</text>
+<text x="181.0" y="168" font-size="12" fill="#17221c" text-anchor="middle">输入问题并提交</text>
+<line x1="100" y1="175" x2="262" y2="175" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="343.0" y="214" font-size="12" fill="#17221c" text-anchor="middle">POST /api/query（SSE 长连接）</text>
+<line x1="262" y1="221" x2="424" y2="221" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="505.0" y="260" font-size="12" fill="#17221c" text-anchor="middle">submit（认证 · 游客配额）</text>
+<line x1="424" y1="267" x2="586" y2="267" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="424.0" y="306" font-size="12" fill="#24714f" text-anchor="middle">SSE：已提交</text>
+<line x1="586" y1="313" x2="262" y2="313" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="667.0" y="352" font-size="12" fill="#17221c" text-anchor="middle">invoke(state)</text>
+<line x1="586" y1="359" x2="748" y2="359" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="505.0" y="398" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在理解问题</text>
+<line x1="748" y1="405" x2="262" y2="405" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="829.0" y="444" font-size="12" fill="#17221c" text-anchor="middle">预处理：路由+改写+检索词+presentation（注入能力清单）</text>
+<line x1="748" y1="451" x2="910" y2="451" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="829.0" y="490" font-size="12" fill="#5c6a61" text-anchor="middle">direct_response / data_qa / database_query</text>
+<line x1="910" y1="497" x2="748" y2="497" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="505.0" y="536" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在生成回答</text>
+<line x1="748" y1="543" x2="262" y2="543" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="667.0" y="582" font-size="12" fill="#5c6a61" text-anchor="middle">QueryResult（直接回答）</text>
+<line x1="748" y1="589" x2="586" y2="589" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="1072.0" y="628" font-size="12" fill="#17221c" text-anchor="middle">分析已有结果（可调展示工具）</text>
+<line x1="748" y1="635" x2="1396" y2="635" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="1153.0" y="674" font-size="12" fill="#17221c" text-anchor="middle">生成回答 / Markdown 报告</text>
+<line x1="1396" y1="681" x2="910" y2="681" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="667.0" y="720" font-size="12" fill="#5c6a61" text-anchor="middle">QueryResult（回答 / 报告）</text>
+<line x1="748" y1="727" x2="586" y2="727" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="505.0" y="766" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在检索相关数据表</text>
+<line x1="748" y1="773" x2="262" y2="773" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="910.0" y="812" font-size="12" fill="#17221c" text-anchor="middle">retrieve(query, 检索词)</text>
+<line x1="748" y1="819" x2="1072" y2="819" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="991.0" y="858" font-size="12" fill="#17221c" text-anchor="middle">embed + rerank</text>
+<line x1="1072" y1="865" x2="910" y2="865" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="910.0" y="904" font-size="12" fill="#5c6a61" text-anchor="middle">hits → 构建 Schema 图</text>
+<line x1="1072" y1="911" x2="748" y2="911" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="505.0" y="950" font-size="12" fill="#24714f" text-anchor="middle">interrupt：waiting_clarification</text>
+<line x1="748" y1="957" x2="262" y2="957" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="181.0" y="996" font-size="12" fill="#17221c" text-anchor="middle">补充说明</text>
+<line x1="100" y1="1003" x2="262" y2="1003" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="505.0" y="1042" font-size="12" fill="#17221c" text-anchor="middle">Command(resume=...)</text>
+<line x1="262" y1="1049" x2="748" y2="1049" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="505.0" y="1088" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在生成 SQL → SQL 已生成 → 正在执行查询</text>
+<line x1="748" y1="1095" x2="262" y2="1095" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="991.0" y="1134" font-size="12" fill="#17221c" text-anchor="middle">Agent 循环：LLM 决策 → query_trade_data(SQL)</text>
+<line x1="748" y1="1141" x2="1234" y2="1141" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="991.0" y="1180" font-size="12" fill="#5c6a61" text-anchor="middle">结果行（只读校验，≤200 行）</text>
+<line x1="1234" y1="1187" x2="748" y2="1187" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="829.0" y="1226" font-size="12" fill="#17221c" text-anchor="middle">携带错误的修正决策</text>
+<line x1="748" y1="1233" x2="910" y2="1233" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="1072.0" y="1272" font-size="12" fill="#5c6a61" text-anchor="middle">修正 SQL 重新执行</text>
+<line x1="910" y1="1279" x2="1234" y2="1279" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="505.0" y="1318" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在整理结果</text>
+<line x1="748" y1="1325" x2="262" y2="1325" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="829.0" y="1364" font-size="12" fill="#17221c" text-anchor="middle">ResponseGenerator：标题 + 结果说明</text>
+<line x1="748" y1="1371" x2="910" y2="1371" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="505.0" y="1410" font-size="12" fill="#24714f" text-anchor="middle">SSE：正在生成图表</text>
+<line x1="748" y1="1417" x2="262" y2="1417" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="1072.0" y="1456" font-size="12" fill="#17221c" text-anchor="middle">以本轮结果为数据源生成图表</text>
+<line x1="748" y1="1463" x2="1396" y2="1463" stroke="#39463f" stroke-width="1.4" stroke-dasharray="none" marker-end="url(#arrow)"/>
+<text x="1072.0" y="1502" font-size="12" fill="#5c6a61" text-anchor="middle">report（可视化规格）</text>
+<line x1="1396" y1="1509" x2="748" y2="1509" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="667.0" y="1548" font-size="12" fill="#5c6a61" text-anchor="middle">QueryResult（表格 + SQL + 说明 [+ 图表]）</text>
+<line x1="748" y1="1555" x2="586" y2="1555" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<text x="424.0" y="1594" font-size="12" fill="#24714f" text-anchor="middle">SSE：result 事件</text>
+<line x1="586" y1="1601" x2="262" y2="1601" stroke="#24714f" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGreen)"/>
+<text x="181.0" y="1640" font-size="12" fill="#5c6a61" text-anchor="middle">渲染表格 / 结果说明 / 图表</text>
+<line x1="262" y1="1647" x2="100" y2="1647" stroke="#5c6a61" stroke-width="1.4" stroke-dasharray="5 4" marker-end="url(#arrowGray)"/>
+<path d="M 586 1693 h 44 v 20 h -40" fill="none" stroke="#39463f" stroke-width="1.4" marker-end="url(#arrow)"/>
+<text x="638" y="1709" font-size="12" fill="#17221c">异步归档 + 短期记忆摘要</text>
+<rect x="56.0" y="55" width="88" height="46" rx="9" fill="#6f312a" stroke="#b9c4bb"/>
+<text x="100" y="75" font-size="12.5" fill="#ffffff" text-anchor="middle">用户</text>
+<rect x="200.0" y="55" width="124" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="262" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">前端</text>
+<text x="262" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">App.vue</text>
+<rect x="341.0" y="55" width="166" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="424" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">FastAPI</text>
+<text x="424" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">/api/query</text>
+<rect x="468.0" y="55" width="236" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="586" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">FinQueryService</text>
+<rect x="672.0" y="55" width="152" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="748" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">LangGraph</text>
+<text x="748" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">工作流</text>
+<rect x="866.0" y="55" width="88" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="910" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">LLM</text>
+<text x="910" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">模型</text>
+<rect x="982.0" y="55" width="180" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="1072" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">SchemaIndex</text>
+<text x="1072" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">检索</text>
+<rect x="1179.0" y="55" width="110" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="1234" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">MCP</text>
+<text x="1234" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">DuckDB</text>
+<rect x="1341.0" y="55" width="110" height="46" rx="9" fill="#ffffff" stroke="#b9c4bb"/>
+<text x="1396" y="75" font-size="12.5" fill="#17221c" text-anchor="middle">DataQa</text>
+<text x="1396" y="91" font-size="12.5" fill="#17221c" text-anchor="middle">Agent</text>
+<text x="40" y="1801" font-size="11.5" fill="#5c6a61">实线＝同步调用　灰虚线＝返回　绿虚线＝SSE 进度事件（ProgressBus → 前端阶段清单）</text>
+</svg>
+  </div>
+  <footer>
+    <a href="/">← 返回 FinQuery</a> · <a href="/query-flow-sequence.mmd">Mermaid 源文件</a> · <a href="/query-flow-sequence.svg">SVG 原图</a>
+  </footer>
+</div>
+</body>
+</html>
