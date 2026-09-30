@@ -76,9 +76,14 @@ class SingleDatabaseAgent:
             "mcp_tools": tools,
         }
 
+        retry_after_failure = False
         try:
             for call_index in range(1, self.max_tool_calls + 1):
-                payload = {**base_payload, "tool_results": observations}
+                # SQL 执行失败后的修正调用使用精简上下文，缩短模型首 token 延迟。
+                if retry_after_failure:
+                    payload = self._retry_payload(base_payload, observations)
+                else:
+                    payload = {**base_payload, "tool_results": observations}
                 notify(
                     STAGE_PLANNING_SQL,
                     "正在生成 SQL" if call_index == 1 else f"查询失败，正在修正 SQL（第 {call_index} 次尝试）",
@@ -141,6 +146,7 @@ class SingleDatabaseAgent:
 
                 if tool_name == database_tool:
                     if not bool(tool_result.get("success")) and call_index < self.max_tool_calls:
+                        retry_after_failure = True
                         observations.append({
                             "tool": tool_name,
                             "result": tool_result,
@@ -165,6 +171,24 @@ class SingleDatabaseAgent:
             raise
         except (RuntimeError, KeyError, TypeError, ValueError) as exc:
             raise PipelineStageError("single_database_agent", str(exc)) from exc
+
+    @staticmethod
+    def _retry_payload(
+        base_payload: dict[str, Any],
+        observations: list[dict[str, Any]],
+    ) -> dict[str, Any]:
+        """SQL 修正调用的精简上下文：去掉工具目录等冗余信息。"""
+        retrieval = base_payload.get("retrieval") or {}
+        return {
+            "query": base_payload.get("query"),
+            "database": base_payload.get("database"),
+            "schema_text": base_payload.get("schema_text"),
+            "confirmed_fields": base_payload.get("confirmed_fields", []),
+            "confirmed_parameters": base_payload.get("confirmed_parameters", {}),
+            # selected_fields 供显式枚举值校验继续使用。
+            "retrieval": {"selected_fields": retrieval.get("selected_fields", [])},
+            "tool_results": observations,
+        }
 
     def _validated_decision(
         self,
