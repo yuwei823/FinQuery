@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, nextTick, onMounted, ref } from "vue"
 import { api } from "./api"
+import MarkdownReport from "./components/MarkdownReport.vue"
 import ReportCard from "./components/ReportCard.vue"
 import ResultTableCard from "./components/ResultTableCard.vue"
 import type { AuthUser, ProgressEvent, QueryResult, ReportDataSource, SavedMemory, SchemaField, SchemaTable, WorkspaceConfig } from "./types"
@@ -42,7 +43,7 @@ const promptGroupsByDatabase: Record<string, PromptGroup[]> = {
       title: "闲聊问答",
       hint: "直接回答 · 无需查数",
       prompts: [
-        "介绍一下你自己：你能帮我做什么，不能做什么？",
+        "介绍一下自己：你能帮我做什么，不能做什么？",
         "你能查到哪些金融数据？覆盖哪些市场、指标和时间段？",
       ],
     },
@@ -52,7 +53,7 @@ const promptGroupsByDatabase: Record<string, PromptGroup[]> = {
       hint: "先查询 · 再追问",
       prompts: [
         "获取上一个交易日A股涨幅最大的20只股票",
-        "以最新交易日为截止日，计算每只 ETF 最近20个交易日的收益率、平均换手率和份额变化率。按详细分类分组，仅保留至少10只基金的分类，返回每类收益率最高的3只 ETF",
+        "计算每只 ETF 最近 20 个交易日的收益率、平均换手率和份额变化率。按详细分类分组，保留 10 种分类，返回每类收益率最高的 3 只 ETF",
       ],
     },
     {
@@ -633,8 +634,8 @@ function toggleSql(taskId: string) {
             <div class="prompt-list">
               <section v-for="group in promptGroups" :key="group.key" class="prompt-group">
                 <header><strong>{{ group.title }}</strong><small>{{ group.hint }}</small></header>
-                <button v-for="prompt in group.prompts" :key="prompt" @click="submit(prompt)">
-                  <span>↗</span>{{ prompt }}
+                <button v-for="prompt in group.prompts" :key="prompt" :title="prompt" @click="submit(prompt)">
+                  <span class="prompt-arrow">↗</span><span class="prompt-text">{{ prompt }}</span>
                 </button>
               </section>
             </div>
@@ -649,7 +650,7 @@ function toggleSql(taskId: string) {
             </div>
 
             <div class="assistant-message">
-              <div class="message-avatar assistant">A</div>
+              <div class="message-avatar assistant">FinQ</div>
               <div class="message-body assistant-body">
                 <div class="answer-heading" :class="{ 'qa-heading': turn.result.route !== 'database_query' }">
                   <div><small>FinQuery</small><strong v-if="turn.result.route === 'database_query'">{{ turn.result.status === "failed" ? "处理失败" : turn.result.status === "waiting_clarification" ? "需要补充信息" : "查询完成" }}</strong></div>
@@ -699,14 +700,6 @@ function toggleSql(taskId: string) {
                   </div>
                 </div>
 
-                <ReportCard
-                  v-if="turn.result.report"
-                  :report="turn.result.report"
-                  :sources="reportDataSources"
-                />
-
-                <p v-else-if="turn.result.route !== 'database_query' && turn.result.analysis" class="qa-answer">{{ turn.result.analysis }}</p>
-
                 <ResultTableCard
                   v-if="turn.result.route === 'database_query' && turn.result.status === 'completed' && turn.result.rows.length"
                   :title="turn.result.result_title || '查询结果'"
@@ -729,6 +722,14 @@ function toggleSql(taskId: string) {
                   <strong>结果说明</strong>
                   <p>{{ turn.result.analysis }}</p>
                 </div>
+
+                <ReportCard
+                  v-if="turn.result.report"
+                  :report="turn.result.report"
+                  :sources="reportDataSources"
+                />
+
+                <MarkdownReport v-else-if="turn.result.route !== 'database_query' && turn.result.analysis" class="qa-answer" :markdown="turn.result.analysis" />
               </div>
             </div>
           </article>
@@ -739,7 +740,7 @@ function toggleSql(taskId: string) {
           </div>
 
           <div v-if="loading" class="assistant-message loading-message">
-            <div class="message-avatar assistant">A</div>
+            <div class="message-avatar assistant">FinQ</div>
             <div class="message-body">
               <ul class="progress-steps">
                 <li
