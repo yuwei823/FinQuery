@@ -82,12 +82,12 @@
   strong { color: $color-neutral-700; font-size: $font-size-sm; text-align: right; }
 }
 
-.pie-chart { display: grid; grid-template-columns: 116px minmax(0, 1fr); align-items: center; gap: 18px; }
+.pie-chart { display: grid; grid-template-columns: 124px minmax(0, 1fr); align-items: center; gap: 18px; }
 
 .pie-disc {
   @include grid-center;
-  width: 112px;
-  height: 112px;
+  width: 120px;
+  height: 120px;
   border-radius: 50%;
 
   &::before { grid-area: 1 / 1; width: 58px; height: 58px; border-radius: 50%; background: $color-white; content: ""; }

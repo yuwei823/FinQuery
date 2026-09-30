@@ -2,7 +2,7 @@
 
 .app-layout {
   display: grid;
-  grid-template-columns: 244px minmax(480px, 1fr) 360px;
+  grid-template-columns: 272px minmax(480px, 1fr) 400px;
   width: 100vw;
   height: 100vh;
   background: $color-neutral-25;
@@ -126,8 +126,8 @@
 
 .user-avatar {
   @include grid-center;
-  width: 30px;
-  height: 30px;
+  width: 34px;
+  height: 34px;
   border-radius: 50%;
   color: $color-white;
   background: $color-neutral-700;
@@ -145,7 +145,7 @@
 .chat-header {
   @include flex-center;
   gap: 12px;
-  min-height: 62px;
+  min-height: 68px;
   padding: 0 24px;
   border-bottom: 1px solid $line;
   background: $color-white-a90;
@@ -216,8 +216,8 @@
 
 .welcome-mark {
   @include grid-center;
-  width: 44px;
-  height: 44px;
+  width: 48px;
+  height: 48px;
   margin: auto;
   border: 1px solid $color-brand-150;
   border-radius: 14px;

@@ -7,7 +7,7 @@
 .user-message,
 .assistant-message {
   display: grid;
-  grid-template-columns: 30px minmax(0, 1fr);
+  grid-template-columns: 34px minmax(0, 1fr);
   gap: 12px;
   align-items: start;
 }
@@ -30,8 +30,8 @@
 
 .message-avatar {
   @include grid-center;
-  width: 29px;
-  height: 29px;
+  width: 32px;
+  height: 32px;
   border-radius: 9px;
   font-size: $font-size-md;
 
@@ -189,7 +189,7 @@
 table { width: 100%; border-collapse: collapse; font-size: $font-size-lg; }
 
 th,
-td { padding: 10px 14px; border-bottom: 1px solid $color-neutral-75; text-align: left; white-space: nowrap; }
+td { padding: 12px 16px; border-bottom: 1px solid $color-neutral-75; text-align: left; white-space: nowrap; }
 
 th { color: $color-neutral-500; background: $color-neutral-25; font-size: $font-size-sm; font-weight: $font-weight-semibold; }
 tbody tr:hover { background: $color-neutral-50; }
@@ -233,8 +233,8 @@ tbody tr:hover { background: $color-neutral-50; }
 
   button {
     @include grid-center;
-    width: 30px;
-    height: 30px;
+    width: 34px;
+    height: 34px;
     border: 0;
     border-radius: 9px;
     color: $color-white;

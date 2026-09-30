@@ -2,26 +2,26 @@ $font-family-sans: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
 $font-family-serif: Georgia, "Noto Serif SC", serif;
 
 // Interface type scale: dense data UI from micro metadata to report titles.
-$font-size-2xs: 6px;
-$font-size-xs: 7px;
-$font-size-sm: 8px;
-$font-size-md: 9px;
-$font-size-lg: 10px;
-$font-size-body-sm: 11px;
-$font-size-body: 12px;
-$font-size-body-lg: 13px;
-$font-size-subtitle: 14px;
-$font-size-heading-sm: 15px;
-$font-size-heading-md: 16px;
-$font-size-icon-lg: 17px;
-$font-size-heading-lg: 18px;
-$font-size-title: 19px;
-$font-size-title-lg: 21px;
+$font-size-2xs: 9px;
+$font-size-xs: 10px;
+$font-size-sm: 11px;
+$font-size-md: 12px;
+$font-size-lg: 13px;
+$font-size-body-sm: 14px;
+$font-size-body: 15px;
+$font-size-body-lg: 16px;
+$font-size-subtitle: 17px;
+$font-size-heading-sm: 18px;
+$font-size-heading-md: 19px;
+$font-size-icon-lg: 20px;
+$font-size-heading-lg: 21px;
+$font-size-title: 23px;
+$font-size-title-lg: 25px;
 
 // Responsive display sizes stay separate from the fixed interface scale.
-$font-size-display-login: clamp(38px, 4.6vw, 66px);
-$font-size-display-welcome: clamp(27px, 3vw, 38px);
-$font-size-display-mobile: 34px;
+$font-size-display-login: clamp(42px, 5vw, 72px);
+$font-size-display-welcome: clamp(30px, 3.4vw, 42px);
+$font-size-display-mobile: 38px;
 $font-size-code-inline: .92em;
 
 // Print typography uses physical point units for predictable PDF output.
