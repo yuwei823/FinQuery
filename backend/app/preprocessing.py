@@ -41,6 +41,7 @@ class PreparedRequest:
     response: str = ""
     response_type: ResponseType = "answer"
     source: str = "model"
+    presentation: str = "none"
 
 
 class RequestPreprocessor:
@@ -72,6 +73,7 @@ Schema检索信息。data_qa和direct_response不提取Schema信息。
   "rewritten":false,
   "response":"仅direct_response填写自然语言回答或澄清问题",
   "response_type":"answer|clarification",
+  "presentation":"none|chart|report",
   "retrieval":{
     "retrieval_terms":["用于BM25和Embedding的简短Schema检索词，不要写完整句子"],
     "metrics":[], "dimensions":[], "filters":[],
@@ -79,6 +81,8 @@ Schema检索信息。data_qa和direct_response不提取Schema信息。
   }
 }
 database_query必须填写standalone_query和retrieval，response为空。
+仅当action=database_query且用户同时明确要求图表、可视化或报告时，presentation填chart或report；
+其余情况presentation一律为none；data_qa和direct_response恒为none。
 data_qa必须清空standalone_query、response和retrieval。
 direct_response必须填写response，并清空standalone_query和retrieval。不要猜表名。"""
         capability = capability.strip()
@@ -155,7 +159,13 @@ direct_response必须填写response，并清空standalone_query和retrieval。�
             standalone_query=standalone,
             rewritten=bool(payload.get("rewritten", standalone != original_query.strip())),
             retrieval=retrieval,
+            presentation=self._presentation(payload.get("presentation")),
         )
+
+    @staticmethod
+    def _presentation(value: Any) -> str:
+        presentation = str(value or "none").strip()
+        return presentation if presentation in {"none", "chart", "report"} else "none"
 
     @staticmethod
     def _strings(value: Any) -> list[str]:

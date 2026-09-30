@@ -15,6 +15,7 @@ STAGE_PLANNING_SQL = "planning_sql"
 STAGE_SQL_READY = "sql_ready"
 STAGE_EXECUTING = "executing_query"
 STAGE_FINALIZING = "finalizing"
+STAGE_VISUALIZING = "visualizing"
 STAGE_FAILED = "failed"
 
 

@@ -4,8 +4,9 @@ from app.preprocessing import RequestPreprocessor
 
 
 class CountingModel:
-    def __init__(self, action: str) -> None:
+    def __init__(self, action: str, presentation: str = "none") -> None:
         self.action = action
+        self.presentation = presentation
         self.calls = 0
         self.system = ""
 
@@ -18,6 +19,7 @@ class CountingModel:
                 # 验证问答路由会清空 Schema 检索参数。
                 "standalone_query": "不应保留",
                 "retrieval": {"retrieval_terms": ["销售额"]},
+                "presentation": "chart",
             }
         if self.action == "direct_response":
             return {
@@ -28,6 +30,7 @@ class CountingModel:
                 "response_type": "clarification",
                 "standalone_query": "不应保留",
                 "retrieval": {"retrieval_terms": ["销售额"]},
+                "presentation": "chart",
             }
         return {
             "action": "database_query", "confidence": 0.9, "reason": "需要新数据",
@@ -37,6 +40,7 @@ class CountingModel:
                 "metrics": ["销售额"], "dimensions": ["地区"],
                 "filters": [], "time_expressions": ["本月"], "operations": ["汇总"],
             },
+            "presentation": self.presentation,
         }
 
 
@@ -70,6 +74,24 @@ class RequestPreprocessorTest(unittest.TestCase):
         self.assertEqual(result.source, "model_unavailable_fallback")
         self.assertIn("暂时不可用", result.response)
         self.assertIn("测试模型不可用", result.reason)
+
+    def test_presentation_is_parsed_for_database_query(self) -> None:
+        result = RequestPreprocessor(CountingModel("database_query", "chart")).prepare("查询销售额并画图", "")
+
+        self.assertEqual(result.action, "database_query")
+        self.assertEqual(result.presentation, "chart")
+
+    def test_invalid_presentation_falls_back_to_none(self) -> None:
+        result = RequestPreprocessor(CountingModel("database_query", "graph")).prepare("查询销售额", "")
+
+        self.assertEqual(result.presentation, "none")
+
+    def test_presentation_is_none_outside_database_query(self) -> None:
+        qa = RequestPreprocessor(CountingModel("data_qa")).prepare("分析刚才的结果", "")
+        direct = RequestPreprocessor(CountingModel("direct_response")).prepare("你好", "")
+
+        self.assertEqual(qa.presentation, "none")
+        self.assertEqual(direct.presentation, "none")
 
     def test_capability_manifest_is_injected_into_system_prompt(self) -> None:
         model = CountingModel("direct_response")

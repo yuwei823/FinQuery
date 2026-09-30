@@ -53,7 +53,7 @@ docs/                         Design and migration notes; not runtime contracts
 5. `DuckDbEngine` validates one DuckDB `SELECT`/`WITH` statement, enforces access scope, rejects `SELECT *`, and registers CSV files, Parquet files, or partition directories as read-only views. It returns at most 200 rows.
 6. LangGraph uses an in-memory checkpointer and `interrupt`/`Command(resume=...)` for clarification. Active clarification state remains process-local. Optional session archiving restores completed turns and summaries, not an interrupted LangGraph checkpoint.
 
-Existing-result analysis is a separate `data_qa` route. It can produce Markdown plus chart specifications (bar, pie, line, area, scatter, heatmap, candlestick), but charts must reference columns from an available prior result.
+Existing-result analysis is a separate `data_qa` route. It can produce Markdown plus chart specifications (bar, pie, line, area, scatter, heatmap, candlestick), but charts must reference columns from an available prior result. When a database question also asks for a chart or report, the preprocessor marks `presentation` and, after a successful query, the workflow's `visualize_result` node chains into the same `data_qa` agent with the fresh result, so charts arrive in the same response as the table; chart failures degrade to the table-only result.
 
 ## Setup and common commands
 

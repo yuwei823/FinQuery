@@ -163,6 +163,20 @@ class ResultBuilder:
         )
 
     @staticmethod
+    def attach_report(result: dict[str, Any], qa: DataQaResult) -> dict[str, Any]:
+        """把 data_qa 生成的报告/图表合并进已完成的查询结果。"""
+        if not qa.report:
+            return result
+        merged = dict(result)
+        merged["report"] = qa.report.model_dump(mode="json")
+        merged["report_tool_calls"] = qa.tool_calls
+        merged["steps"] = [
+            *list(result.get("steps") or []),
+            "基于本轮查询结果调用展示工具生成图表",
+        ]
+        return merged
+
+    @staticmethod
     def public_retrieval(retrieval: dict[str, Any]) -> dict[str, Any]:
         visible = {
             "query", "retrieval_terms", "extraction", "embedding_source",

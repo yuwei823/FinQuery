@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+import json
 from typing import Any
 
 from langgraph.checkpoint.memory import InMemorySaver
@@ -30,6 +31,7 @@ from .progress import (
     STAGE_PREPROCESSING,
     STAGE_RESPONDING,
     STAGE_RETRIEVING,
+    STAGE_VISUALIZING,
     ProgressBus,
 )
 from .result_builder import ResultBuilder
@@ -84,6 +86,7 @@ class QueryWorkflow:
         builder.add_node("human_clarification", self._human_clarification)
         builder.add_node("prepare_single_database", self._prepare_single_database)
         builder.add_node("execute_single_database", self._execute_single_database)
+        builder.add_node("visualize_result", self._visualize_result)
         builder.add_node("run_multi_database", self._run_multi_database)
         builder.add_edge(START, "preprocess")
         builder.add_conditional_edges(
@@ -119,7 +122,12 @@ class QueryWorkflow:
                 "execute_single_database": "execute_single_database",
             },
         )
-        builder.add_edge("execute_single_database", END)
+        builder.add_conditional_edges(
+            "execute_single_database",
+            self._after_execute,
+            {"visualize_result": "visualize_result", "end": END},
+        )
+        builder.add_edge("visualize_result", END)
         builder.add_conditional_edges(
             "run_multi_database",
             lambda state: "human_clarification" if state.get("clarification") else "end",
@@ -169,6 +177,7 @@ class QueryWorkflow:
                 "reason": decision.reason,
                 "response_type": decision.response_type,
                 "source": decision.source,
+                "presentation": decision.presentation,
             },
             "direct_response": decision.response,
             "standalone_query": decision.standalone_query,
@@ -370,6 +379,47 @@ class QueryWorkflow:
             }
         result = ResultBuilder.completed(state, [execution], execution, final, [call], log)
         return {"execution_log": log, "tool_calls": [call], "result": result.model_dump(mode="json")}
+
+    @staticmethod
+    def _after_execute(state: QueryState) -> str:
+        presentation = str((state.get("intent") or {}).get("presentation") or "none")
+        execution = state.get("mcp_execution") or {}
+        if (
+            presentation in ("chart", "report")
+            and execution.get("success")
+            and execution.get("rows")
+        ):
+            return "visualize_result"
+        return "end"
+
+    def _visualize_result(self, state: QueryState) -> dict[str, Any]:
+        """查询成功后，按用户要求用本轮结果生成图表/报告。"""
+        self._emit(state, STAGE_VISUALIZING, "正在生成图表")
+        execution = state.get("mcp_execution") or {}
+        result = dict(state.get("result") or {})
+        recent_result = json.dumps({
+            "task_id": state["task_id"],
+            "title": result.get("result_title") or "查询结果",
+            "row_count": len(execution.get("rows") or []),
+            "analysis": result.get("analysis"),
+            "columns": list(execution.get("columns") or []),
+            "rows": list(execution.get("rows") or [])[: self.config.context_table_row_limit],
+            "sql": str(execution.get("sql") or ""),
+        }, ensure_ascii=False)
+        try:
+            qa_result = self.data_qa_agent.run(
+                state["query"],
+                {"short_term": "", "recent_result": recent_result, "selected_tables": ""},
+                state.get("access_scope") or {},
+            )
+        except PipelineStageError as exc:
+            # 图表生成失败时降级为仅表格，保留已成功执行的查询结果。
+            log = list(state.get("execution_log") or [])
+            log.append({"stage": exc.stage, "success": False, "error": exc.message})
+            if result:
+                result["execution_log"] = log
+            return {"execution_log": log, "result": result}
+        return {"result": ResultBuilder.attach_report(result, qa_result)}
 
     def _run_multi_database(self, state: QueryState) -> dict[str, Any]:
         """返回尚未实现的多数据库查询结果。"""
