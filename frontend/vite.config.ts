@@ -1,8 +1,20 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
+import { existsSync, readdirSync } from "node:fs"
 import { resolve } from "node:path"
 
-const staticDirectoryPages = new Set(["/workflow", "/dev_resume"])
+// public 下所有含 index.html 的子目录自动成为静态目录页，新增页面无需改配置。
+function publicDirectoryPages(): Set<string> {
+  const publicDir = resolve(__dirname, "public")
+  const pages = new Set<string>()
+  for (const entry of readdirSync(publicDir, { withFileTypes: true })) {
+    if (entry.isDirectory() && existsSync(resolve(publicDir, entry.name, "index.html"))) {
+      pages.add(`/${entry.name}`)
+    }
+  }
+  return pages
+}
+const staticDirectoryPages = publicDirectoryPages()
 
 export default defineConfig({
   plugins: [
@@ -31,7 +43,6 @@ export default defineConfig({
     rollupOptions: {
       input: {
         main: resolve(__dirname, "index.html"),
-        workflow: resolve(__dirname, "workflow/index.html"),
       },
     },
   },
