@@ -6,6 +6,7 @@ from langgraph.checkpoint.memory import InMemorySaver
 from langgraph.graph import END, START, StateGraph
 from langgraph.types import Command, interrupt
 
+from ..capabilities import render_capability_manifest
 from ..config import Settings, settings
 from ..database import DEFAULT_DATABASE, SCHEMA
 from ..errors import PipelineStageError
@@ -148,7 +149,10 @@ class QueryWorkflow:
     def _preprocess(self, state: QueryState) -> dict[str, Any]:
         """生成路由、独立查询和 Schema 检索参数。"""
         self._emit(state, STAGE_PREPROCESSING, "正在理解问题")
-        decision = self.preprocessor.prepare(state["query"], state.get("route_context", ""))
+        capability = render_capability_manifest(AccessScope.from_dict(state.get("access_scope")))
+        decision = self.preprocessor.prepare(
+            state["query"], state.get("route_context", ""), capability
+        )
         execution_log = list(state.get("execution_log") or [])
         if decision.source == "model_unavailable_fallback":
             execution_log.append({

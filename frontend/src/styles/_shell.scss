@@ -231,10 +231,28 @@
 .prompt-list {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
+  gap: 10px;
+  align-items: start;
+}
+
+.prompt-group {
+  display: flex;
+  flex-direction: column;
   gap: 8px;
+  height: 100%;
+
+  header {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+    padding: 0 2px;
+
+    strong { font-size: $font-size-lg; color: $color-neutral-800; }
+    small { font-size: $font-size-sm; color: $muted; }
+  }
 
   button {
-    min-height: 58px;
+    flex: 1;
     padding: 11px;
     border: 1px solid $color-brand-150;
     border-radius: 10px;

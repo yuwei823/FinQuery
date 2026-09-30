@@ -7,9 +7,11 @@ class CountingModel:
     def __init__(self, action: str) -> None:
         self.action = action
         self.calls = 0
+        self.system = ""
 
     def chat_json(self, system: str, user: str) -> dict:
         self.calls += 1
+        self.system = system
         if self.action == "data_qa":
             return {
                 "action": "data_qa", "confidence": 0.9, "reason": "分析已有结果",
@@ -68,6 +70,23 @@ class RequestPreprocessorTest(unittest.TestCase):
         self.assertEqual(result.source, "model_unavailable_fallback")
         self.assertIn("暂时不可用", result.response)
         self.assertIn("测试模型不可用", result.reason)
+
+    def test_capability_manifest_is_injected_into_system_prompt(self) -> None:
+        model = CountingModel("direct_response")
+        capability = "数据库 trade_data：中国股票日线行情\n示例问法：查询浦发银行收盘价"
+
+        result = RequestPreprocessor(model).prepare("你能查什么数据", "", capability)
+
+        self.assertEqual(result.action, "direct_response")
+        self.assertIn(capability, model.system)
+        self.assertIn("边界规则", model.system)
+
+    def test_empty_capability_keeps_system_prompt_unchanged(self) -> None:
+        model = CountingModel("direct_response")
+
+        RequestPreprocessor(model).prepare("你能查什么数据", "")
+
+        self.assertNotIn("能力清单", model.system)
 
     def test_gray_zone_is_clarified_by_preprocessor_without_retrieval(self) -> None:
         model = CountingModel("direct_response")

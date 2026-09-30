@@ -85,7 +85,7 @@ class DatabaseSwitchesTest(unittest.TestCase):
             first = self._source(root, "first", "first_alias")
             second = self._source(root, "second", "second_alias")
 
-            active, schema, _, synonyms, role_tables = load_database_catalog(
+            active, schema, _, synonyms, role_tables, meta = load_database_catalog(
                 {"second"},
                 {"first": first, "second": second},
             )
@@ -94,6 +94,10 @@ class DatabaseSwitchesTest(unittest.TestCase):
             self.assertEqual([table["id"] for table in schema], ["second.items"])
             self.assertEqual(synonyms, {"second.items.item_id": ["second_alias"]})
             self.assertEqual(role_tables["market_analyst"], frozenset({"second.items"}))
+            self.assertEqual(
+                meta["second"],
+                {"scenario": "", "time_coverage": "", "example_questions": []},
+            )
 
     def test_active_synonyms_and_cache_are_database_scoped(self) -> None:
         self.assertEqual(ACTIVE_DATABASES, frozenset({"trade_data"}))

@@ -29,14 +29,41 @@ interface HistoricalResultTable {
 
 const SAVED_TABLE_LIMIT = 8
 const FIELD_LIBRARY_LIMIT = 12
-const promptsByDatabase: Record<string, string[]> = {
+interface PromptGroup {
+  key: string
+  title: string
+  hint: string
+  prompts: string[]
+}
+const promptGroupsByDatabase: Record<string, PromptGroup[]> = {
   trade_data: [
-    "查询浦发银行最近20个交易日的收盘价和成交额",
-    "按申万一级行业统计最新交易日的总市值",
-    "查询最近交易日成交额最高的20只股票",
-    "比较沪深300、中证500和中证1000最近一个月的涨跌幅",
-    "以最新交易日为截止日，计算每只 ETF 最近20个交易日的收益率、平均换手率和份额变化率。按详细分类分组，仅保留至少10只基金的分类，返回每类收益率最高的3只 ETF。",
-    "分析最新交易日的沪深300成分股，关联当日之前已披露的最新财报，计算最近20日涨跌幅、机构净流入、资产负债率和经营现金流/净利润。按申万一级行业汇总并返回表现最好的10个行业。"
+    {
+      key: "chat",
+      title: "闲聊问答",
+      hint: "直接回答 · 无需查数",
+      prompts: [
+        "介绍一下你自己：你能帮我做什么，不能做什么？",
+        "你能查到哪些金融数据？覆盖哪些市场、指标和时间段？",
+      ],
+    },
+    {
+      key: "report",
+      title: "分析报告",
+      hint: "先查询 · 再追问",
+      prompts: [
+        "获取上一个交易日A股涨幅最大的20只股票",
+        "以最新交易日为截止日，计算每只 ETF 最近20个交易日的收益率、平均换手率和份额变化率。按详细分类分组，仅保留至少10只基金的分类，返回每类收益率最高的3只 ETF",
+      ],
+    },
+    {
+      key: "chart",
+      title: "图表可视化",
+      hint: "先查询 · 再绘图",
+      prompts: [
+        "获取最近一个月A股交易量前20的ETF及数据，并绘制柱状图",
+        "最近沪深300指数一个月的行情，用 K 线图展示走势并配一段解读",
+      ],
+    },
   ],
 }
 const input = ref("")
@@ -45,11 +72,11 @@ const pendingQuery = ref("")
 const progressEvents = ref<ProgressEvent[]>([])
 const error = ref("")
 const schema = ref<SchemaTable[]>([])
-const prompts = computed(() => {
+const promptGroups = computed(() => {
   const databases = [...new Set(schema.value.map((table) => table.database).filter(Boolean))]
-  const items = databases.flatMap((database) => promptsByDatabase[database!] ?? [])
+  const items = databases.flatMap((database) => promptGroupsByDatabase[database!] ?? [])
   if (items.length) return items
-  return databases.length ? [] : promptsByDatabase.trade_data
+  return databases.length ? [] : promptGroupsByDatabase.trade_data
 })
 const savedMemories = ref<SavedMemory[]>([])
 const workspace = ref<WorkspaceConfig>({})
@@ -604,9 +631,12 @@ function toggleSql(taskId: string) {
             <h1>想从数据里了解什么？</h1>
             <p>查询结果会以清晰的表格卡片展示，并支持分页和Excel导出。</p>
             <div class="prompt-list">
-              <button v-for="prompt in prompts" :key="prompt" @click="submit(prompt)">
-                <span>↗</span>{{ prompt }}
-              </button>
+              <section v-for="group in promptGroups" :key="group.key" class="prompt-group">
+                <header><strong>{{ group.title }}</strong><small>{{ group.hint }}</small></header>
+                <button v-for="prompt in group.prompts" :key="prompt" @click="submit(prompt)">
+                  <span>↗</span>{{ prompt }}
+                </button>
+              </section>
             </div>
           </div>
         </div>

@@ -49,7 +49,7 @@ class RequestPreprocessor:
     def __init__(self, model_client: ModelClient) -> None:
         self.model_client = model_client
 
-    def prepare(self, query: str, recent_context: str) -> PreparedRequest:
+    def prepare(self, query: str, recent_context: str, capability: str = "") -> PreparedRequest:
         system = """你是问数系统的请求预处理器，一次完成上下文聚合、意图判断和必要回复。
 
 意图边界：
@@ -81,6 +81,16 @@ Schema检索信息。data_qa和direct_response不提取Schema信息。
 database_query必须填写standalone_query和retrieval，response为空。
 data_qa必须清空standalone_query、response和retrieval。
 direct_response必须填写response，并清空standalone_query和retrieval。不要猜表名。"""
+        capability = capability.strip()
+        if capability:
+            system += (
+                "\n\n能力清单（回答能力、数据范围、使用限制问题的唯一事实依据）：\n"
+                f"{capability}\n"
+                "边界规则：direct_response回答能力或数据范围问题时，严格依据上述清单，"
+                "不得提及清单之外的市场、品种或指标；清单未覆盖的请求，明确说明「当前未接入」，"
+                "并从清单示例问法中挑选1-2个推荐给用户。"
+                "database_query和data_qa的路由判断不受此清单限制。"
+            )
         user = f"当前问题：{query}\n近期轻量上下文：{recent_context or '无'}"
         try:
             payload = self.model_client.chat_json(system, user)

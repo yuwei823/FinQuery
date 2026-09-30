@@ -2,6 +2,12 @@
   "schema_version": "1.0.0",
   "database": "trade_data",
   "scenario": "中国股票和主要指数的日线行情、资金流、财务快照和行业分类",
+  "time_coverage": "A股股票日线1990-12至2026-09，主要指数日线2005-06至2026-09，ETF日线2010-01至2026-09，财务报表按披露期覆盖2007年至2026年半年报",
+  "example_questions": [
+    "查询浦发银行最近20个交易日的收盘价和成交额",
+    "比较沪深300、中证500和中证1000最近一个月的涨跌幅",
+    "按申万一级行业统计最新交易日的总市值"
+  ],
   "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "stock_etf_trading_data"]},
   "tables": [
     {

@@ -22,6 +22,7 @@ def load_database_catalog(
     list[dict[str, Any]],
     dict[str, list[str]],
     dict[str, frozenset[str]],
+    dict[str, dict[str, Any]],
 ]:
     """加载启用数据库，并验证每个数据库的 Schema 与同义词。"""
     registry = DATABASE_SOURCES if sources is None else sources
@@ -38,6 +39,7 @@ def load_database_catalog(
     relations: list[dict[str, Any]] = []
     synonyms: dict[str, list[str]] = {}
     role_tables: dict[str, set[str]] = {}
+    database_meta: dict[str, dict[str, Any]] = {}
 
     for database_id in sorted(active):
         source = registry[database_id]
@@ -50,6 +52,13 @@ def load_database_catalog(
                 f"Schema 数据库标识不一致：期望 {database_id}，实际 {declared_database}"
             )
 
+        database_meta[database_id] = {
+            "scenario": str(payload.get("scenario") or ""),
+            "time_coverage": str(payload.get("time_coverage") or ""),
+            "example_questions": [
+                str(item) for item in payload.get("example_questions") or []
+            ],
+        }
         source_tables = list(payload.get("tables") or [])
         for table in source_tables:
             table.setdefault("database", database_id)
@@ -90,10 +99,11 @@ def load_database_catalog(
         relations,
         synonyms,
         {role: frozenset(ids) for role, ids in role_tables.items()},
+        database_meta,
     )
 
 
-ACTIVE_DATABASES, SCHEMA, RELATIONS, SYNONYMS, ROLE_TABLES = load_database_catalog(
+ACTIVE_DATABASES, SCHEMA, RELATIONS, SYNONYMS, ROLE_TABLES, DATABASE_META = load_database_catalog(
     settings.database_switches
 )
 DEFAULT_DATABASE = sorted(ACTIVE_DATABASES)[0]

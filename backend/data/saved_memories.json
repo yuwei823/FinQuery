@@ -1,5 +1,101 @@
 [
   {
+    "id": "result:af6ca33817d1",
+    "user_id": "demo_admin",
+    "kind": "result_table",
+    "task_id": "af6ca33817d1",
+    "query": "A股交易量最大的20个ETF是哪些？并生成柱状图。",
+    "summary": "数据显示华夏恒生互联网科技业ETF(QDII)以7368678296761.0的总交易量位居第一，华夏恒生科技ETF(QDII)和恒生科技分别以5870920160811.0和4111649043310.0的交易量位列第二和第三。列表完整包含了从第一名到第二十名易方达沪深300医药ETF（交易量1663117512157.0）的所有指定数据。",
+    "title": "A股交易量前20的ETF及数据",
+    "columns": [
+      "fund_name",
+      "total_volume"
+    ],
+    "rows": [
+      {
+        "fund_name": "华夏恒生互联网科技业ETF(QDII)",
+        "total_volume": 7368678296761.0
+      },
+      {
+        "fund_name": "华夏恒生科技ETF(QDII)",
+        "total_volume": 5870920160811.0
+      },
+      {
+        "fund_name": "恒生科技",
+        "total_volume": 4111649043310.0
+      },
+      {
+        "fund_name": "华夏上证科创板50成份ETF",
+        "total_volume": 3455936064919.0
+      },
+      {
+        "fund_name": "国泰中证全指证券公司ETF",
+        "total_volume": 2741889382346.0
+      },
+      {
+        "fund_name": "华夏上证50ETF",
+        "total_volume": 2549819912909.0
+      },
+      {
+        "fund_name": "博时恒生医疗保健(QDII-ETF)",
+        "total_volume": 2549132413687.0
+      },
+      {
+        "fund_name": "广发中证香港创新药(QDII-ETF)",
+        "total_volume": 2490171182723.0
+      },
+      {
+        "fund_name": "易方达中证香港证券投资主题(港股通)ETF",
+        "total_volume": 2469711376932.0
+      },
+      {
+        "fund_name": "易方达中证海外中国互联网50(QDII-ETF)",
+        "total_volume": 2057727000951.0
+      },
+      {
+        "fund_name": "易方达创业板ETF",
+        "total_volume": 2038340078980.0
+      },
+      {
+        "fund_name": "华泰柏瑞沪深300ETF",
+        "total_volume": 2023786131824.0
+      },
+      {
+        "fund_name": "华安创业板50ETF",
+        "total_volume": 1949120013821.0
+      },
+      {
+        "fund_name": "华夏中证A500ETF",
+        "total_volume": 1939718456646.0
+      },
+      {
+        "fund_name": "富国中证港股通互联网ETF",
+        "total_volume": 1929852531659.0
+      },
+      {
+        "fund_name": "易方达恒生国企(QDII-ETF)",
+        "total_volume": 1888400781884.0
+      },
+      {
+        "fund_name": "华宝中证全指证券公司ETF",
+        "total_volume": 1805182351345.0
+      },
+      {
+        "fund_name": "国泰中证A500ETF",
+        "total_volume": 1716788872717.0
+      },
+      {
+        "fund_name": "华宝中证医疗ETF",
+        "total_volume": 1694512977764.0
+      },
+      {
+        "fund_name": "易方达沪深300医药ETF",
+        "total_volume": 1663117512157.0
+      }
+    ],
+    "created_at": "2026-09-30T10:09:25"
+  },
+  {
     "id": "field:trade_data.stock_daily.total_market_cap",
     "user_id": "demo_admin",
     "kind": "schema_field",
