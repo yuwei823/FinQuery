@@ -66,46 +66,8 @@
 }
 
 .chart-empty { padding: 28px 8px; color: $color-neutral-300; font-size: $font-size-md; text-align: center; }
-.bar-chart { display: grid; gap: 8px; }
 
-.bar-row {
-  display: grid;
-  grid-template-columns: 60px minmax(70px, 1fr) 62px;
-  align-items: center;
-  gap: 8px;
-
-  > span { @include truncate; color: $color-neutral-600; font-size: $font-size-sm; }
-
-  > div { height: 8px; overflow: hidden; border-radius: 999px; background: $color-neutral-75; }
-
-  i { display: block; height: 100%; min-width: 2px; border-radius: inherit; background: linear-gradient(90deg, $color-brand-700, $color-brand-400); }
-  strong { color: $color-neutral-700; font-size: $font-size-sm; text-align: right; }
-}
-
-.pie-chart { display: grid; grid-template-columns: 124px minmax(0, 1fr); align-items: center; gap: 18px; }
-
-.pie-disc {
-  @include grid-center;
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-
-  &::before { grid-area: 1 / 1; width: 58px; height: 58px; border-radius: 50%; background: $color-white; content: ""; }
-
-  > span { z-index: 1; grid-area: 1 / 1; color: $color-neutral-800; font-size: $font-size-heading-md; font-weight: $font-weight-bold; }
-  small { display: block; color: $color-neutral-400; font-size: $font-size-xs; font-weight: $font-weight-medium; text-align: center; }
-}
-
-.pie-legend {
-  display: grid;
-  gap: 7px;
-  min-width: 0;
-
-  > div { display: grid; grid-template-columns: 7px minmax(0, 1fr) auto; align-items: center; gap: 6px; }
-  i { width: 7px; height: 7px; border-radius: 2px; }
-  span { @include truncate; color: $color-neutral-600; font-size: $font-size-sm; }
-  strong { color: $color-neutral-700; font-size: $font-size-sm; }
-}
+.chart-host { height: 300px; }
 
 .markdown-body {
   padding: 20px;
@@ -188,20 +150,6 @@
 
         strong { font-size: $font-size-print-body; }
       }
-    }
-
-    .bar-row {
-      grid-template-columns: 28mm minmax(45mm, 1fr) 30mm;
-
-      > span,
-      strong { font-size: $font-size-print-sm; }
-
-      > div { height: 3mm; }
-    }
-
-    .pie-legend {
-      span,
-      strong { font-size: $font-size-print-sm; }
     }
 
     .markdown-body {

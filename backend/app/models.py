@@ -69,12 +69,17 @@ class Interpretation(BaseModel):
 
 
 class VisualizationSpec(BaseModel):
-    type: Literal["bar", "pie"]
+    type: Literal["bar", "pie", "line", "area", "scatter", "heatmap", "candlestick"]
     title: str
     source_task_id: str
     category_field: str
     value_field: str
     max_items: int = Field(default=12, ge=3, le=30)
+    y_field: str | None = None
+    open_field: str | None = None
+    high_field: str | None = None
+    low_field: str | None = None
+    close_field: str | None = None
 
 
 class AnalysisReport(BaseModel):

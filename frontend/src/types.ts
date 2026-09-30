@@ -111,12 +111,17 @@ export interface CoderToolCall {
 }
 
 export interface VisualizationSpec {
-  type: "bar" | "pie"
+  type: "bar" | "pie" | "line" | "area" | "scatter" | "heatmap" | "candlestick"
   title: string
   source_task_id: string
   category_field: string
   value_field: string
   max_items: number
+  y_field?: string | null
+  open_field?: string | null
+  high_field?: string | null
+  low_field?: string | null
+  close_field?: string | null
 }
 
 export interface AnalysisReport {

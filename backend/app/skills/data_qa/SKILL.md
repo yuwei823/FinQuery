@@ -15,7 +15,7 @@
 - 报告使用 Markdown，内容应包含分析范围、关键发现、详细分析、风险或限制、建议。
 - 结论中的数值必须来自可用数据来源，不得补全或估算缺失数值。
 - 图表不是必选项。只有图表能明显提升报告可读性时才调用展示工具。
-- 柱状图用于类别比较；饼图只用于少量类别的占比构成，类别过多时改用柱状图。
+- 按数据形状选择图表工具：类别数值比较用 `build_bar_chart`；少量类别占比构成用 `build_pie_chart`，类别过多时改用柱状图；指标随日期等有序序列的变化趋势用 `build_line_chart`；强调单序列总量变化用 `build_area_chart`；两个数值维度的关系用 `build_scatter_chart`；两个离散维度交叉的数值大小用 `build_heatmap`；OHLC 四值行情用 `build_candlestick_chart`（category_field 为日期字段，并提供 open/high/low/close 四个字段）。
 - 每次工具调用必须引用 `available_data_sources` 中真实存在的 `task_id` 和字段名。
 - 不得调用数据库和时间工具。
 

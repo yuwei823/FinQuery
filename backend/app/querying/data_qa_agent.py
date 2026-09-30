@@ -111,7 +111,7 @@ class DataQaAgent:
             arguments = raw_call.get("arguments") or {}
             if not self._tool_allowed(name) or not isinstance(arguments, dict):
                 raise ValueError(f"展示工具调用不合法：{name or '空'}")
-            self._validate_chart_source(arguments, source_catalog)
+            self._validate_chart_source(name, arguments, source_catalog)
             result = client.call_tool(name, arguments)
             visualization = VisualizationSpec.model_validate(result)
             visualizations.append(visualization)
@@ -164,6 +164,7 @@ class DataQaAgent:
 
     @staticmethod
     def _validate_chart_source(
+        name: str,
         arguments: dict[str, Any],
         source_catalog: dict[str, dict[str, Any]],
     ) -> None:
@@ -172,8 +173,19 @@ class DataQaAgent:
         if not source:
             raise ValueError(f"图表引用了不可用的数据来源：{task_id or '空'}")
         columns = set(source["columns"])
-        category = str(arguments.get("category_field") or "")
-        value = str(arguments.get("value_field") or "")
-        missing = [field for field in (category, value) if field not in columns]
+        if name == "build_candlestick_chart":
+            # K 线契约为日期 + OHLC 四字段，value_field 由工具层自动填收盘价。
+            required = ["category_field", "open_field", "high_field", "low_field", "close_field"]
+        else:
+            required = ["category_field", "value_field"]
+            if name == "build_heatmap":
+                required.append("y_field")
+        missing = []
+        for key in required:
+            field = str(arguments.get(key) or "")
+            if not field:
+                missing.append(f"{key}(缺失)")
+            elif field not in columns:
+                missing.append(field)
         if missing:
             raise ValueError(f"图表字段不在查询结果中：{', '.join(missing)}")

@@ -7,9 +7,14 @@ from ..database import DEFAULT_DATABASE, SCHEMA, physical_table_name
 from ..querying.duckdb_engine import DuckDbEngine
 from ..security import AccessController, AccessScope
 from .tools import (
+    build_area_chart,
     build_bar_chart,
+    build_candlestick_chart,
     build_database_query_tool,
+    build_heatmap,
+    build_line_chart,
     build_pie_chart,
+    build_scatter_chart,
     current_datetime,
     resolve_date_range,
 )
@@ -67,6 +72,51 @@ def create_local_mcp_server(
         ),
         annotations=READ_ONLY,
     )(build_pie_chart)
+    server.tool(
+        name="build_line_chart",
+        title="生成折线图配置",
+        description=(
+            "基于一张已有查询结果生成前端折线图配置。"
+            "适合指标随日期等有序序列的变化趋势，不读取数据库，也不生成模拟数据。"
+        ),
+        annotations=READ_ONLY,
+    )(build_line_chart)
+    server.tool(
+        name="build_area_chart",
+        title="生成面积图配置",
+        description=(
+            "基于一张已有查询结果生成前端面积图配置。"
+            "适合强调单序列总量随有序序列的变化，不读取数据库，也不生成模拟数据。"
+        ),
+        annotations=READ_ONLY,
+    )(build_area_chart)
+    server.tool(
+        name="build_scatter_chart",
+        title="生成散点图配置",
+        description=(
+            "基于一张已有查询结果生成前端散点图配置。"
+            "适合观察两个数值维度之间的关系，不读取数据库，也不生成模拟数据。"
+        ),
+        annotations=READ_ONLY,
+    )(build_scatter_chart)
+    server.tool(
+        name="build_heatmap",
+        title="生成热力图配置",
+        description=(
+            "基于一张已有查询结果生成前端热力图配置。"
+            "适合展示两个离散维度交叉后的数值大小，不读取数据库，也不生成模拟数据。"
+        ),
+        annotations=READ_ONLY,
+    )(build_heatmap)
+    server.tool(
+        name="build_candlestick_chart",
+        title="生成K线图配置",
+        description=(
+            "基于一张已有查询结果生成前端K线图配置。"
+            "适合展示OHLC四值行情，不读取数据库，也不生成模拟数据。"
+        ),
+        annotations=READ_ONLY,
+    )(build_candlestick_chart)
 
     databases = sorted({str(table.get("database") or DEFAULT_DATABASE) for table in SCHEMA})
     for database in databases:

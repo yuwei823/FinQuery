@@ -15,7 +15,18 @@ class SkillRegistryTest(unittest.TestCase):
 
     def test_qa_skill_only_exposes_presentation_tools(self) -> None:
         skill = self.registry.get("data_qa")
-        self.assertEqual(skill.allowed_tools, ("build_bar_chart", "build_pie_chart"))
+        self.assertEqual(
+            skill.allowed_tools,
+            (
+                "build_bar_chart",
+                "build_pie_chart",
+                "build_line_chart",
+                "build_area_chart",
+                "build_scatter_chart",
+                "build_heatmap",
+                "build_candlestick_chart",
+            ),
+        )
         self.assertEqual(skill.max_tool_calls, 3)
         self.assertEqual(skill.output_actions, ("answer", "report"))
 

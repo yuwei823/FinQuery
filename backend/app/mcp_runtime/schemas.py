@@ -30,9 +30,14 @@ class DatabaseQueryResult(BaseModel):
 
 
 class ChartSpecResult(BaseModel):
-    type: str = Field(description="前端图表类型：bar或pie")
+    type: str = Field(description="前端图表类型：bar、pie、line、area、scatter、heatmap、candlestick")
     title: str = Field(description="图表标题")
     source_task_id: str = Field(description="提供图表数据的查询任务ID")
-    category_field: str = Field(description="分类字段")
+    category_field: str = Field(description="分类/X轴字段")
     value_field: str = Field(description="数值字段")
     max_items: int = Field(description="前端最多展示的数据项数")
+    y_field: str | None = Field(default=None, description="热力图的第二维度字段")
+    open_field: str | None = Field(default=None, description="K线开盘价字段")
+    high_field: str | None = Field(default=None, description="K线最高价字段")
+    low_field: str | None = Field(default=None, description="K线最低价字段")
+    close_field: str | None = Field(default=None, description="K线收盘价字段")
