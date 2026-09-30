@@ -1,0 +1,606 @@
+{
+  "version": 1,
+  "cases": [
+    {
+      "id": "c001",
+      "category": "chitchat",
+      "query": "介绍一下你自己：你能帮我做什么，不能做什么？",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": [
+        "支持美股",
+        "支持港股",
+        "支持债券",
+        "支持期货",
+        "可以查询美股",
+        "纳斯达克指数行情"
+      ]
+    },
+    {
+      "id": "c002",
+      "category": "chitchat",
+      "query": "你能查到哪些金融数据？覆盖哪些市场、指标和时间段？",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": [
+        "支持美股",
+        "支持港股",
+        "支持债券",
+        "支持期货",
+        "可以查询美股",
+        "纳斯达克指数行情"
+      ]
+    },
+    {
+      "id": "c003",
+      "category": "out_of_scope",
+      "query": "查询苹果公司（AAPL）最近一个月的股价走势",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": [
+        "为您查询到",
+        "查询结果如下",
+        "数据显示"
+      ]
+    },
+    {
+      "id": "c004",
+      "category": "out_of_scope",
+      "query": "今天中国十年期国债收益率是多少？",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": [
+        "为您查询到",
+        "查询结果如下",
+        "数据显示"
+      ]
+    },
+    {
+      "id": "c005",
+      "category": "out_of_scope",
+      "query": "帮我查一下螺纹钢期货的最新价格",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": [
+        "为您查询到",
+        "查询结果如下",
+        "数据显示"
+      ]
+    },
+    {
+      "id": "q001",
+      "category": "simple_query",
+      "query": "查询浦发银行最近20个交易日的收盘价和成交额",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "浦发银行",
+        "收盘价",
+        "成交额",
+        "交易日"
+      ],
+      "expected_tables": [
+        "trade_data.stock_daily"
+      ],
+      "expected_fields": [
+        "trade_data.stock_daily.stock_name",
+        "trade_data.stock_daily.trade_date",
+        "trade_data.stock_daily.close",
+        "trade_data.stock_daily.turnover"
+      ],
+      "golden_sql": "SELECT trade_date, close, turnover FROM stock_daily WHERE stock_name = '浦发银行' ORDER BY trade_date DESC LIMIT 20",
+      "expected_result": {
+        "columns": [
+          "trade_date",
+          "close",
+          "turnover"
+        ],
+        "rows": [
+          {
+            "trade_date": "2026-09-29",
+            "close": 9.18,
+            "turnover": 739740988.0
+          },
+          {
+            "trade_date": "2026-09-28",
+            "close": 9.16,
+            "turnover": 1080846770.0
+          },
+          {
+            "trade_date": "2026-09-24",
+            "close": 9.0,
+            "turnover": 475964884.0
+          },
+          {
+            "trade_date": "2026-09-23",
+            "close": 8.98,
+            "turnover": 458952162.0
+          },
+          {
+            "trade_date": "2026-09-22",
+            "close": 9.04,
+            "turnover": 480795737.0
+          },
+          {
+            "trade_date": "2026-09-21",
+            "close": 9.01,
+            "turnover": 593492200.0
+          },
+          {
+            "trade_date": "2026-09-18",
+            "close": 9.07,
+            "turnover": 469969405.0
+          },
+          {
+            "trade_date": "2026-09-17",
+            "close": 9.06,
+            "turnover": 414887057.0
+          },
+          {
+            "trade_date": "2026-09-16",
+            "close": 9.1,
+            "turnover": 656348140.0
+          },
+          {
+            "trade_date": "2026-09-15",
+            "close": 9.18,
+            "turnover": 823773905.0
+          },
+          {
+            "trade_date": "2026-09-14",
+            "close": 9.4,
+            "turnover": 722307374.0
+          },
+          {
+            "trade_date": "2026-09-11",
+            "close": 9.26,
+            "turnover": 604625882.0
+          },
+          {
+            "trade_date": "2026-09-10",
+            "close": 9.35,
+            "turnover": 555882181.0
+          },
+          {
+            "trade_date": "2026-09-09",
+            "close": 9.23,
+            "turnover": 467549947.0
+          },
+          {
+            "trade_date": "2026-09-08",
+            "close": 9.28,
+            "turnover": 374763157.0
+          },
+          {
+            "trade_date": "2026-09-07",
+            "close": 9.23,
+            "turnover": 806326225.0
+          },
+          {
+            "trade_date": "2026-09-04",
+            "close": 9.43,
+            "turnover": 712270967.0
+          },
+          {
+            "trade_date": "2026-09-03",
+            "close": 9.27,
+            "turnover": 841972880.0
+          },
+          {
+            "trade_date": "2026-09-02",
+            "close": 9.28,
+            "turnover": 625374762.0
+          },
+          {
+            "trade_date": "2026-09-01",
+            "close": 9.35,
+            "turnover": 952382710.0
+          }
+        ]
+      },
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q002",
+      "category": "simple_query",
+      "query": "比较上证指数和沪深300最近一个月的涨跌幅",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "上证指数",
+        "沪深300",
+        "涨跌幅",
+        "收盘价",
+        "交易日"
+      ],
+      "expected_tables": [
+        "trade_data.index_daily"
+      ],
+      "expected_fields": [
+        "trade_data.index_daily.index_code",
+        "trade_data.index_daily.trade_date",
+        "trade_data.index_daily.close"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q003",
+      "category": "simple_query",
+      "query": "查询最近交易日成交额最高的20只股票",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "成交额",
+        "最高",
+        "股票",
+        "最近交易日"
+      ],
+      "expected_tables": [
+        "trade_data.stock_daily"
+      ],
+      "expected_fields": [
+        "trade_data.stock_daily.stock_name",
+        "trade_data.stock_daily.trade_date",
+        "trade_data.stock_daily.turnover"
+      ],
+      "golden_sql": "SELECT stock_name, trade_date, turnover FROM stock_daily WHERE trade_date = (SELECT MAX(trade_date) FROM stock_daily) ORDER BY turnover DESC LIMIT 20",
+      "expected_result": {
+        "columns": [
+          "stock_name",
+          "trade_date",
+          "turnover"
+        ],
+        "rows": [
+          {
+            "stock_name": "中际旭创",
+            "trade_date": "2026-09-29",
+            "turnover": 13099145541.12
+          },
+          {
+            "stock_name": "亨通光电",
+            "trade_date": "2026-09-29",
+            "turnover": 11344313714.0
+          },
+          {
+            "stock_name": "新易盛",
+            "trade_date": "2026-09-29",
+            "turnover": 10061899943.16
+          },
+          {
+            "stock_name": "宁德时代",
+            "trade_date": "2026-09-29",
+            "turnover": 8608636254.1
+          },
+          {
+            "stock_name": "长鑫科技",
+            "trade_date": "2026-09-29",
+            "turnover": 8202052877.0
+          },
+          {
+            "stock_name": "兆易创新",
+            "trade_date": "2026-09-29",
+            "turnover": 7587701015.0
+          },
+          {
+            "stock_name": "天孚通信",
+            "trade_date": "2026-09-29",
+            "turnover": 7359507758.66
+          },
+          {
+            "stock_name": "寒武纪",
+            "trade_date": "2026-09-29",
+            "turnover": 7339177495.0
+          },
+          {
+            "stock_name": "东山精密",
+            "trade_date": "2026-09-29",
+            "turnover": 6157783215.19
+          },
+          {
+            "stock_name": "澜起科技",
+            "trade_date": "2026-09-29",
+            "turnover": 5996162940.0
+          },
+          {
+            "stock_name": "江淮汽车",
+            "trade_date": "2026-09-29",
+            "turnover": 5815861568.0
+          },
+          {
+            "stock_name": "京东方A",
+            "trade_date": "2026-09-29",
+            "turnover": 5032126577.2
+          },
+          {
+            "stock_name": "源杰科技",
+            "trade_date": "2026-09-29",
+            "turnover": 5005963868.0
+          },
+          {
+            "stock_name": "药明康德",
+            "trade_date": "2026-09-29",
+            "turnover": 4927714396.0
+          },
+          {
+            "stock_name": "生益科技",
+            "trade_date": "2026-09-29",
+            "turnover": 4812206364.0
+          },
+          {
+            "stock_name": "中国巨石",
+            "trade_date": "2026-09-29",
+            "turnover": 4754132278.0
+          },
+          {
+            "stock_name": "欣旺达",
+            "trade_date": "2026-09-29",
+            "turnover": 4229595034.76
+          },
+          {
+            "stock_name": "有研新材",
+            "trade_date": "2026-09-29",
+            "turnover": 4216846897.0
+          },
+          {
+            "stock_name": "海光信息",
+            "trade_date": "2026-09-29",
+            "turnover": 4154813728.0
+          },
+          {
+            "stock_name": "永鼎股份",
+            "trade_date": "2026-09-29",
+            "turnover": 4068873635.0
+          }
+        ]
+      },
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q004",
+      "category": "complex_query",
+      "query": "按申万一级行业统计最新交易日的总市值",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "申万一级行业",
+        "总市值",
+        "最新交易日",
+        "统计"
+      ],
+      "expected_tables": [
+        "trade_data.stock_daily"
+      ],
+      "expected_fields": [
+        "trade_data.stock_daily.industry_level_1",
+        "trade_data.stock_daily.total_market_cap",
+        "trade_data.stock_daily.trade_date"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q005",
+      "category": "complex_query",
+      "query": "分析最新交易日的沪深300成分股，关联当日之前已披露的最新财报，按申万一级行业汇总资产负债率",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "沪深300成分股",
+        "财报",
+        "披露日期",
+        "资产负债率",
+        "申万一级行业"
+      ],
+      "expected_tables": [
+        "trade_data.stock_daily",
+        "trade_data.financial_statement"
+      ],
+      "expected_fields": [
+        "trade_data.stock_daily.is_csi_300",
+        "trade_data.stock_daily.symbol",
+        "trade_data.stock_daily.trade_date",
+        "trade_data.stock_daily.industry_level_1",
+        "trade_data.financial_statement.symbol",
+        "trade_data.financial_statement.publish_date",
+        "trade_data.financial_statement.total_liabilities",
+        "trade_data.financial_statement.total_assets"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q006",
+      "category": "compound",
+      "query": "获取最近一个月A股交易量前20的ETF及数据，并绘制柱状图",
+      "expected_route": "database_query",
+      "expected_presentation": "chart",
+      "retrieval_terms": [
+        "ETF",
+        "交易量",
+        "最近一个月",
+        "前20"
+      ],
+      "expected_tables": [
+        "trade_data.stock_etf_trading_data"
+      ],
+      "expected_fields": [
+        "trade_data.stock_etf_trading_data.fund_name",
+        "trade_data.stock_etf_trading_data.fund_code",
+        "trade_data.stock_etf_trading_data.trade_date",
+        "trade_data.stock_etf_trading_data.volume"
+      ],
+      "golden_sql": "SELECT fund_name, fund_code, SUM(volume) AS total_volume FROM stock_etf_trading_data WHERE trade_date >= (SELECT MAX(trade_date) - INTERVAL '1' MONTH FROM stock_etf_trading_data) GROUP BY fund_name, fund_code ORDER BY total_volume DESC LIMIT 20",
+      "expected_result": {
+        "columns": [
+          "fund_name",
+          "fund_code",
+          "total_volume"
+        ],
+        "rows": [
+          {
+            "fund_name": "华夏上证科创板半导体材料设备主题ETF",
+            "fund_code": "588170.SH",
+            "total_volume": 68251002614.0
+          },
+          {
+            "fund_name": "国泰中证全指通信设备ETF",
+            "fund_code": "515880.SH",
+            "total_volume": 64216448901.0
+          },
+          {
+            "fund_name": "国泰中证半导体材料设备主题ETF",
+            "fund_code": "159516.SZ",
+            "total_volume": 59036739416.0
+          },
+          {
+            "fund_name": "广发中证香港创新药(QDII-ETF)",
+            "fund_code": "513120.SH",
+            "total_volume": 57888847418.0
+          },
+          {
+            "fund_name": "华夏上证科创板50成份ETF",
+            "fund_code": "588000.SH",
+            "total_volume": 49130630197.0
+          },
+          {
+            "fund_name": "华泰柏瑞南方东英恒生科技指数ETF(QDII)",
+            "fund_code": "513130.SH",
+            "total_volume": 48370073711.0
+          },
+          {
+            "fund_name": "华夏恒生互联网科技业ETF(QDII)",
+            "fund_code": "513330.SH",
+            "total_volume": 48277131512.0
+          },
+          {
+            "fund_name": "华泰柏瑞中证A500ETF",
+            "fund_code": "563360.SH",
+            "total_volume": 47388423128.0
+          },
+          {
+            "fund_name": "华夏恒生科技ETF(QDII)",
+            "fund_code": "513180.SH",
+            "total_volume": 43137097219.0
+          },
+          {
+            "fund_name": "南方中证A500ETF",
+            "fund_code": "159352.SZ",
+            "total_volume": 41564516850.0
+          },
+          {
+            "fund_name": "国泰中证A500ETF",
+            "fund_code": "159338.SZ",
+            "total_volume": 37298588962.0
+          },
+          {
+            "fund_name": "富国中证港股通互联网ETF",
+            "fund_code": "159792.SZ",
+            "total_volume": 36830180723.0
+          },
+          {
+            "fund_name": "华夏上证科创板半导体材料设备主题ETF",
+            "fund_code": "sh588170",
+            "total_volume": 32071924647.0
+          },
+          {
+            "fund_name": "嘉实上证科创板芯片ETF",
+            "fund_code": "588200.SH",
+            "total_volume": 31540702489.0
+          },
+          {
+            "fund_name": "国泰中证全指通信设备ETF",
+            "fund_code": "sh515880",
+            "total_volume": 30147867027.0
+          },
+          {
+            "fund_name": "华泰柏瑞中证韩交所中韩半导体ETF(QDII)",
+            "fund_code": "513310.SH",
+            "total_volume": 29099769976.0
+          },
+          {
+            "fund_name": "广发中证香港创新药(QDII-ETF)",
+            "fund_code": "sh513120",
+            "total_volume": 28939462392.0
+          },
+          {
+            "fund_name": "华宝中证全指证券公司ETF",
+            "fund_code": "512000.SH",
+            "total_volume": 26547260271.0
+          },
+          {
+            "fund_name": "易方达中证香港证券投资主题(港股通)ETF",
+            "fund_code": "513090.SH",
+            "total_volume": 25541798471.0
+          },
+          {
+            "fund_name": "国泰中证半导体材料设备主题ETF",
+            "fund_code": "sz159516",
+            "total_volume": 24301686107.0
+          }
+        ]
+      },
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q007",
+      "category": "compound",
+      "query": "最近沪深300指数一个月的行情，用K线图展示走势并配一段解读",
+      "expected_route": "database_query",
+      "expected_presentation": "chart",
+      "retrieval_terms": [
+        "沪深300",
+        "指数",
+        "行情",
+        "开盘价",
+        "最高价",
+        "最低价",
+        "收盘价"
+      ],
+      "expected_tables": [
+        "trade_data.index_daily"
+      ],
+      "expected_fields": [
+        "trade_data.index_daily.index_code",
+        "trade_data.index_daily.trade_date",
+        "trade_data.index_daily.open",
+        "trade_data.index_daily.high",
+        "trade_data.index_daily.low",
+        "trade_data.index_daily.close"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "c008",
+      "category": "clarification",
+      "query": "帮我看看最近的行情怎么样",
+      "expected_route": "direct_response",
+      "retrieval_terms": [],
+      "expected_tables": [],
+      "expected_fields": [],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    }
+  ]
+}

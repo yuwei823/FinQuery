@@ -92,6 +92,10 @@ Set-Location backend
 .venv/Scripts/python.exe scripts/financial_statement_pipeline.py validate
 .venv/Scripts/python.exe scripts/etf_daily_pipeline.py validate
 
+# Offline evaluation (golden SQL snapshot check is free; recall makes small embed/rerank calls)
+.venv/Scripts/python.exe scripts/evaluate.py golden --check
+.venv/Scripts/python.exe scripts/evaluate.py recall
+
 # Frontend type-check and production build
 Set-Location ../frontend
 npm run build

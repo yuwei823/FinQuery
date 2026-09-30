@@ -23,3 +23,4 @@ frontend/dist/
 frontend/.env
 frontend/*.tsbuildinfo
 code_analysis/
+backend/eval/reports/
