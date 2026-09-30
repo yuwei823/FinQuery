@@ -571,8 +571,6 @@ function toggleSql(taskId: string) {
           </button>
           <small>无需账号，每位游客每日最多查询 {{ guestDailyQueryLimit }} 次</small>
         </div>
-
-        <small class="login-note">请输入管理员分配的账号和密码。</small>
       </form>
     </section>
   </main>
