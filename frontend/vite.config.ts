@@ -1,5 +1,6 @@
 import { defineConfig } from "vite"
 import vue from "@vitejs/plugin-vue"
+import { resolve } from "node:path"
 
 const staticDirectoryPages = new Set(["/workflow", "/dev_resume"])
 
@@ -26,6 +27,14 @@ export default defineConfig({
       },
     },
   ],
+  build: {
+    rollupOptions: {
+      input: {
+        main: resolve(__dirname, "index.html"),
+        workflow: resolve(__dirname, "workflow/index.html"),
+      },
+    },
+  },
   server: {
     host: "127.0.0.1",
     port: 5173,
