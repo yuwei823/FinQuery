@@ -3,7 +3,7 @@ import { computed, nextTick, onMounted, ref } from "vue"
 import { api } from "./api"
 import ReportCard from "./components/ReportCard.vue"
 import ResultTableCard from "./components/ResultTableCard.vue"
-import type { AuthUser, QueryResult, ReportDataSource, SavedMemory, SchemaField, SchemaTable, WorkspaceConfig } from "./types"
+import type { AuthUser, ProgressEvent, QueryResult, ReportDataSource, SavedMemory, SchemaField, SchemaTable, WorkspaceConfig } from "./types"
 
 interface ConversationTurn {
   query: string
@@ -42,6 +42,7 @@ const promptsByDatabase: Record<string, string[]> = {
 const input = ref("")
 const loading = ref(false)
 const pendingQuery = ref("")
+const progressEvents = ref<ProgressEvent[]>([])
 const error = ref("")
 const schema = ref<SchemaTable[]>([])
 const prompts = computed(() => {
@@ -337,12 +338,25 @@ function saveActiveConversation() {
   tidyConversations()
 }
 
+function handleProgress(event: ProgressEvent) {
+  const events = progressEvents.value
+  const last = events[events.length - 1]
+  if (last && last.stage === event.stage) {
+    events[events.length - 1] = event
+  } else {
+    events.push(event)
+  }
+  nextTick(() => conversationScroll.value?.scrollTo({ top: conversationScroll.value.scrollHeight }))
+}
+
 async function submit(text?: string) {
   const query = (text ?? input.value).trim()
   if (!query || loading.value) return
   if (!activeConversation.value) createConversation()
   loading.value = true
   pendingQuery.value = query
+  progressEvents.value = []
+  progressEvents.value.push({ task_id: "", stage: "submitted", message: "已提交，等待后端响应" })
   error.value = ""
   input.value = ""
   try {
@@ -360,6 +374,7 @@ async function submit(text?: string) {
       query,
       requestWorkspace,
       activeConversation.value?.id ?? "studio-demo",
+      handleProgress,
     )
     activeConversation.value?.turns.push({ query, result })
     saveActiveConversation()
@@ -369,6 +384,7 @@ async function submit(text?: string) {
   } finally {
     loading.value = false
     pendingQuery.value = ""
+    progressEvents.value = []
   }
 }
 
@@ -694,7 +710,21 @@ function toggleSql(taskId: string) {
 
           <div v-if="loading" class="assistant-message loading-message">
             <div class="message-avatar assistant">A</div>
-            <div class="loading-copy"><span></span><div><strong>正在分析</strong><small>理解问题并检索相关 Schema…</small></div></div>
+            <div class="message-body">
+              <ul class="progress-steps">
+                <li
+                  v-for="(event, index) in progressEvents"
+                  :key="`${event.stage}:${index}`"
+                  :class="index === progressEvents.length - 1 ? 'active' : 'done'"
+                >
+                  <span class="step-icon">{{ index === progressEvents.length - 1 ? "" : "✓" }}</span>
+                  <div class="step-copy">
+                    <strong>{{ event.message }}</strong>
+                    <small v-if="event.detail">{{ event.detail }}</small>
+                  </div>
+                </li>
+              </ul>
+            </div>
           </div>
         </div>
         </div>

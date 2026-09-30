@@ -178,6 +178,14 @@ export interface QueryResult {
   report_tool_calls?: ReportToolCall[]
 }
 
+export interface ProgressEvent {
+  task_id: string
+  stage: string
+  message: string
+  detail?: string
+  ts?: number
+}
+
 export interface ReportDataSource {
   taskId: string
   title: string

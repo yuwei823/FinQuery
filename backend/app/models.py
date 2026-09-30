@@ -38,6 +38,14 @@ class ClarificationRequest(BaseModel):
     option_id: str
 
 
+class ProgressEvent(BaseModel):
+    task_id: str
+    stage: str
+    message: str = ""
+    detail: str = ""
+    ts: float = 0.0
+
+
 class ClarificationOption(BaseModel):
     id: str
     label: str

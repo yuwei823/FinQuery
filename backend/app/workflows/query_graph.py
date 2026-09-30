@@ -21,6 +21,16 @@ from ..querying.single_database_agent import SingleDatabaseAgent
 from ..retrieval import SchemaGraphBuilder, SchemaIndex
 from ..security import AccessScope
 from ..skills import SkillRegistry
+from .progress import (
+    STAGE_ANALYZING,
+    STAGE_EXECUTING,
+    STAGE_FINALIZING,
+    STAGE_PLANNING_SQL,
+    STAGE_PREPROCESSING,
+    STAGE_RESPONDING,
+    STAGE_RETRIEVING,
+    ProgressBus,
+)
 from .result_builder import ResultBuilder
 from .state import QueryState
 
@@ -41,6 +51,7 @@ class QueryWorkflow:
         self.skills = SkillRegistry()
         self.graph_builder = SchemaGraphBuilder()
         self.database_engine = DuckDbEngine()
+        self.progress = ProgressBus()
         self.single_database_agent = SingleDatabaseAgent(
             model_client,
             self.mcp_client,
@@ -119,6 +130,11 @@ class QueryWorkflow:
     def run_config(task_id: str) -> dict[str, Any]:
         return {"configurable": {"thread_id": task_id}}
 
+    def _emit(self, state: QueryState, stage: str, message: str, detail: str = "") -> None:
+        task_id = str(state.get("task_id") or "")
+        if task_id:
+            self.progress.emit(task_id, stage, message, detail)
+
     def invoke(self, payload: QueryState | Command, task_id: str) -> QueryResult:
         state = self.graph.invoke(payload, config=self.run_config(task_id))
         return self._state_result(state, task_id)
@@ -131,6 +147,7 @@ class QueryWorkflow:
 
     def _preprocess(self, state: QueryState) -> dict[str, Any]:
         """生成路由、独立查询和 Schema 检索参数。"""
+        self._emit(state, STAGE_PREPROCESSING, "正在理解问题")
         decision = self.preprocessor.prepare(state["query"], state.get("route_context", ""))
         execution_log = list(state.get("execution_log") or [])
         if decision.source == "model_unavailable_fallback":
@@ -158,6 +175,7 @@ class QueryWorkflow:
 
     def _respond_directly(self, state: QueryState) -> dict[str, Any]:
         """返回预处理模型生成的普通回答或自然语言澄清。"""
+        self._emit(state, STAGE_RESPONDING, "正在生成回答")
         result = ResultBuilder.direct_response(
             state["task_id"],
             state.get("direct_response", ""),
@@ -170,6 +188,7 @@ class QueryWorkflow:
         }
 
     def _answer_qa(self, state: QueryState) -> dict[str, Any]:
+        self._emit(state, STAGE_ANALYZING, "正在分析已有结果")
         qa_result = self.data_qa_agent.run(
             state["query"],
             {
@@ -188,6 +207,7 @@ class QueryWorkflow:
         }
 
     def _retrieve_schema(self, state: QueryState) -> dict[str, Any]:
+        self._emit(state, STAGE_RETRIEVING, "正在检索相关数据表")
         standalone_query = state["standalone_query"]
         extraction = state.get("extraction") or {}
         retrieval = self.schema_index.retrieve(
@@ -251,6 +271,8 @@ class QueryWorkflow:
         return {"workspace": workspace, "clarification": None, "direct_sql": "", "result": {}}
 
     def _prepare_single_database(self, state: QueryState) -> dict[str, Any]:
+        self._emit(state, STAGE_PLANNING_SQL, "正在生成 SQL")
+        task_id = str(state.get("task_id") or "")
         workspace = dict(state.get("workspace") or {})
         database = (state.get("database_names") or [DEFAULT_DATABASE])[0]
         decision = self.single_database_agent.prepare(
@@ -261,6 +283,7 @@ class QueryWorkflow:
             state["retrieval"],
             workspace,
             state.get("access_scope") or {},
+            progress=lambda stage, message, detail="": self.progress.emit(task_id, stage, message, detail),
         )
         if decision["action"] == "clarify":
             return {
@@ -280,6 +303,7 @@ class QueryWorkflow:
         }
 
     def _execute_single_database(self, state: QueryState) -> dict[str, Any]:
+        self._emit(state, STAGE_FINALIZING, "正在整理查询结果")
         database = (state.get("database_names") or [DEFAULT_DATABASE])[0]
         raw_execution = state.get("mcp_execution") or {}
         execution = SqlExecution(

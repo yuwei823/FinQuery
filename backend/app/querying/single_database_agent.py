@@ -9,6 +9,7 @@ from ..errors import PipelineStageError
 from ..mcp_runtime.client import LocalMcpClient
 from ..model_client import ModelClient
 from ..skills import SkillDefinition
+from ..workflows.progress import STAGE_EXECUTING, STAGE_PLANNING_SQL, STAGE_SQL_READY
 
 
 class SingleDatabaseAgent:
@@ -35,8 +36,10 @@ class SingleDatabaseAgent:
         retrieval: dict[str, Any],
         workspace: dict[str, Any],
         access_scope: dict[str, Any],
+        progress: Callable[[str, str, str], None] | None = None,
     ) -> dict[str, Any]:
         database_tool = f"query_{database}"
+        notify = progress or (lambda _stage, _message, _detail="": None)
         mcp_client = self.mcp_client_factory(access_scope)
 
         # 每次请求都通过MCP tools/list获取当前工具定义。
@@ -76,6 +79,10 @@ class SingleDatabaseAgent:
         try:
             for call_index in range(1, self.max_tool_calls + 1):
                 payload = {**base_payload, "tool_results": observations}
+                notify(
+                    STAGE_PLANNING_SQL,
+                    "正在生成 SQL" if call_index == 1 else f"查询失败，正在修正 SQL（第 {call_index} 次尝试）",
+                )
                 decision = self._validated_decision(system, payload, tool_names)
                 action = str(decision["action"])
 
@@ -116,6 +123,10 @@ class SingleDatabaseAgent:
                             ),
                         })
                         continue
+
+                if tool_name == database_tool:
+                    notify(STAGE_SQL_READY, "SQL 已生成", str(arguments.get("sql") or "").strip())
+                    notify(STAGE_EXECUTING, "正在执行查询")
 
                 tool_result = mcp_client.call_tool(tool_name, arguments)
                 trace = {

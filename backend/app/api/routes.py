@@ -1,8 +1,14 @@
 from __future__ import annotations
 
+import json
+import queue
+import threading
+import uuid
+from collections.abc import Iterator
 from hashlib import sha256
 
-from fastapi import APIRouter, Depends, Header, HTTPException, Request, Response
+from fastapi import APIRouter, Depends, Header, HTTPException, Request
+from fastapi.responses import StreamingResponse
 
 from ..errors import PipelineStageError
 from ..models import (
@@ -152,12 +158,12 @@ def skills(_: AuthUser = Depends(require_user)) -> list[dict]:
     return service.list_skills()
 
 
-@router.post("/query", response_model=QueryResult)
+@router.post("/query")
 def query(
     payload: QueryRequest,
-    response: Response,
     user: AuthUser = Depends(require_user),
-) -> QueryResult:
+) -> StreamingResponse:
+    """以SSE流式返回查询进度事件，最后一个result事件携带完整QueryResult。"""
     remaining = auth_service.consume_guest_query(user)
     if user.role == "guest":
         if remaining is None:
@@ -165,9 +171,52 @@ def query(
                 status_code=429,
                 detail=f"游客每日最多查询{auth_service.guest_daily_query_limit}次，请明天再试",
             )
-        response.headers["X-Guest-Queries-Remaining"] = str(remaining)
     workspace = payload.workspace.model_dump(exclude_none=True) if payload.workspace else None
-    return service.submit(payload.query, payload.session_id, workspace, user.user_id)
+    task_id = uuid.uuid4().hex[:12]
+    events = service.workflow.progress.subscribe(task_id)
+
+    def run() -> None:
+        try:
+            result = service.submit(
+                payload.query,
+                payload.session_id,
+                workspace,
+                user.user_id,
+                task_id=task_id,
+            )
+            events.put(("result", result.model_dump(mode="json")))
+        except Exception as exc:  # 兜底，防止工作流异常导致流悬挂
+            failure = QueryResult(
+                task_id=task_id,
+                status="failed",
+                route="database_query",
+                message="处理停止：内部错误",
+                analysis=str(exc),
+                route_reason="未使用本地语义兜底",
+                workflow_mode="failed_explicitly",
+            )
+            events.put(("result", failure.model_dump(mode="json")))
+
+    threading.Thread(target=run, daemon=True).start()
+
+    def stream() -> Iterator[str]:
+        try:
+            while True:
+                try:
+                    kind, data = events.get(timeout=25)
+                except queue.Empty:
+                    yield ": ping\n\n"
+                    continue
+                yield f"event: {kind}\ndata: {json.dumps(data, ensure_ascii=False)}\n\n"
+                if kind == "result":
+                    break
+        finally:
+            service.workflow.progress.unsubscribe(task_id, events)
+
+    headers = {"Cache-Control": "no-cache", "X-Accel-Buffering": "no"}
+    if user.role == "guest" and remaining is not None:
+        headers["X-Guest-Queries-Remaining"] = str(remaining)
+    return StreamingResponse(stream(), media_type="text/event-stream", headers=headers)
 
 
 @router.post("/tasks/{task_id}/clarify", response_model=QueryResult)

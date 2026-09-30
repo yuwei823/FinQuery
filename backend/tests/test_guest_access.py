@@ -15,6 +15,7 @@ from app.models import QueryResult
 from app.security.access_control import AccessController, MARKET_ANALYST_TABLES
 from app.security.auth import AuthService
 from app.security.guest_quota import GuestQueryQuota
+from app.workflows.progress import ProgressBus
 
 
 class GuestAccessTest(unittest.TestCase):
@@ -67,6 +68,7 @@ class GuestAccessTest(unittest.TestCase):
             with patch.dict("os.environ", environment, clear=True):
                 auth_service = AuthService()
             query_service = Mock()
+            query_service.workflow.progress = ProgressBus()
             query_service.submit.return_value = QueryResult(
                 task_id="guest-test",
                 status="completed",

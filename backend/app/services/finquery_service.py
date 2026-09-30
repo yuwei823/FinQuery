@@ -12,6 +12,7 @@ from ..model_client import ModelClient
 from ..models import QueryResult
 from ..retrieval import SchemaIndex
 from ..security import AccessController
+from ..workflows.progress import STAGE_FAILED, STAGE_SUBMITTED
 from ..workflows.query_graph import QueryWorkflow
 from .memory_store import MemoryStore
 from .session_context import SessionContext
@@ -41,14 +42,20 @@ class FinQueryService:
         session_id: str,
         workspace: dict[str, Any] | None = None,
         user_id: str | None = None,
+        task_id: str | None = None,
     ) -> QueryResult:
         normalized = query.strip()
         access_scope = self.access_controller.resolve(user_id)
         scoped_session_id = f"{access_scope.user_id}:{session_id}"
+        task_id = task_id or uuid.uuid4().hex[:12]
+        progress = self.workflow.progress
+        progress.emit(task_id, STAGE_SUBMITTED, "已提交，正在处理")
         pending = self.context.latest_pending(scoped_session_id)
         if pending and pending.get("user_id") == access_scope.user_id:
             option_id = self.context.match_clarification(normalized, pending["result"])
             if option_id:
+                # 澄清续跑沿用原任务线程，进度事件经别名转发给本次订阅者。
+                progress.alias(pending["result"].task_id, task_id)
                 return self.clarify(
                     pending["result"].task_id,
                     option_id,
@@ -56,7 +63,6 @@ class FinQueryService:
                     user_id=access_scope.user_id,
                 )
 
-        task_id = uuid.uuid4().hex[:12]
         resolved_workspace = self.context.normalize_workspace(workspace)
         self.context.archive.save_message(
             scoped_session_id,
@@ -76,6 +82,7 @@ class FinQueryService:
                 task_id,
             )
         except PipelineStageError as exc:
+            progress.emit(task_id, STAGE_FAILED, f"{exc.stage}失败")
             result = QueryResult(
                 task_id=task_id,
                 status="failed",
