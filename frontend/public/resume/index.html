@@ -6,82 +6,39 @@
   <title>王雨薇 - 简历</title>
   <style>
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-    :root {
-      --accent: #a93f45;
-      --accent-soft: #fbf2f3;
-      --text: #292929;
-      --muted: #555;
-      --line: #e7dfe0;
-    }
-    html, body { margin: 0; padding: 0; background: #fff; }
-    body {
-      width: 210mm;
-      min-height: 297mm;
-      margin: 0 auto;
-      padding: 8mm 13mm 8mm;
-      color: var(--text);
-      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
-      font-size: 12.5px;
-      line-height: 1.36;
-    }
-    header {
-      display: flex;
-      justify-content: space-between;
-      align-items: flex-end;
-      gap: 18px;
-      padding-bottom: 5px;
-      border-bottom: 1.5px solid var(--accent);
-    }
-    h1 { margin: 0; font-size: 30px; line-height: 1.15; letter-spacing: .2px; }
-    .headline { margin-top: 4px; color: var(--accent); font-weight: 650; font-size: 13.5px; }
-    .contact { text-align: right; color: var(--muted); font-size: 14px; line-height: 1.5; white-space: nowrap; }
-    .contact a { color: inherit; text-decoration: none; }
-    .header-left { display: flex; align-items: flex-end; gap: 14px; }
-    .avatar { display: block; width: 80px; height: 80px; flex-shrink: 0; object-fit: cover; border-radius: 999px; }
-    section { margin-top: 10px; }
-    .section-title {
-      display: flex;
-      align-items: center;
-      gap: 7px;
-      margin: 0 0 4px;
-      padding: 3px 7px;
-      color: var(--accent);
-      background: var(--accent-soft);
-      font-size: 14px;
-      line-height: 1.25;
-    }
-    .section-title::before { content: ""; width: 3px; height: 14px; background: var(--accent); }
-    .summary { margin: 0; color: var(--muted); }
-    .summary strong { color: var(--text); }
-    .capabilities { display: flex; flex-wrap: wrap; gap: 4px 7px; }
-    .capabilities span {
-      padding: 2px 7px;
-      border: 1px solid var(--line);
-      border-radius: 2px;
-      color: #444;
-      background: #fff;
-      font-size: 12.5px;
-    }
-    .entry { margin-bottom: 14px; break-inside: avoid; }
-    .entry:last-child { margin-bottom: 0; }
-    .entry-head { display: flex; justify-content: space-between; gap: 14px; align-items: baseline; }
-    .entry-title { margin: 0; font-size: 13.5px; font-weight: 700; }
-    .project-link { color: var(--accent); font-size: 13px; font-weight: 600; text-decoration: none; white-space: nowrap; }
-    .entry-meta { flex: 0 0 auto; color: var(--muted); font-size: 12px; white-space: nowrap; }
-    .role { margin: 1px 0 2px; color: #761212; font-size: 12.5px; font-weight: 600; }
-    ul { margin: 0; padding-left: 18px; }
-    li { margin: 1px 0; color: var(--muted); }
-    li strong { color: var(--text); }
-    .compact-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 5px 20px; }
-    .education-item { break-inside: avoid; }
-    .education-item p { margin: 1px 0 0; color: var(--muted); font-size: 12.5px; }
-    .skills { break-inside: avoid; }
-    .skills p { margin: 2px 0; color: var(--muted); }
-    .skills strong { color: var(--text); }
-    @page { size: A4; margin: 0; }
+    :root { --accent:#a93f45; --accent-soft:#fbf2f3; --text:#292929; --muted:#555; --line:#e7dfe0; }
+    html, body { margin:0; padding:0; background:#fff; }
+    body { width:210mm; min-height:297mm; margin:0 auto; padding:8mm 13mm; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif; font-size:12.5px; line-height:1.4; }
+    header { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; padding-bottom:5px; border-bottom:1.5px solid var(--accent); }
+    .header-left { display:flex; align-items:flex-end; gap:14px; }
+    .avatar { width:80px; height:80px; flex-shrink:0; object-fit:cover; border-radius:999px; }
+    h1 { margin:0; font-size:30px; line-height:1.15; }
+    .headline { margin-top:4px; color:var(--accent); font-weight:650; font-size:13.5px; }
+    .contact { text-align:right; color:var(--muted); font-size:14px; line-height:1.5; white-space:nowrap; }
+    .contact a, .project-link { color:inherit; text-decoration:none; }
+    section { margin-top:10px; }
+    .section-title { display:flex; align-items:center; gap:7px; margin:0 0 5px; padding:3px 7px; color:var(--accent); background:var(--accent-soft); font-size:14px; line-height:1.25; }
+    .section-title::before { content:""; width:3px; height:14px; background:var(--accent); }
+    .entry { margin-bottom:14px; break-inside:avoid; }
+    .entry:last-child { margin-bottom:0; }
+    .entry-head { display:flex; justify-content:space-between; gap:14px; align-items:baseline; }
+    .entry-title { margin:0; font-size:13.5px; font-weight:700; }
+    .entry-meta { flex:0 0 auto; color:var(--muted); font-size:12px; white-space:nowrap; }
+    .role { margin:1px 0 3px; color:#761212; font-size:12.5px; font-weight:600; }
+    .overview { margin:2px 0 5px; color:var(--muted); }
+    .project { margin:7px 0 3px; font-size:12.8px; font-weight:700; color:var(--text); }
+    .project-link { color:var(--accent); font-size:12.5px; font-weight:600; white-space:nowrap; }
+    ul { margin:0; padding-left:18px; }
+    li { margin:1px 0; color:var(--muted); }
+    li strong, .skills strong { color:var(--text); }
+    .compact-grid { display:grid; grid-template-columns:1fr 1fr; gap:5px 20px; }
+    .education-item { break-inside:avoid; }
+    .education-item p, .skills p { margin:2px 0; color:var(--muted); }
+    @page { size:A4; margin:8mm 13mm; }
     @media print {
-      body { margin: 0; }
-      a { color: inherit; }
+      body { width:auto; min-height:auto; margin:0; padding:0; }
+      a { color:inherit; }
+      .page-two-start { break-before:page; page-break-before:always; }
     }
   </style>
 </head>
@@ -91,26 +48,20 @@
       <img class="avatar" src="avatar.png" alt="王雨薇头像" width="80" height="80">
       <div>
         <h1>王雨薇</h1>
-        <div class="headline">企业级数据平台 · 平台工程 · 技术产品交付</div>
+        <div class="headline">全栈工程师 · 企业级数据与 AI 解决方案</div>
       </div>
     </div>
-    <div class="contact">
-      13962202918<br>
-      <a href="mailto:yuweiw823@outlook.com">yuweiw823@outlook.com</a><br>
-      北京
-    </div>
+    <div class="contact">13962202918<br><a href="mailto:yuweiw823@outlook.com">yuweiw823@outlook.com</a><br>北京</div>
   </header>
 
   <main>
     <section>
-      <div class="section-title-wrapper">
-          <div class="title-bar"></div>
-          <h2 class="section-title">专业概述</h2>
-      </div>
-      <ul class="section-content">
-        <li>拥有 <strong>9 年以上微软软件工程经验</strong>，具备扎实的平台工程与前端技术能力以及 SDK 开发、复杂系统集成和跨团队交付经验。</li>
-        <li>长期参与 Power BI / Microsoft Fabric、Azure Portal 及 Azure Synapse Analytics 等企业级数据云平台的核心网页端建设。</li>
-        <li>了解 LLM 与 AI Agent 的典型应用场景和技术原理；能够运用 AI 工具辅助分析、开发与验证，并应用于实际工程交付。</li>
+      <h2 class="section-title">专业概述</h2>
+      <ul>
+        <li>拥有 <strong>9 年以上微软软件工程经验</strong>，长期参与 Power BI / Microsoft Fabric、Azure Synapse Analytics 与 Azure Portal 等企业级数据云平台建设。</li>
+        <li>具备从业务需求理解、技术方案设计、平台集成到工程落地的完整能力，熟悉大型 SaaS 平台、SDK、工作负载接入、数据权限及发布体系。</li>
+        <li>担任 Microsoft Fabric 工作区模块技术负责人，长期与数据工程、湖仓、Spark、实时分析、数据科学、模型训练及 BI 等团队合作，推动不同工作负载以标准化方式接入统一平台。</li>
+        <li>能够在业务、产品和工程团队之间梳理需求、明确系统边界并推进方案交付，具备 AI Agent 原型设计及部署经验。</li>
       </ul>
     </section>
 
@@ -123,90 +74,132 @@
           <div class="entry-meta">2021.11 – 2026.07 · 北京</div>
         </div>
         <p class="role">高级软件工程师 / Senior Software Engineer</p>
+        <p class="overview">参与在 Power BI 平台基础上从 0 到 1 建设 Microsoft Fabric Shell，面向数据工程、湖仓、Spark、实时分析、数据科学、模型训练及 BI 等团队提供统一平台、标准化接入机制和开发体验。截至 2026 年 7 月，Power BI 与 Fabric 整体 MAU 约 <strong>2700 万</strong>，所负责的工作区界面 MAU 约 <strong>400 万</strong>。</p>
+
+        <h4 class="project">Microsoft Fabric 平台底座与 Extension Framework</h4>
         <ul>
-          <li><strong>平台建设：</strong>参与从零构建 Microsoft Fabric Shell 数据平台、工作区、数据开发体验，开发者 AI Copilot 等多个核心功能模块。负责用户创建、管理和访问 Fabric 项目的核心界面，<strong>整体产品 MAU 达 2700 万，工作区界面 MAU 达 400 万级别</strong>。</li>
-          <li><strong>SDK 与生态：</strong>参与构建并发布 <strong>10+ npm SDK</strong>，建立 Shell 与 iframe 工作负载的通信机制及 CI/CD 发布流程，支持 <strong>50+ Fabric 工作负载</strong>的独立集成与发布。</li>
-          <li><strong>复杂产品交付：</strong>端到端交付工作区固定与筛选、创建面板改版、实时任务状态及子文件夹同步等功能，覆盖状态管理、交互、测试与上线迭代。</li>
-          <li><strong>AI Agent 开发：</strong>参与构建 Unified Copilot Pane，覆盖会话生命周期管理、上下文状态同步、工具调用编排及流式响应链路，实现统一业务上下文感知与跨 iframe 工具调用。</li>
+          <li>担任<strong>工作区模块技术负责人</strong>，参与平台能力规划、技术方案落地及核心功能交付。</li>
+          <li>参与开发 Extension Framework，协助建设 Fabric Shell 与 iframe 工作负载之间的标准化接入机制；直接开发并维护 <strong>10+ npm SDK</strong>，框架整体支撑 <strong>50+ 工作负载</strong>独立集成与发布。</li>
+          <li>面向垂直业务团队承担技术接入和需求协调，将不同产品的业务诉求转化为可复用的平台能力，并参与平台 CI/CD 发布流程及长期演进。</li>
+        </ul>
+
+        <h4 class="project">数据开发配置与发布体验标准化</h4>
+        <ul>
+          <li>面向数据集成、湖仓、Spark、实时分析、数据科学、模型训练和 BI 等团队，梳理工作负载接入中的配置与发布需求。</li>
+          <li>负责统一配置与发布功能的设计和实现，将不同工作负载的操作流程整合为一致的平台交互与接入方案；将单个工作负载的平均接入投入从约 <strong>20 人天缩短至 5 人天以内</strong>。</li>
+        </ul>
+
+        <h4 class="project">Microsoft Fabric Developer Copilot</h4>
+        <ul>
+          <li>参与 Unified Copilot Pane 建设，负责基于 Extension Framework 的前端接入和查询交互优化。</li>
+          <li>通过 Fabric Shell 中转 Copilot 与不同 iframe 工作负载之间的交互，实现统一 Copilot 入口及跨工作负载业务上下文传递，为后续智能化场景扩展提供统一接入基础。</li>
+        </ul>
+
+        <h4 class="project">Fabric 工作区体验升级与多客户端状态同步</h4>
+        <ul>
+          <li>参与工作区统一升级，交付项目固定与筛选、创建面板改版及文件夹同步等功能。</li>
+          <li>负责多端前端状态同步，通过后端推送变更信号，按变更规模执行对象级增量刷新或工作区全量刷新，并以信号合并和请求防抖减少重复请求。</li>
+        </ul>
+
+        <h4 class="project">Fabric CDN 资源交付与故障切换</h4>
+        <ul>
+          <li>针对首次打开网页时的 CDN 入口资源加载异常，以及页面运行中的 Lazy Load 模块加载异常，分别设计并实现首屏 CDN fallback 和模块级 CDN fallback。</li>
+          <li>通过 Webpack 完成资源地址重写及构建逻辑注入；任一 fallback 触发后切换至 WFE，并采用 8 小时粘性策略保持稳定加载路径，避免用户反复等待 CDN 超时。</li>
+          <li>方案在生产环境中将 iframe <strong>首屏可用时间 P90 从 5.6 秒降低至 1.0 秒，降幅约 80%</strong>，提升平台访问的连续性和可靠性。</li>
         </ul>
       </article>
 
       <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">微软 · Azure Synapse Analytics 数据平台团队</h3>
-          <div class="entry-meta">2019.03 – 2021.11 · 北京</div>
-        </div>
+        <div class="entry-head"><h3 class="entry-title">微软 · Azure Synapse Analytics 数据平台团队</h3><div class="entry-meta">2019.03 – 2021.11 · 北京</div></div>
         <p class="role">软件工程师 II / Software Engineer II</p>
-        <ul>
-          <li>参与从零构建 Azure Synapse Analytics 在线门户，设计并实现数据库、表和存储过程对象资源管理器，以及工作区权限及 RBAC 管理界面。</li>
-        </ul>
+        <ul><li>参与从 0 到 1 建设 Azure Synapse Analytics 在线门户，负责 SQL / Spark 资源管理器及 RBAC 权限管理页面，为数据资源浏览和工作区权限管理提供统一入口。</li></ul>
       </article>
 
       <article class="entry">
-        <div class="entry-head">
-          <h3 class="entry-title">微软 · Azure Portal Shell 平台团队</h3>
-          <div class="entry-meta">2016.12 – 2019.03 · 美国雷德蒙德</div>
-        </div>
+        <div class="entry-head"><h3 class="entry-title">微软 · Azure Portal Shell 平台团队</h3><div class="entry-meta">2016.12 – 2019.03 · 美国雷德蒙德</div></div>
         <p class="role">软件工程师 II / Software Engineer II</p>
-        <ul>
-          <li>开发并维护 Azure Portal SDK 及可复用交互组件，为 <strong>150+ Azure 扩展合作团队</strong>提供 UX 技术支持与集成指导，推动门户交互一致性。</li>
-        </ul>
+        <ul><li>开发并维护 Azure Portal UI Component SDK，以可复用组件和统一界面规范支撑 <strong>150+ Azure 扩展团队</strong>构建门户应用。</li></ul>
       </article>
     </section>
 
-    <section>
+    <section class="page-two-start">
       <h2 class="section-title">个人项目</h2>
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">EvoHarness · Skills 自进化的 TypeScript Agent Runtime</h3>
+          <div class="entry-meta">2026.09</div>
+        </div>
+        <p class="role">独立项目 · Agent Runtime 与 AI 解决方案设计</p>
+        <ul>
+          <li><strong>项目定位：</strong>基于开源 Agent Runtime 项目，用 TypeScript 重写为本地 Agent 底座，统一组织模型、工具、权限、长期记忆、Skills、子 Agent、MCP 外部工具与会话状态，为领域 Agent 二次开发提供工程基础。</li>
+          <li><strong>运行架构：</strong>基于 TypeScript + Node.js 实现 Agentic Harness，兼容 OpenAI-compatible 接口；统一编排模型推理、工具调用、权限检查、结果回写和会话恢复，并集成 Plan Mode、MCP 外部工具及子 Agent。</li>
+          <li><strong>长程任务：</strong>设计 episode_memory、working_memory 与 tool_memory 三层结构化会话折叠，按上下文窗口 75% 阈值自动触发压缩，在上下文受限、工具反复失败或策略切换时保留任务进度、当前状态和工具经验，支持折叠后继续执行。</li>
+          <li><strong>Skills 自进化：</strong>通过 pending window 捕捉用户后续反馈，由 Extractor 与 Maintainer 完成候选抽取、相似检索及 add / merge / discard 决策，并记录来源、版本快照与使用统计，把稳定规则沉淀为可复用的 SKILL.md。</li>
+          <li><strong>工程验证：</strong>以 DeepSeek 真实模型完成端到端闭环验证，覆盖跨进程记忆召回、自动折叠压缩、结果持久化与子 Agent 探索等场景。</li>
+        </ul>
+      </article>
 
       <article class="entry">
         <div class="entry-head">
-          <h3 class="entry-title">FinQuery Data Agent · 金融市场自然语言问数与分析系统智能体<a class="project-link" href="https://finquery.dev/" target="_blank" rel="noopener noreferrer">（https://finquery.dev）</a></h3>
+          <h3 class="entry-title">FinQuery · 金融市场自然语言问数与分析系统 <a class="project-link" href="https://finquery.dev/" target="_blank" rel="noopener noreferrer">（finquery.dev）</a></h3>
           <div class="entry-meta">2026.08</div>
         </div>
-        <p class="role">后端开发 / AI Agent 应用</p>
+        <p class="role">独立项目 · 数据与 AI 解决方案设计</p>
         <ul>
-          <li><strong>项目定位：</strong>面向股票与主要指数日行情构建中文自然语言问数智能体，基于 Vue 3、FastAPI、LangGraph 与 DuckDB 打通用户提问、SQL 生成与执行、已有结果分析及可视化报告链路。</li>
-          <li><strong>Agent 与检索：</strong>实现直接回答、已有结果分析和数据库查询的意图路由；融合 BM25、向量检索、RRF 与重排序完成字段级 Schema 召回和关系图构建，并通过 LangGraph 中断与恢复机制支持人工澄清。</li>
-          <li><strong>数据工程：</strong>构建股票与主要指数独立增量管道，将外部 CSV 标准化为分片 Parquet；通过增量清单、完整性校验及文件压实支持每日更新，并统一注册 CSV、Parquet 文件或分片目录为只读查询视图。</li>
-          <li><strong>安全与部署：</strong>将数据库能力封装为进程内 MCP 工具，通过用户级数据权限和 DuckDB 校验限制单条只读查询及显式字段投影；使用 Docker Compose 编排独立的生产环境后端服务和 Nginx 网关，并配置密码校验、API 限流和游客日配额。</li>
+          <li><strong>业务场景：</strong>面向不熟悉 SQL、但需要分析金融市场数据的用户，设计并公开部署自然语言问数解决方案，覆盖股票、指数、ETF 及财务报表的查询、比较和可视化分析。</li>
+          <li><strong>方案设计：</strong>独立完成产品定位、用户流程及系统链路设计，并借助 AI 工具完成代码开发和工程验证。</li>
+          <li><strong>技术架构：</strong>基于 Vue 3、FastAPI、LangGraph 与 DuckDB，构建从意图识别、Schema 检索、歧义澄清、SQL 生成和安全执行到表格及图表输出的端到端方案。</li>
+          <li><strong>数据理解：</strong>融合 BM25、向量检索、RRF 与重排序筛选相关字段，并根据表关系组织 Schema 上下文，解决自然语言问题与复杂数据库结构之间的映射问题。</li>
+          <li><strong>安全交付：</strong>通过进程内 MCP 编排数据库工具，在 Schema 可见性、工具调用和 SQL 执行阶段实施用户级权限控制及单条只读查询校验；使用 Docker Compose 构建公开演示环境，并配置访问校验、API 限流和游客配额。</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">VibeKey · 三键低功耗蓝牙 / USB 小键盘</h3>
+          <div class="entry-meta">2026.08 – 至今</div>
+        </div>
+        <p class="role">个人兴趣项目 · 嵌入式软硬件开发</p>
+        <ul>
+          <li>基于 CH582F 芯片设计三键蓝牙小键盘，集成 GPIO 按键、蓝牙 HID、USB HID、USB-C 与锂电池充电模块，用于 Codex / Vibe Coding 中的 No、Yes、Yes All 快捷操作。</li>
+          <li>借助 AI 独立完成元器件选型、电路原理图设计、PCB 版图绘制、固件编译与烧录及首版 PCBA 验证；实现蓝牙搜索、配对与重连、USB 键盘识别和三个按键的正确输入，目前正通过 3D 打印优化外形，并开发配套软件界面。</li>
+        </ul>
+      </article>
+
+      <article class="entry">
+        <div class="entry-head">
+          <h3 class="entry-title">哈利·波特同人作品翻译</h3>
+          <div class="entry-meta">长期持续</div>
+        </div>
+        <p class="role">个人兴趣项目 · 英汉文学翻译与同人社区共建</p>
+        <ul>
+          <li>志愿参与中文同人社区建设，长期翻译哈利·波特英文同人作品，累计完成<strong>逾 120 万字</strong>译文；注重术语统一、人物语气与文学风格，并持续进行校对与修订。</li>
         </ul>
       </article>
     </section>
 
     <section>
-      <h2 class="section-title">认证证书</h2>
+      <h2 class="section-title">认证与专业评价</h2>
       <div class="compact-grid">
-        <div class="education-item">
-          <div class="entry-head"><strong>OceanBase OBCA 分布式数据库专员认证</strong><span class="entry-meta">2026.09</span></div>
-          <p>成绩：89 / 100</p>
-        </div>
-        <div class="education-item">
-          <div class="entry-head"><strong>数据合规与保护专业能力评价证书</strong><span class="entry-meta">2026.09</span></div>
-          <p>成绩待公布</p>
-        </div>
+        <div class="education-item"><div class="entry-head"><strong>OceanBase OBCA 分布式数据库专员认证</strong><span class="entry-meta">2026.09</span></div><p>成绩：89 / 100</p></div>
+        <div class="education-item"><div class="entry-head"><strong>数据合规与保护专业能力评价</strong><span class="entry-meta">2026.09</span></div><p>成绩待公布，待认证</p></div>
       </div>
     </section>
 
     <section>
       <h2 class="section-title">教育背景</h2>
       <div class="compact-grid">
-        <div class="education-item">
-          <div class="entry-head"><strong>华盛顿大学</strong><span class="entry-meta">2013.09 – 2015.06</span></div>
-          <p class="entry-head"><span>工业与系统工程 · 硕士</span><span class="entry-meta">美国西雅图</span></p>
-        </div>
-        <div class="education-item">
-          <div class="entry-head"><strong>南开大学</strong><span class="entry-meta">2009.09 – 2013.06</span></div>
-          <p class="entry-head"><span>工业工程 · 学士</span><span class="entry-meta">天津</span></p>
-        </div>
+        <div class="education-item"><div class="entry-head"><strong>华盛顿大学</strong><span class="entry-meta">2013.09 – 2015.06</span></div><p class="entry-head"><span>工业与系统工程 · 硕士</span><span class="entry-meta">美国西雅图</span></p></div>
+        <div class="education-item"><div class="entry-head"><strong>南开大学</strong><span class="entry-meta">2009.09 – 2013.06</span></div><p class="entry-head"><span>工业工程 · 学士</span><span class="entry-meta">天津</span></p></div>
       </div>
     </section>
 
     <section class="skills">
       <h2 class="section-title">专业技能</h2>
-      <p><strong>企业级前端与平台工程：</strong>TypeScript、HTML/CSS、Angular；RxJS、NgRx；iframe 微前端、Shell 与 SDK 集成</p>
-      <p><strong>数据查询与检索：</strong>Python、FastAPI、SQL、DuckDB</p>
-      <p><strong>AI Agent 与 LLM 应用：</strong>意图路由、人工澄清、会话与上下文管理、工具调用 / MCP、流式响应</p>
-      <p><strong>工程质量与协作：</strong>Git、Playwright、Docker、CI/CD；跨团队平台交付与中英文技术沟通</p>
-      <p><strong>个人兴趣与爱好：</strong>个人硬件开发、PCB 设计与 3D 打印；哈利波特英文同人作品翻译（逾百万字）</p>
+      <p><strong>企业级平台与解决方案：</strong>大型 SaaS 平台、数据平台门户、工作区、Extension Framework、SDK 与工作负载集成</p>
+      <p><strong>业务与技术衔接：</strong>需求理解、流程梳理、方案拆解、技术接入、跨团队协调、PoC 与演示环境建设、中英文技术沟通</p>
+      <p><strong>数据与 AI 架构：</strong>自然语言问数、Schema 检索、SQL、DuckDB、LangGraph、MCP、人工澄清与上下文管理</p>
+      <p><strong>全栈开发：</strong>TypeScript、JavaScript、Angular、Python、FastAPI、HTML/CSS、Git、Docker、CI/CD</p>
     </section>
   </main>
 </body>
