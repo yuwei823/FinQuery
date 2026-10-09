@@ -1,0 +1,1730 @@
+<!doctype html>
+<html lang="zh-CN">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta name="description" content="认识 FinQuery Studio：用中文提问，查询金融数据，并生成可追溯的表格、图表与分析报告。">
+  <title>认识 FinQuery Studio · 金融数据，从一个问题开始</title>
+  <style>
+    :root {
+      --ink: #17221c;
+      --muted: #7b6f6a;
+      --brand: #7a3b32;
+      --dark: #351b18;
+      --soft: #f5e8e5;
+      --line: #e6e9e5;
+      --paper: #fbfcfa;
+      --sidebar: #edf0ed;
+      --sans: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
+      --serif: Georgia, "Noto Serif SC", serif
+    }
+
+    * {
+      box-sizing: border-box
+    }
+
+    html {
+      scroll-behavior: smooth;
+      scroll-padding-top: 96px
+    }
+
+    body {
+      margin: 0;
+      color: var(--ink);
+      background: var(--paper);
+      font: 15px/1.8 var(--sans)
+    }
+
+    button,
+    a {
+      -webkit-tap-highlight-color: transparent
+    }
+
+    button {
+      font: inherit;
+      cursor: pointer
+    }
+
+    a {
+      color: inherit;
+      text-decoration: none
+    }
+
+    button:focus-visible,
+    a:focus-visible,
+    summary:focus-visible {
+      outline: 3px solid #c18476;
+      outline-offset: 5px
+    }
+
+    p,
+    h1,
+    h2,
+    h3 {
+      margin-top: 0
+    }
+
+    p {
+      color: var(--muted)
+    }
+
+    h2 {
+      font-size: clamp(27px, 3vw, 39px);
+      line-height: 1.4;
+      letter-spacing: -1px;
+      margin-bottom: 16px
+    }
+
+    h3 {
+      font-size: 18px;
+      line-height: 1.5;
+      margin-bottom: 10px
+    }
+
+    .wrap {
+      width: min(1160px, calc(100% - 64px));
+      margin: auto
+    }
+
+    .top {
+      position: sticky;
+      top: 0;
+      z-index: 20;
+      border-bottom: 1px solid var(--line);
+      background: rgba(251, 252, 250, .96);
+      backdrop-filter: blur(14px)
+    }
+
+    .nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 22px;
+      min-height: 76px
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 11px;
+      font-size: 18px;
+      font-weight: 700;
+      white-space: nowrap
+    }
+
+    .mark {
+      display: grid;
+      place-items: center;
+      width: 42px;
+      height: 42px;
+      border: 1px solid #eedbd7;
+      border-radius: 10px;
+      color: #4b231f;
+      background: #fbf5f3;
+      font-size: 14px;
+      letter-spacing: -.5px
+    }
+
+    .brand small {
+      font-size: 11px;
+      font-weight: 400;
+      letter-spacing: 1px;
+      color: var(--muted);
+      display: block;
+      line-height: 1.3
+    }
+
+    .links {
+      display: flex;
+      gap: 25px;
+      font-size: 13px;
+      color: #5d504c
+    }
+
+    .links a {
+      padding: 8px 0;
+      position: relative
+    }
+
+    .links a:hover,
+    .links a[aria-current] {
+      color: var(--brand)
+    }
+
+    .links a[aria-current]:after {
+      content: "";
+      position: absolute;
+      bottom: 1px;
+      left: 0;
+      right: 0;
+      height: 2px;
+      background: var(--brand)
+    }
+
+    .progress {
+      position: absolute;
+      bottom: -1px;
+      height: 2px;
+      background: var(--brand);
+      width: 0
+    }
+
+    .hero {
+      position: relative;
+      overflow: hidden;
+      background: linear-gradient(130deg, #351b18, #4b231f 65%, #7a3b32);
+      color: #fbf5f3
+    }
+
+    .hero:after,
+    .hero:before {
+      content: "";
+      position: absolute;
+      border: 1px solid #ffffff12;
+      border-radius: 50%;
+      width: 620px;
+      height: 620px;
+      right: -190px;
+      top: -140px;
+      pointer-events: none
+    }
+
+    .hero:after {
+      width: 440px;
+      height: 440px;
+      right: -100px;
+      top: -50px
+    }
+
+    .hero-grid {
+      display: grid;
+      grid-template-columns: 1.06fr 1fr;
+      gap: 62px;
+      padding: 85px 0 76px;
+      align-items: center;
+      position: relative;
+      z-index: 1
+    }
+
+    .eyebrow {
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 2px;
+      text-transform: uppercase;
+      color: var(--brand);
+      margin-bottom: 20px
+    }
+
+    .hero .eyebrow {
+      color: #d8ada4;
+      display: flex;
+      align-items: center;
+      gap: 12px
+    }
+
+    .eyebrow:before {
+      content: "";
+      display: inline-block;
+      width: 22px;
+      height: 1px;
+      background: currentColor;
+      vertical-align: middle;
+      margin-right: 9px
+    }
+
+    .hero .eyebrow:before {
+      margin: 0
+    }
+
+    .hero h1 {
+      font-size: clamp(38px, 4.2vw, 58px);
+      line-height: 1.28;
+      letter-spacing: -2px;
+      font-weight: 500;
+      margin-bottom: 24px
+    }
+
+    .hero h1 em {
+      font-style: normal;
+      color: #d8ada4
+    }
+
+    .hero p {
+      color: #e7cbc5;
+      max-width: 465px;
+      line-height: 1.95
+    }
+
+    .hero-actions {
+      display: flex;
+      gap: 12px;
+      margin-top: 30px;
+      align-items: center
+    }
+
+    .btn {
+      display: inline-flex;
+      justify-content: center;
+      align-items: center;
+      gap: 18px;
+      border: 1px solid var(--line);
+      border-radius: 9px;
+      padding: 11px 20px;
+      background: white;
+      font-size: 13px;
+      font-weight: 600;
+      transition: transform .2s, box-shadow .2s
+    }
+
+    .btn:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 7px 20px #00000012
+    }
+
+    .hero .btn {
+      background: #fbf5f3;
+      color: #4b231f;
+      border-color: #fbf5f3
+    }
+
+    .hero .quiet {
+      background: transparent;
+      color: #e7cbc5;
+      border-color: #ffffff30
+    }
+
+    .hero-note {
+      margin-top: 25px;
+      font-size: 11px;
+      color: #d8ada4;
+      letter-spacing: .4px
+    }
+
+    .preview {
+      background: var(--paper);
+      border: 1px solid #e7cbc5;
+      border-radius: 15px;
+      box-shadow: 0 30px 60px #180b0a45;
+      overflow: hidden;
+      color: var(--ink);
+      transform: rotate(1deg)
+    }
+
+    .preview-head {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 14px 18px;
+      border-bottom: 1px solid var(--line);
+      font-size: 12px
+    }
+
+    .pill {
+      font-size: 10px;
+      letter-spacing: .5px;
+      padding: 3px 9px;
+      background: var(--soft);
+      color: var(--brand);
+      border-radius: 99px;
+      white-space: nowrap
+    }
+
+    .preview-body {
+      padding: 23px
+    }
+
+    .bubble {
+      padding: 12px 15px;
+      border-radius: 10px;
+      background: var(--soft);
+      margin: 0 0 22px 22px;
+      font-size: 13px;
+      color: #4b231f
+    }
+
+    .preview-label {
+      font-size: 10px;
+      color: var(--muted);
+      letter-spacing: 1px
+    }
+
+    .preview h3 {
+      font-size: 16px;
+      margin: 8px 0 15px
+    }
+
+    .chart {
+      height: 134px;
+      display: flex;
+      gap: 17px;
+      align-items: flex-end;
+      padding: 8px 15px 0;
+      border-bottom: 1px solid var(--line);
+      background: repeating-linear-gradient(to top, transparent 0, transparent 32px, #edf0ed 33px, #edf0ed 34px)
+    }
+
+    .bar {
+      flex: 1;
+      height: var(--h);
+      background: #a96558;
+      border-radius: 4px 4px 0 0;
+      transform-origin: bottom;
+      animation: grow 1.2s cubic-bezier(.2, .8, .2, 1) both;
+      animation-delay: var(--delay)
+    }
+
+    .bar:nth-child(2n) {
+      background: #d8ada4
+    }
+
+    .chart-labels {
+      display: flex;
+      justify-content: space-around;
+      font-size: 10px;
+      color: var(--muted);
+      margin-top: 6px
+    }
+
+    .preview .preview-foot {
+      border-top: 1px solid var(--line);
+      margin-top: 20px;
+      padding-top: 12px;
+      font-size: 11px;
+      color: var(--muted);
+      display: flex;
+      justify-content: space-between
+    }
+
+    .intro-strip {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      padding: 25px 0;
+      gap: 32px;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .intro-strip div {
+      display: flex;
+      gap: 13px;
+      align-items: center
+    }
+
+    .intro-strip b {
+      color: var(--brand);
+      font-family: var(--serif);
+      font-size: 29px;
+      font-weight: 400
+    }
+
+    .intro-strip span {
+      font-size: 12px;
+      color: var(--muted)
+    }
+
+    .intro-strip strong {
+      display: block;
+      font-size: 14px;
+      color: var(--ink)
+    }
+
+    section.content {
+      padding: 80px 0;
+      border-bottom: 1px solid var(--line)
+    }
+
+    .section-top {
+      display: flex;
+      gap: 50px;
+      justify-content: space-between;
+      align-items: flex-end;
+      margin-bottom: 34px
+    }
+
+    .section-top>div {
+      max-width: 620px
+    }
+
+    .section-top p {
+      margin-bottom: 0
+    }
+
+    .section-index {
+      font: italic 56px var(--serif);
+      color: #e7cbc5;
+      line-height: 1
+    }
+
+    .grid3 {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 18px
+    }
+
+    .card {
+      padding: 27px;
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: white;
+      transition: border-color .25s, transform .25s, box-shadow .25s
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      border-color: #d8ada4;
+      box-shadow: 0 12px 28px #22392d08
+    }
+
+    .card p {
+      font-size: 13px;
+      margin-bottom: 0
+    }
+
+    .icon {
+      display: grid;
+      place-items: center;
+      width: 37px;
+      height: 37px;
+      background: #fbf5f3;
+      border: 1px solid #eedbd7;
+      border-radius: 9px;
+      color: var(--brand);
+      font: 19px var(--serif);
+      margin-bottom: 23px
+    }
+
+    .example {
+      margin-top: 22px;
+      padding-top: 15px;
+      border-top: 1px solid var(--line);
+      font-size: 12px;
+      color: var(--brand)
+    }
+
+    .demo-layout {
+      display: grid;
+      grid-template-columns: 300px 1fr;
+      min-height: 400px;
+      border: 1px solid #eedbd7;
+      border-radius: 14px;
+      overflow: hidden;
+      background: white
+    }
+
+    .demo-side {
+      background: var(--sidebar);
+      padding: 27px
+    }
+
+    .demo-side .eyebrow {
+      font-size: 10px;
+      margin-bottom: 12px
+    }
+
+    .scenario {
+      display: block;
+      width: 100%;
+      text-align: left;
+      padding: 13px 14px;
+      margin-top: 10px;
+      background: transparent;
+      border: 1px solid transparent;
+      border-radius: 9px;
+      color: #5d504c;
+      font-size: 13px
+    }
+
+    .scenario.active {
+      background: white;
+      border-color: #d8ada4;
+      color: var(--brand);
+      box-shadow: 0 3px 10px #22392d06
+    }
+
+    .scenario span {
+      display: block;
+      color: var(--muted);
+      font-size: 11px;
+      margin-top: 3px
+    }
+
+    .demo-side p {
+      font-size: 11px;
+      margin-top: 28px
+    }
+
+    .demo-main {
+      padding: 30px 34px;
+      min-width: 0
+    }
+
+    .demo-heading {
+      display: flex;
+      justify-content: space-between;
+      gap: 20px;
+      align-items: center;
+      font-size: 11px;
+      color: var(--muted);
+      margin-bottom: 20px
+    }
+
+    .question {
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+      margin-bottom: 24px
+    }
+
+    .demo-steps {
+      display: flex;
+      gap: 7px;
+      flex-wrap: wrap;
+      margin-bottom: 20px
+    }
+
+    .demo-steps span {
+      padding: 5px 10px;
+      border: 1px solid var(--line);
+      border-radius: 6px;
+      font-size: 11px;
+      color: var(--muted);
+      transition: background .25s, color .25s
+    }
+
+    .demo-steps span.on {
+      background: var(--soft);
+      border-color: #e7cbc5;
+      color: var(--brand)
+    }
+
+    .demo-result {
+      padding: 20px;
+      background: #fbf5f3;
+      border: 1px solid #eedbd7;
+      border-radius: 9px;
+      min-height: 120px
+    }
+
+    .demo-result b {
+      font-size: 15px
+    }
+
+    .demo-result p {
+      font-size: 13px;
+      margin: 7px 0 0
+    }
+
+    .demo-result small {
+      display: block;
+      margin-top: 10px;
+      color: var(--brand);
+      font-size: 11px
+    }
+
+    .demo-result.flash {
+      animation: appear .4s both
+    }
+
+    .demo-actions {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      margin-top: 20px
+    }
+
+    .demo-actions .btn {
+      background: var(--brand);
+      color: white;
+      border-color: var(--brand);
+      padding: 9px 17px
+    }
+
+    .demo-actions span {
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .btn:disabled {
+      opacity: .6;
+      cursor: wait
+    }
+
+    .data-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 16px
+    }
+
+    .data-card {
+      padding: 24px 21px;
+      background: white;
+      border: 1px solid var(--line);
+      border-radius: 10px
+    }
+
+    .data-card code {
+      font-size: 10px;
+      word-break: break-all;
+      color: var(--brand)
+    }
+
+    .data-card h3 {
+      margin: 14px 0 9px;
+      font-size: 17px
+    }
+
+    .data-card p {
+      font-size: 12px;
+      min-height: 66px;
+      margin-bottom: 15px
+    }
+
+    .data-card .tag {
+      font-size: 10px;
+      color: #5d504c;
+      border-top: 1px solid var(--line);
+      padding-top: 12px
+    }
+
+    .note {
+      font-size: 12px;
+      color: var(--muted);
+      margin: 18px 0 0
+    }
+
+    .pipeline {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      margin-top: 24px;
+      padding: 20px;
+      background: var(--sidebar);
+      border-radius: 10px;
+      gap: 16px;
+      font-size: 12px
+    }
+
+    .pipeline b {
+      display: block;
+      font-size: 13px
+    }
+
+    .pipeline span {
+      color: var(--muted)
+    }
+
+    .flow-board {
+      border: 1px solid var(--line);
+      border-radius: 14px;
+      background: white;
+      padding: 30px
+    }
+
+    .flow-entry {
+      text-align: center;
+      max-width: 440px;
+      margin: 0 auto 27px;
+      padding: 15px;
+      background: #fbf5f3;
+      border: 1px solid #eedbd7;
+      border-radius: 10px
+    }
+
+    .flow-entry small {
+      font-size: 10px;
+      letter-spacing: 1px;
+      color: var(--brand);
+      display: block
+    }
+
+    .routes {
+      display: grid;
+      grid-template-columns: 1fr 1.7fr 1fr;
+      gap: 18px;
+      position: relative
+    }
+
+    .route {
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      padding: 22px;
+      background: var(--paper)
+    }
+
+    .route.main {
+      border-color: #d8ada4;
+      background: #fbf5f3
+    }
+
+    .route>small {
+      color: var(--brand);
+      font-size: 10px
+    }
+
+    .route h3 {
+      font-size: 16px;
+      margin-top: 7px
+    }
+
+    .route p {
+      font-size: 12px;
+      margin-bottom: 0
+    }
+
+    .flow-step {
+      display: flex;
+      gap: 13px;
+      margin-top: 15px;
+      align-items: flex-start
+    }
+
+    .flow-step i {
+      font-style: normal;
+      flex-shrink: 0;
+      display: grid;
+      place-items: center;
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background: white;
+      border: 1px solid #e7cbc5;
+      font-size: 11px;
+      color: var(--brand)
+    }
+
+    .flow-step strong {
+      font-size: 12px;
+      display: block
+    }
+
+    .flow-step span {
+      font-size: 11px;
+      color: var(--muted);
+      display: block
+    }
+
+    .flow-aside {
+      border-left: 2px solid #d8ada4;
+      padding: 0 0 0 12px;
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    .architecture {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-top: 20px
+    }
+
+    .architecture div {
+      border-top: 2px solid #e7cbc5;
+      padding-top: 16px
+    }
+
+    .architecture b {
+      font-size: 13px
+    }
+
+    .architecture p {
+      font-size: 12px;
+      margin: 5px 0 0
+    }
+
+    .trust {
+      margin-top: 35px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 25px
+    }
+
+    .trust h3 {
+      font-size: 15px
+    }
+
+    .trust p {
+      font-size: 12px;
+      margin: 0
+    }
+
+    .scale {
+      background: #f5f0ed
+    }
+
+    .scale .section-index {
+      color: #d8ada4
+    }
+
+    .scale-intro {
+      padding: 20px 24px;
+      border-left: 3px solid var(--brand);
+      background: #ffffff80;
+      margin-bottom: 28px;
+      font-size: 13px;
+      color: #5d504c
+    }
+
+    .scale-list {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px
+    }
+
+    .scale-item {
+      background: #fff;
+      border: 1px solid #e6ded8;
+      border-radius: 11px;
+      padding: 25px
+    }
+
+    .scale-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 13px
+    }
+
+    .scale-top span {
+      font: 23px var(--serif);
+      color: #a96558
+    }
+
+    .scale-top small {
+      font-size: 10px;
+      color: var(--brand);
+      border-radius: 30px;
+      background: var(--soft);
+      padding: 3px 9px
+    }
+
+    .scale-item h3 {
+      font-size: 18px
+    }
+
+    .scale-item p {
+      font-size: 12px;
+      margin: 9px 0
+    }
+
+    .scale-item p b {
+      color: #39463f;
+      font-weight: 600
+    }
+
+    .success {
+      margin-top: 15px;
+      border-top: 1px solid var(--line);
+      padding-top: 12px;
+      color: var(--brand);
+      font-size: 11px
+    }
+
+    .closing {
+      padding: 52px 0;
+      display: flex;
+      justify-content: space-between;
+      gap: 35px;
+      align-items: center
+    }
+
+    .closing h2 {
+      font-size: 26px;
+      margin-bottom: 7px
+    }
+
+    .closing p {
+      font-size: 13px;
+      margin: 0
+    }
+
+    .closing .btn {
+      color: var(--brand);
+      white-space: nowrap
+    }
+
+    footer {
+      border-top: 1px solid var(--line);
+      padding: 25px 0 35px;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    footer .wrap {
+      display: flex;
+      justify-content: space-between;
+      gap: 30px
+    }
+
+    details {
+      margin-top: 18px;
+      font-size: 11px;
+      color: var(--muted)
+    }
+
+    summary {
+      cursor: pointer;
+      color: var(--brand)
+    }
+
+    .sources {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px 22px;
+      margin-top: 12px
+    }
+
+    .sources code {
+      overflow-wrap: anywhere;
+      font-size: 10px;
+      color: #5d504c
+    }
+
+    .reveal {
+      opacity: 1
+    }
+
+    .motion .reveal {
+      opacity: 0;
+      transform: translateY(20px);
+      transition: opacity .65s, transform .65s
+    }
+
+    .motion .reveal.visible {
+      opacity: 1;
+      transform: none
+    }
+
+    @keyframes grow {
+      from {
+        transform: scaleY(0)
+      }
+
+      to {
+        transform: scaleY(1)
+      }
+    }
+
+    @keyframes appear {
+      from {
+        opacity: .4;
+        transform: translateY(7px)
+      }
+
+      to {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @media(min-width:900px) {
+      .hero .preview {
+        animation: appear .85s .12s both
+      }
+
+      .hero-copy {
+        animation: appear .7s both
+      }
+    }
+
+    @media(max-width:900px) {
+      .hero-grid {
+        gap: 30px;
+        padding: 55px 0
+      }
+
+      .hero h1 {
+        font-size: 40px
+      }
+
+      .data-grid {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .data-card p {
+        min-height: 0
+      }
+
+      .demo-layout {
+        grid-template-columns: 240px 1fr
+      }
+
+      .links {
+        gap: 15px
+      }
+
+      .brand small {
+        display: none
+      }
+
+      .routes {
+        grid-template-columns: 1fr
+      }
+
+      .route.main {
+        order: -1
+      }
+
+      .grid3 {
+        gap: 12px
+      }
+
+      .card {
+        padding: 21px
+      }
+
+      .intro-strip {
+        gap: 20px
+      }
+    }
+
+    @media(max-width:640px) {
+      .wrap {
+        width: calc(100% - 36px)
+      }
+
+      .nav {
+        min-height: 70px;
+        gap: 10px;
+        flex-wrap: wrap;
+        padding: 12px 0
+      }
+
+      .brand {
+        font-size: 16px
+      }
+
+      .mark {
+        width: 34px;
+        height: 34px;
+        font-size: 11px
+      }
+
+      .links {
+        width: 100%;
+        justify-content: space-between;
+        gap: 8px;
+        font-size: 11px
+      }
+
+      .hero-grid {
+        grid-template-columns: 1fr;
+        padding: 45px 0;
+        gap: 34px
+      }
+
+      .hero h1 {
+        font-size: 40px
+      }
+
+      .hero p {
+        font-size: 13px
+      }
+
+      .preview {
+        transform: none
+      }
+
+      .hero-note {
+        font-size: 10px
+      }
+
+      .intro-strip {
+        grid-template-columns: 1fr;
+        gap: 17px;
+        padding: 23px 0
+      }
+
+      .intro-strip b {
+        min-width: 42px
+      }
+
+      .intro-strip strong {
+        display: inline;
+        margin-right: 10px
+      }
+
+      .grid3,
+      .scale-list,
+      .trust {
+        grid-template-columns: 1fr
+      }
+
+      .section-top {
+        gap: 15px
+      }
+
+      .section-index {
+        font-size: 42px
+      }
+
+      .section-top p {
+        font-size: 13px
+      }
+
+      section.content {
+        padding: 52px 0
+      }
+
+      .demo-layout {
+        grid-template-columns: 1fr
+      }
+
+      .demo-side {
+        padding: 21px
+      }
+
+      .demo-side p {
+        margin: 12px 0 0
+      }
+
+      .scenario {
+        padding: 10px;
+        margin-top: 5px
+      }
+
+      .scenario span {
+        display: none
+      }
+
+      .demo-main {
+        padding: 24px 20px
+      }
+
+      .demo-actions {
+        align-items: flex-start;
+        flex-direction: column;
+        gap: 9px
+      }
+
+      .data-grid {
+        gap: 10px
+      }
+
+      .data-card {
+        padding: 19px 15px
+      }
+
+      .data-card code {
+        font-size: 9px
+      }
+
+      .pipeline {
+        grid-template-columns: 1fr 1fr
+      }
+
+      .architecture {
+        grid-template-columns: 1fr
+      }
+
+      .flow-board {
+        padding: 20px
+      }
+
+      .closing {
+        align-items: flex-start;
+        flex-direction: column;
+        padding: 35px 0
+      }
+
+      footer .wrap {
+        flex-direction: column;
+        gap: 6px
+      }
+
+      .sources {
+        grid-template-columns: 1fr
+      }
+
+      .hero-actions .btn {
+        padding: 10px 15px
+      }
+    }
+
+    @media(prefers-reduced-motion:reduce) {
+      html {
+        scroll-behavior: auto
+      }
+
+      *,
+      *:before,
+      *:after {
+        animation: none !important;
+        transition: none !important
+      }
+
+      .motion .reveal {
+        opacity: 1;
+        transform: none
+      }
+    }
+
+    @media print {
+
+      .top,
+      .hero-actions,
+      .demo-actions,
+      .scenario,
+      .closing .btn,
+      .progress {
+        display: none
+      }
+
+      html {
+        scroll-behavior: auto
+      }
+
+      .wrap {
+        width: 100%
+      }
+
+      .hero {
+        background: #fff;
+        color: var(--ink)
+      }
+
+      .hero p,
+      .hero .eyebrow,
+      .hero h1 em,
+      .hero-note {
+        color: var(--brand)
+      }
+
+      .hero-grid {
+        padding: 20px 0
+      }
+
+      .hero:after,
+      .hero:before {
+        display: none
+      }
+
+      .preview {
+        box-shadow: none;
+        transform: none
+      }
+
+      .motion .reveal {
+        opacity: 1;
+        transform: none
+      }
+
+      section.content {
+        padding: 28px 0
+      }
+
+      .card,
+      .scale-item,
+      .data-card,
+      .route {
+        break-inside: avoid
+      }
+
+      .scale {
+        background: white
+      }
+
+      .section-index {
+        font-size: 35px
+      }
+
+      h2 {
+        font-size: 25px
+      }
+
+      body {
+        font-size: 12px
+      }
+
+      .demo-side {
+        display: none
+      }
+
+      .demo-layout {
+        grid-template-columns: 1fr
+      }
+
+      footer {
+        padding: 15px 0
+      }
+    }
+  
+    /* Alibaba Cloud mapping: reuse existing brand tokens and reveal motion. */
+    .cloud-products{display:flex;flex-wrap:wrap;gap:6px;margin:14px 0 17px}
+    .cloud-products span{padding:4px 9px;border:1px solid #eedbd7;border-radius:6px;background:#fbf5f3;font-size:11px;color:var(--brand)}
+    .cloud-detail{margin:14px 0 0;padding:12px 0;border-top:1px dashed #e6ded8}
+    .cloud-detail summary{font-size:12px;font-weight:600}
+    .cloud-detail p{margin:12px 0 0}
+    .cloud-references{display:flex;flex-wrap:wrap;gap:8px 15px;margin-top:15px}
+    .cloud-references a{font-size:11px;color:var(--brand);text-decoration:underline;text-underline-offset:3px;overflow-wrap:anywhere}
+    .cloud-references a:hover{color:var(--dark)}
+    .cloud-gap{padding:25px;margin-top:25px;border:1px solid #d8ada4;border-left:3px solid var(--brand);border-radius:9px;background:#fbf5f3}
+    .cloud-gap p,.cloud-gap li,.cloud-phases li{font-size:12px;color:#5d504c}
+    .cloud-gap ul,.cloud-phases ol{padding-left:20px;margin:12px 0 0}.cloud-gap li,.cloud-phases li{margin:8px 0}
+    .cloud-phases{padding:27px 0 5px}.cloud-phases h3{margin-bottom:15px}
+    @media(max-width:640px){.cloud-gap{padding:20px}.cloud-products span{font-size:10px}.scale-top small{white-space:normal;text-align:right}}
+    @media print{.cloud-detail>p{display:block!important}.cloud-detail{content-visibility:visible}.cloud-gap{break-inside:avoid}.cloud-references a{font-size:9px}}
+
+  </style>
+</head>
+
+<body>
+  <header class="top">
+    <div class="wrap nav"><a class="brand" href="#home" aria-label="FinQuery Studio 返回顶部"><span
+          class="mark">FinQ</span><span>FinQuery<small>STUDIO / PROJECT INTRODUCTION</small></span></a>
+      <nav class="links" aria-label="页面导航"><a href="#overview">项目概览</a><a href="#experience">体验方式</a><a
+          href="#data">数据范围</a><a href="#how">如何工作</a><a href="#scale">Scale Up</a></nav>
+    </div>
+    <div class="progress" aria-hidden="true"></div>
+  </header>
+  <main>
+    <section class="hero" id="home">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <div class="eyebrow">AI DATA ASSISTANT</div>
+          <h1>用自然语言，<br>读懂<em>金融数据。</em></h1>
+          <p>FinQuery Studio 是一个中文金融数据分析应用。把你想了解的问题写下来，它会查找相关数据、执行查询，再把结果整理成表格、图表或分析报告。</p>
+          <div class="hero-actions"><a class="btn" target="_blank" href="https://finquery.dev/">亲手问数 <span>↗</span></a><a
+              class="btn quiet" href="#scale">探索提升方向 <span>↓</span></a></div>
+          <div class="hero-note">中文提问 · 真实数据查询 · 可查看 SQL · 连续分析</div>
+        </div>
+        <div class="preview" aria-label="FinQuery 交互示意，图形不代表真实行情">
+          <div class="preview-head"><strong>FinQuery Studio</strong><span class="pill">交互示意</span></div>
+          <div class="preview-body">
+            <div class="bubble">比较几只 ETF 的成交额，并绘制柱状图。</div>
+            <div class="preview-label">QUERY → DATA → INSIGHT</div>
+            <h3>从一个问题，到一份可读的结果</h3>
+            <div class="chart" aria-hidden="true">
+              <div class="bar" style="--h:52%;--delay:.1s"></div>
+              <div class="bar" style="--h:78%;--delay:.2s"></div>
+              <div class="bar" style="--h:63%;--delay:.3s"></div>
+              <div class="bar" style="--h:95%;--delay:.4s"></div>
+              <div class="bar" style="--h:72%;--delay:.5s"></div>
+            </div>
+            <div class="chart-labels" aria-hidden="true"><span>ETF A</span><span>ETF B</span><span>ETF C</span><span>ETF
+                D</span><span>ETF E</span></div>
+            <div class="preview-foot"><span>表格 / 图表 / 文字解读</span><span>示意图 · 非真实行情</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <div class="wrap intro-strip">
+      <div><b>01</b><span><strong>用业务语言提问</strong>从“想知道什么”开始</span></div>
+      <div><b>02</b><span><strong>让查询过程可见</strong>查看处理进度与生成的 SQL</span></div>
+      <div><b>03</b><span><strong>围绕结果继续分析</strong>追问、作图、整理报告</span></div>
+    </div>
+    <section class="content" id="overview">
+      <div class="wrap">
+        <div class="section-top reveal">
+          <div>
+            <div class="eyebrow">THE IDEA</div>
+            <h2>把查数与分析，放进同一段对话。</h2>
+            <p>金融数据分散在不同表中，往往需要先找字段、写查询，再做图表。FinQuery 将这些步骤连接起来，让分析者用中文表达需求，并保留查看查询依据的入口。</p>
+          </div><span class="section-index" aria-hidden="true">01</span>
+        </div>
+        <div class="grid3">
+          <article class="card reveal">
+            <div class="icon">问</div>
+            <h3>快速找到想看的数据</h3>
+            <p>面向行情研究者和业务分析者，支持筛选、排名、汇总与趋势查询。无需先掌握数据表名和 SQL 语法。</p>
+            <div class="example">例如：某个交易日，涨幅最大的股票有哪些？</div>
+          </article>
+          <article class="card reveal">
+            <div class="icon">析</div>
+            <h3>让结果变得容易理解</h3>
+            <p>基于查询结果继续提问，生成文字解读与图表。也可以在一次提问中同时要求查询和绘图。</p>
+            <div class="example">例如：把这份结果画成图，并解释主要差异。</div>
+          </article>
+          <article class="card reveal">
+            <div class="icon">存</div>
+            <h3>保留可复用的分析素材</h3>
+            <p>收藏结果表和常用字段，将历史结果加入工作区，为后续分析提供上下文；表格可导出，报告可保存为 Markdown 或通过打印保存 PDF。</p>
+            <div class="example">例如：结合已收藏的结果，整理一份分析报告。</div>
+          </article>
+        </div>
+      </div>
+    </section>
+    <section class="content" id="experience">
+      <div class="wrap">
+        <div class="section-top reveal">
+          <div>
+            <div class="eyebrow">A SMALL WALKTHROUGH</div>
+            <h2>你提问，系统把过程展开。</h2>
+            <p>选择一种场景，看看问题会怎样被处理。下方是本地交互演示，不会调用模型或查询数据库。</p>
+          </div><span class="section-index" aria-hidden="true">02</span>
+        </div>
+        <div class="demo-layout reveal">
+          <div class="demo-side">
+            <div class="eyebrow">选择一个场景</div><button class="scenario active" data-case="0"
+              aria-pressed="true">01　查询新数据<span>筛选、排序、返回结果表</span></button><button class="scenario" data-case="1"
+              aria-pressed="false">02　查询并生成图表<span>从日线数据到走势展示</span></button><button class="scenario" data-case="2"
+              aria-pressed="false">03　分析已有结果<span>延续上下文，整理报告</span></button>
+            <p>实际查询需要已接入的数据、相应权限与可用的模型服务。</p>
+          </div>
+          <div class="demo-main">
+            <div class="demo-heading"><span>YOU → FINQUERY</span><span class="pill">流程演示</span></div>
+            <div class="question" id="demo-question">查询 2026 年 9 月 1 日 A 股涨幅最大的 20 只股票。</div>
+            <div class="demo-steps" id="demo-steps"><span class="on">理解问题</span><span class="on">查找字段</span><span
+                class="on">执行查询</span><span class="on">呈现结果</span></div>
+            <div class="demo-result" id="demo-result" aria-live="polite"><b>得到一张可检查的结果表</b>
+              <p>系统按交易日筛选，依据收盘价与前收盘价计算涨幅，再排序返回股票和相关指标。</p><small>可以查看 SQL、收藏结果，并继续追问。</small>
+            </div>
+            <div class="demo-actions"><button class="btn" id="play">播放处理过程 <span
+                  aria-hidden="true">→</span></button><span id="demo-status" role="status">点击播放，逐步了解系统的处理方式</span></div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="content" id="data">
+      <div class="wrap">
+        <div class="section-top reveal">
+          <div>
+            <div class="eyebrow">DATA FOUNDATION</div>
+            <h2>从金融市场数据出发。</h2>
+            <p>当前注册的 trade_data 数据库包含四类表。原始文件经数据管道整理成适合分析的 Parquet 文件，再由查询引擎读取。</p>
+          </div><span class="section-index" aria-hidden="true">03</span>
+        </div>
+        <div class="data-grid reveal">
+          <article class="data-card"><code>stock_daily</code>
+            <h3>股票日行情</h3>
+            <p>价格、成交量与成交额、市值、资金流、行业分类及部分财务快照。</p>
+            <div class="tag">适合：股票筛选 / 行业比较</div>
+          </article>
+          <article class="data-card"><code>index_daily</code>
+            <h3>主要指数日行情</h3>
+            <p>上证指数、沪深 300 等指数的开高低收、成交量与成交额。</p>
+            <div class="tag">适合：指数走势 / 时段比较</div>
+          </article>
+          <article class="data-card"><code>stock_etf_trading_data</code>
+            <h3>ETF 基金日行情</h3>
+            <p>价格、成交、净值、复权因子、基金分类及基金份额。</p>
+            <div class="tag">适合：ETF 对比 / 分类分析</div>
+          </article>
+          <article class="data-card"><code>financial_statement</code>
+            <h3>股票财务报表</h3>
+            <p>资产负债、利润与现金流核心指标，按报告期和披露日期记录。</p>
+            <div class="tag">适合：财务指标 / 披露期分析</div>
+          </article>
+        </div>
+        <p class="note">数据范围与最新日期以实际部署的数据为准；行情以日线为主。财报数据按披露记录组织，分析历史时点时需要区分报告期与披露日期。</p>
+        <div class="pipeline reveal">
+          <div><b>01 · 检查源文件</b><span>核对表头与字段契约</span></div>
+          <div><b>02 · 增量转换</b><span>跳过未变化文件</span></div>
+          <div><b>03 · 验证完整性</b><span>检查主键、日期与空值</span></div>
+          <div><b>04 · 压实与更新</b><span>减少查询时读取的小文件</span></div>
+        </div>
+      </div>
+    </section>
+    <section class="content" id="how">
+      <div class="wrap">
+        <div class="section-top reveal">
+          <div>
+            <div class="eyebrow">BEHIND THE QUESTION</div>
+            <h2>从一句中文，到有依据的回答。</h2>
+            <p>系统先判断你需要什么，再选择对应的处理路径。大模型负责理解与规划，数据引擎负责执行实际查询。</p>
+          </div><span class="section-index" aria-hidden="true">04</span>
+        </div>
+        <div class="flow-board reveal">
+          <div class="flow-entry"><small>问题 + 会话上下文 + 工作区</small><strong>先理解意图，再决定下一步</strong></div>
+          <div class="routes">
+            <article class="route"><small>PATH A</small>
+              <h3>直接回答</h3>
+              <p>处理一般交流、能力询问，或先用一句话确认你真正想做什么。</p>
+              <div class="flow-aside">例如：“你能查询哪些数据？”<br>依据当前用户可见的数据能力清单回答。</div>
+            </article>
+            <article class="route main"><small>PATH B · 查询新数据</small>
+              <h3>检索 → 规划 → 执行</h3>
+              <div class="flow-step"><i>1</i>
+                <div><strong>找到相关字段</strong><span>结合关键词与语义检索，融合排序后重新评估相关性，选出适合回答问题的字段。</span></div>
+              </div>
+              <div class="flow-step"><i>2</i>
+                <div><strong>组织数据结构，生成 SQL</strong><span>依据表、字段和已声明的关系规划查询；必要时暂停，请用户补充会改变结果的条件。</span></div>
+              </div>
+              <div class="flow-step"><i>3</i>
+                <div><strong>通过受限工具执行只读查询</strong><span>检查 SQL 与访问权限，由 DuckDB 查询 CSV / Parquet 数据，最多返回 200 行。</span>
+                </div>
+              </div>
+              <div class="flow-step"><i>4</i>
+                <div><strong>返回表格与说明</strong><span>如果同时要求图表或报告，再用本轮结果进入分析路径。</span></div>
+              </div>
+            </article>
+            <article class="route"><small>PATH C</small>
+              <h3>分析已有结果</h3>
+              <p>基于当前或选定的历史结果进行解释、比较、总结，按需生成图表报告。</p>
+              <div class="flow-aside">图表必须引用已有结果中的真实列。支持柱状、饼、折线、面积、散点、热力与 K 线图。</div>
+            </article>
+          </div>
+        </div>
+        <div class="architecture reveal">
+          <div><b>交互层 · Vue 3 + TypeScript + ECharts</b>
+            <p>组织对话、结果表和工作区，展示查询阶段进度与图表。</p>
+          </div>
+          <div><b>编排层 · FastAPI + LangGraph</b>
+            <p>连接模型、字段检索与上下文，支持澄清时暂停和继续。</p>
+          </div>
+          <div><b>执行层 · 进程内 MCP + DuckDB</b>
+            <p>MCP 是模型调用工具的统一接口；工具按权限提供，DuckDB 完成数据计算。</p>
+          </div>
+        </div>
+        <div class="trust reveal">
+          <div>
+            <h3>让权限贯穿查询过程</h3>
+            <p>可见表、字段检索、工具发现与 SQL 执行都按用户权限限制；查询工具校验单条只读语句，要求明确列名。</p>
+          </div>
+          <div>
+            <h3>让结果能够回看</h3>
+            <p>前端展示生成的 SQL，后端保留工具调用与阶段日志。图表绑定结果来源，方便核对数据依据。</p>
+          </div>
+          <div>
+            <h3>让失败有明确反馈</h3>
+            <p>阶段错误会显式返回；SQL 失败后可在调用上限内修正。文字或图表生成失败时，保留已成功取得的表格。</p>
+          </div>
+        </div>
+      </div>
+    </section>
+    <section class="content scale" id="scale">
+      <div class="wrap">
+        <div class="section-top reveal">
+          <div>
+            <div class="eyebrow">THE NEXT CHAPTER · ALIBABA CLOUD</div>
+            <h2>可提升的内容（Scale Up）</h2>
+            <p>把八项提升方向与阿里云产品对应起来：哪些能力可以上云，哪些业务逻辑还需要继续建设。</p>
+          </div><span class="section-index" aria-hidden="true">05</span>
+        </div>
+        <div class="scale-intro reveal">依据当前代码与阿里云官方资料整理，赋能项目。更稳、更快、更好的问数能力。</div>
+        <div class="scale-list">
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>01</span><small>云端数据底座，支撑高效分析</small></div>
+            <h3>把本地数据与查询计算迁到云端</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>对象存储 OSS</span><span>AnalyticDB PostgreSQL</span></div>
+            <p><b>当前：</b>当前不是一台可直接迁移的数据库服务器，而是本地 CSV / Parquet 文件，由进程内 DuckDB 临时注册成视图并查询。</p>
+            <p><b>对应产品与用法：</b>建议在 OSS 中分开保存原始文件与整理后的 Parquet，记录来源、批次及版本清单，保留可回溯快照；由 AnalyticDB PostgreSQL 通过外表查询或导入内部表，向 FinQuery 返回结果。RDS 则承接第 04 项中的会话与任务状态。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>OSS 是文件存储，不负责 SQL 计算。替换 DuckDB 需新增查询适配器，调整 SQL 方言、字段类型、只读账号与安全校验，同步更新 MCP / Skill 契约和测试；现有 200 行应用上限不会自动消失。</p></details>
+            <div class="success">验收关注：黄金查询结果一致、只读权限有效、云端延迟和成本符合目标。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/analyticdb/analyticdb-for-postgresql/product-overview/cost-effectiveness" target="_blank" rel="noopener noreferrer">AnalyticDB PostgreSQL · OSS 外表与存储 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/oss/user-guide/manage-objects-in-a-versioning-enabled-bucket" target="_blank" rel="noopener noreferrer">OSS · 对象版本控制 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>02</span><small>云端任务编排，驱动自动更新</small></div>
+            <h3>让数据更新脱离本机计划任务</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>DataWorks · 开发与调度</span><span>OSS · 原始层与整理层</span></div>
+            <p><b>当前：</b>现有 Python 管道依次执行 convert → validate → compact，依赖本机目录与 Windows 定时任务。</p>
+            <p><b>对应产品与用法：</b>将源文件接入 OSS 原始层，用 DataWorks 的 Python / Shell 节点编排“转换 → 校验 → 压实 → 发布”，配置周期调度与失败重跑；仅在校验成功后发布至 OSS 整理层，供分析引擎读取。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>Windows 路径、增量 manifest 和发布步骤需适配对象存储；可保留临时工作目录。第三方依赖需配套运行镜像与资源组。若源数据仍只在本机，必须补充上传或云端采集，否则链路仍依赖本机在线。</p></details>
+            <div class="success">验收关注：校验失败不发布、重复运行不重复入库、可补跑和回溯、更新不依赖个人电脑。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/dataworks/user-guide/schedule/" target="_blank" rel="noopener noreferrer">DataWorks · 调度依赖与重跑 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/dataworks/user-guide/official-mirror" target="_blank" rel="noopener noreferrer">DataWorks · Python 运行环境 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/dataworks/user-guide/image-management" target="_blank" rel="noopener noreferrer">DataWorks · 自定义镜像 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>03</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>把“能回答”变成“可衡量的正确”</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>百炼 Model Studio</span></div>
+            <p><b>当前：</b>已有单元测试、黄金 SQL 结果快照与字段召回评估；仍需把意图、查询结果和报告结论串成端到端质量基线。</p>
+            <p><b>对应产品与用法：</b>百炼支持自定义维度、自动评分及人工标注。可将 FinQuery 跑出的问答导出为推理结果集，评估说明质量、拒答与金融口径表达。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>SQL 字符串相似不代表执行结果相同。黄金结果比对、权限测试、澄清恢复测试仍由项目脚本执行；不能把模型评测当成整个 LangGraph 应用的自动验收。</p></details>
+            <div class="success">验收关注：结果正确率、报告数值一致性、澄清有效性与版本回归。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/model-studio/model-evaluation-overview" target="_blank" rel="noopener noreferrer">百炼 · 模型评测 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>04</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>让会话与任务经得起重启</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>RDS PostgreSQL</span><span>应用身份服务 IDaaS</span></div>
+            <p><b>当前：</b>活动任务、认证令牌和澄清检查点在进程内；可选会话归档与收藏采用本地存储。</p>
+            <p><b>对应产品与用法：</b>建议用 RDS PostgreSQL 存放任务、会话、收藏与检查点数据，利用其备份恢复能力；通过 IDaaS 的 OIDC 单点登录接入正式用户身份。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>需实现共享存储适配、LangGraph 检查点读写和恢复逻辑，迁移本地 JSON / SQLite 数据。IDaaS 解决登录身份，FinQuery 仍负责数据库、表与任务的业务权限。</p></details>
+            <div class="success">验收关注：重启后继续澄清、跨实例状态一致、权限隔离与恢复演练。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/rds/apsaradb-rds-for-postgresql/back-up-an-apsaradb-rds-for-postgresql-instance" target="_blank" rel="noopener noreferrer">RDS PostgreSQL · 备份恢复 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/idaas/eiam/user-guide/oidc-sso-configurations/" target="_blank" rel="noopener noreferrer">IDaaS · OIDC 单点登录 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>05</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>让更多问题同时得到处理</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>Serverless 应用引擎 SAE</span><span>日志服务 SLS</span><span>OpenSearch（按规模选用）</span></div>
+            <p><b>当前：</b>查询通过后台线程运行，字段索引主要在本地计算；已有索引缓存和精简 SQL 重试上下文。</p>
+            <p><b>对应产品与用法：</b>SAE 可托管后端镜像并按策略扩缩容；SLS 汇集日志与观测数据，帮助定位慢阶段。字段量增长后，可评估 OpenSearch 的文本、向量混合检索及条件过滤。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>先完成第 04 项共享状态，再扩容。任务队列、取消、超时与模型调用配额仍需控制；模型 Token 用量需自行采集。更换检索服务时要重做权限过滤、融合排序与召回评估。</p></details>
+            <div class="success">验收关注：高分位响应时间、并发量、单次成本与检索质量；扩容不等于模型额度增加。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/sae/" target="_blank" rel="noopener noreferrer">SAE · 应用托管与弹性 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/sls/" target="_blank" rel="noopener noreferrer">SLS · 日志与可观测 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/open-search/vector-search-edition/query-data/" target="_blank" rel="noopener noreferrer">OpenSearch · 混合检索 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>06</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>让指标和时间口径更明确</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>DataWorks · 数据建模</span></div>
+            <p><b>当前：</b>已有字段说明、同义词与查询规则，但当前 Schema 尚未声明表间关系。</p>
+            <p><b>对应产品与用法：</b>DataWorks 提供维度、数据标准、原子指标及派生指标管理，可用于统一维护“按什么范围、什么公式计算”的定义。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>本次未找到可直接替代本项目金融语义规则的成品能力。交易日历、复权、收益率、财报披露时点及防止重复统计的关联规则，仍需业务定义并同步到 Schema 与查询提示词。</p></details>
+            <div class="success">验收关注：同一指标口径一致、历史时点不使用未来披露数据、关联后不重复计数。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/dataworks/user-guide/perform-dimensional-modeling" target="_blank" rel="noopener noreferrer">DataWorks · 维度与指标建模 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>07</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>从单库分析走向多库协作</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>AnalyticDB PostgreSQL · 联邦分析</span></div>
+            <p><b>当前：</b>支持注册多个数据库，但跨数据库问题仍进入未实现的多库处理路径。</p>
+            <p><b>对应产品与用法：</b>AnalyticDB PostgreSQL 的 Database 外表可访问部分外部关系型数据库，为联邦查询提供执行底座；也可先将需要的数据汇入统一分析库。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>外表能力不等于 Agent 已具备多库编排。仍需实现问题拆分、实体映射、独立授权与结果合并。官方该特性说明限定存储弹性模式、同 VPC，并需工单配置，不能假设任意实例即开即用。</p></details>
+            <div class="success">验收关注：跨库口径正确、权限不扩大、合并结果可追溯。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/analyticdb/analyticdb-for-postgresql/user-guide/use-external-tables-for-federated-analytics-of-external-sql-databases" target="_blank" rel="noopener noreferrer">AnalyticDB PostgreSQL · 联邦分析 <span aria-hidden="true">↗</span></a></div>
+          </article>
+          <article class="scale-item reveal">
+            <div class="scale-top"><span>08</span><small>云产品赋能，按业务场景定制</small></div>
+            <h3>让结果范围与数据新鲜度可见</h3>
+            <div class="cloud-products" aria-label="对应阿里云产品"><span>对象存储 OSS</span></div>
+            <p><b>当前：</b>查询最多返回 200 行，分析上下文也有行数限制；已有结果收藏和报告导出。</p>
+            <p><b>对应产品与用法：</b>OSS 可存放数据快照、完整导出文件与报告；版本控制保留对象历史，签名 URL 支持有时限的文件访问。</p>
+            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>“样本 / 全量”“截至哪个交易日”“结果是否截断”等提示没有可直接替代的云产品，需修改 API 与界面。全量导出也需独立的授权任务；对象版本不等于整个数据集的一致快照，要保存发布清单。</p></details>
+            <div class="success">验收关注：用户能看懂结果范围，下载前校验归属，结论绑定数据版本与业务日期。</div>
+            <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/oss/user-guide/manage-objects-in-a-versioning-enabled-bucket" target="_blank" rel="noopener noreferrer">OSS · 对象版本控制 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/oss/developer-reference/add-signatures-to-urls" target="_blank" rel="noopener noreferrer">OSS · 签名下载链接 <span aria-hidden="true">↗</span></a></div>
+          </article>
+        </div>
+        <details>
+          <summary>查看本页介绍所依据的代码模块</summary>
+          <div class="sources">
+            <div>界面与视觉规范<br><code>frontend/src/App.vue · styles/_settings.scss · components/</code></div>
+            <div>路由与工作流<br><code>backend/app/preprocessing.py · workflows/query_graph.py</code></div>
+            <div>检索与只读执行<br><code>backend/app/retrieval/ · querying/duckdb_engine.py · mcp_runtime/</code></div>
+            <div>数据与更新<br><code>backend/data/databases/trade_data/_schema.json · backend/scripts/</code></div>
+            <div>会话与访问控制<br><code>backend/app/services/ · backend/app/security/ · compose.yaml</code></div>
+            <div>验证与评估<br><code>backend/tests/ · backend/eval/ · backend/scripts/evaluate.py</code></div>
+          </div>
+        </details>
+      </div>
+    </section>
+    <div class="wrap closing reveal">
+      <div>
+        <div class="eyebrow">FINQUERY STUDIO</div>
+        <h2>从提出问题，到理解数据。</h2>
+        <p>用对话连接数据查询、分析过程与可复用的结果。</p>
+      </div><a class="btn" href="#home">回到顶部 <span>↑</span></a>
+    </div>
+  </main>
+  <footer>
+    <div class="wrap"><span>FinQuery Studio · 项目介绍</span><span>依据 2026-10-09 工作区代码整理 · 本页示意不代表实时查询结果</span></div>
+  </footer>
+  <script>
+    (function () {
+      'use strict';
+      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
+      if ('IntersectionObserver' in window) {
+        document.documentElement.classList.add('motion');
+        var observer = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) } }) }, { threshold: .08 });
+        document.querySelectorAll('.reveal').forEach(function (e) { observer.observe(e) });
+        var navObserver = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) { document.querySelectorAll('.links a').forEach(function (a) { if (a.hash === '#' + e.target.id) a.setAttribute('aria-current', 'location'); else a.removeAttribute('aria-current') }) } }) }, { rootMargin: '-15% 0px -60% 0px' });
+        document.querySelectorAll('section.content').forEach(function (s) { navObserver.observe(s) });
+      }
+      var scrollPending = false;
+      function progress() { var d = document.documentElement; document.querySelector('.progress').style.width = (d.scrollHeight > d.clientHeight ? d.scrollTop / (d.scrollHeight - d.clientHeight) * 100 : 0) + '%'; scrollPending = false }
+      window.addEventListener('scroll', function () { if (!scrollPending) { scrollPending = true; requestAnimationFrame(progress) } }, { passive: true }); window.addEventListener('resize', progress); progress();
+      var cases = [
+        { q: '查询 2026 年 9 月 1 日 A 股涨幅最大的 20 只股票。', steps: ['理解问题', '查找字段', '执行查询', '呈现结果'], title: '得到一张可检查的结果表', body: '系统按交易日筛选，依据收盘价与前收盘价计算涨幅，再排序返回股票和相关指标。', foot: '可以查看 SQL、收藏结果，并继续追问。', messages: ['确认日期、指标和返回数量', '定位股票、交易日、收盘价与前收盘价字段', '校验只读 SQL 和权限，再执行查询', '整理表格与文字说明'] },
+        { q: '查询沪深 300 指数 2026 年 9 月的日行情，用 K 线图展示走势并配一段解读。', steps: ['理解问题', '查询行情', '绑定结果', '生成图表'], title: '表格、K 线图与说明在同一轮返回', body: '先查询指数代码、日期及开高低收字段，再将新结果交给分析智能体生成图表配置与文字解读。', foot: '图表使用查询结果中的列；图表生成失败时仍保留表格。', messages: ['识别查数需求及 K 线展示要求', '查询指定指数与日期范围的 OHLC 行情', '校验图表来源与必需字段', '前端绘制图表并展示解读'] },
+        { q: '基于刚才的结果，整理一份分析报告，说明主要差异和分析范围。', steps: ['读取上下文', '分析结果', '组织报告', '保存分享'], title: '围绕已有数据继续分析', body: '从最近结果或工作区选定的历史结果中提取上下文，生成包含范围、发现与限制的 Markdown 报告。', foot: '已有结果分析路径不重新查询数据库；报告可导出 Markdown 或打印为 PDF。', messages: ['识别这是已有结果分析', '读取可用结果与选定的分析表', '组织发现、说明及数据范围', '用户可在应用中导出报告'] }
+      ];
+      var current = 0, timer = null, run = 0;
+      var q = document.getElementById('demo-question'), steps = document.getElementById('demo-steps'), result = document.getElementById('demo-result'), play = document.getElementById('play'), status = document.getElementById('demo-status');
+      function showResult(c) { result.replaceChildren(); var b = document.createElement('b'), p = document.createElement('p'), s = document.createElement('small'); b.textContent = c.title; p.textContent = c.body; s.textContent = c.foot; result.append(b, p, s); result.classList.remove('flash'); void result.offsetWidth; result.classList.add('flash') }
+      function select(n) { clearTimeout(timer); run++; current = n; var c = cases[n]; q.textContent = c.q; steps.replaceChildren(); c.steps.forEach(function (text) { var s = document.createElement('span'); s.textContent = text; s.className = 'on'; steps.append(s) }); showResult(c); play.disabled = false; status.textContent = '点击播放，逐步了解系统的处理方式'; document.querySelectorAll('.scenario').forEach(function (b, i) { b.classList.toggle('active', i === n); b.setAttribute('aria-pressed', String(i === n)) }) }
+      document.querySelectorAll('.scenario').forEach(function (b) { b.addEventListener('click', function () { select(Number(b.dataset.case)) }) });
+      play.addEventListener('click', function () { clearTimeout(timer); var token = ++run, c = cases[current]; if (reduced.matches) { showResult(c); status.textContent = '已展示完整流程（减少动态效果）'; return } play.disabled = true; Array.from(steps.children).forEach(function (s) { s.classList.remove('on') }); var i = 0; function tick() { if (token !== run) return; if (i < c.steps.length) { steps.children[i].classList.add('on'); result.replaceChildren(); var b = document.createElement('b'), p = document.createElement('p'); b.textContent = c.steps[i]; p.textContent = c.messages[i]; result.append(b, p); status.textContent = '步骤 ' + (i + 1) + ' / ' + c.steps.length; i++; timer = setTimeout(tick, 1050) } else { showResult(c); play.disabled = false; status.textContent = '演示完成 · 可切换场景或再次播放' } } tick() });
+    })();
+  </script>
+</body>
+
+</html>

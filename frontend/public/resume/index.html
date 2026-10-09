@@ -7,26 +7,28 @@
   <style>
     * { box-sizing: border-box; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
     :root { --accent:#a93f45; --accent-soft:#fbf2f3; --text:#292929; --muted:#555; --line:#e7dfe0; }
-    html, body { margin:0; padding:0; background:#fff; }
-    body { width:210mm; min-height:297mm; margin:0 auto; padding:8mm 13mm; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif; font-size:12.5px; line-height:1.4; }
+    html, body { margin:0; padding:0; }
+    body { min-height:100vh; padding:6mm; overflow-x:auto; background:#ececec; color:var(--text); font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Microsoft YaHei",Arial,sans-serif; font-size:12.5px; line-height:1.4; }
+    .resume-spread { display:flex; align-items:stretch; gap:6mm; width:max-content; margin:0 auto; }
+    .resume-page { width:210mm; height:297mm; padding:12mm 12mm; background:#fff; box-shadow:0 2px 12px rgba(0,0,0,.14); }
     header { display:flex; justify-content:space-between; align-items:flex-end; gap:18px; padding-bottom:5px; border-bottom:1.5px solid var(--accent); }
     .header-left { display:flex; align-items:flex-end; gap:14px; }
     .avatar { width:80px; height:80px; flex-shrink:0; object-fit:cover; border-radius:999px; }
     h1 { margin:0; font-size:30px; line-height:1.15; }
-    .headline { margin-top:4px; color:var(--accent); font-weight:650; font-size:13.5px; }
+    .headline { margin-top:4px; color:var(--accent); font-weight:650; font-size:14px; }
     .contact { text-align:right; color:var(--muted); font-size:14px; line-height:1.5; white-space:nowrap; }
     .contact a, .project-link { color:inherit; text-decoration:none; }
-    section { margin-top:10px; }
+    section { margin: 8px 0 12px; }
     .section-title { display:flex; align-items:center; gap:7px; margin:0 0 5px; padding:3px 7px; color:var(--accent); background:var(--accent-soft); font-size:14px; line-height:1.25; }
     .section-title::before { content:""; width:3px; height:14px; background:var(--accent); }
-    .entry { margin-bottom:14px; break-inside:avoid; }
+    .entry { margin-bottom:18px; break-inside:avoid; }
     .entry:last-child { margin-bottom:0; }
     .entry-head { display:flex; justify-content:space-between; gap:14px; align-items:baseline; }
-    .entry-title { margin:0; font-size:13.5px; font-weight:700; }
+    .entry-title { margin:0; font-size:14px; font-weight:700; }
     .entry-meta { flex:0 0 auto; color:var(--muted); font-size:12px; white-space:nowrap; }
     .role { margin:1px 0 3px; color:#761212; font-size:12.5px; font-weight:600; }
     .overview { margin:2px 0 5px; color:var(--muted); }
-    .project { margin:7px 0 3px; font-size:12.8px; font-weight:700; color:var(--text); }
+    .project { margin:7px 0 3px 4px; font-size:12.8px; font-weight:700; color:var(--text); }
     .project-link { color:var(--accent); font-size:12.5px; font-weight:600; white-space:nowrap; }
     ul { margin:0; padding-left:18px; }
     li { margin:1px 0; color:var(--muted); }
@@ -36,19 +38,24 @@
     .education-item p, .skills p { margin:2px 0; color:var(--muted); }
     @page { size:A4; margin:8mm 13mm; }
     @media print {
-      body { width:auto; min-height:auto; margin:0; padding:0; }
+      html, body { background:#fff; }
+      body { min-height:auto; margin:0; padding:0; overflow:visible; }
+      .resume-spread { display:block; width:auto; margin:0; }
+      .resume-page { width:auto; min-height:auto; padding:0; box-shadow:none; }
+      .resume-page + .resume-page { break-before:page; page-break-before:always; }
       a { color:inherit; }
-      .page-two-start { break-before:page; page-break-before:always; }
     }
   </style>
 </head>
 <body>
+  <div class="resume-spread">
+  <div class="resume-page">
   <header>
     <div class="header-left">
       <img class="avatar" src="avatar.png" alt="王雨薇头像" width="80" height="80">
       <div>
         <h1>王雨薇</h1>
-        <div class="headline">全栈工程师 · 企业级数据与 AI 解决方案</div>
+        <div class="headline">全栈技术 · 企业级数据与 AI 解决方案</div>
       </div>
     </div>
     <div class="contact">13962202918<br><a href="mailto:yuweiw823@outlook.com">yuweiw823@outlook.com</a><br>北京</div>
@@ -122,7 +129,12 @@
       </article>
     </section>
 
-    <section class="page-two-start">
+  </main>
+  </div>
+
+  <div class="resume-page">
+  <main>
+    <section>
       <h2 class="section-title">个人项目</h2>
       <article class="entry">
         <div class="entry-head">
@@ -141,7 +153,7 @@
 
       <article class="entry">
         <div class="entry-head">
-          <h3 class="entry-title">FinQuery · 金融市场自然语言问数与分析系统 <a class="project-link" href="https://finquery.dev/" target="_blank" rel="noopener noreferrer">（finquery.dev）</a></h3>
+          <h3 class="entry-title">FinQuery · 金融市场自然语言问数与分析系统 <a class="project-link" href="https://finquery.dev/" target="_blank" rel="noopener noreferrer">（https://finquery.dev/）</a></h3>
           <div class="entry-meta">2026.08</div>
         </div>
         <p class="role">独立项目 · 数据与 AI 解决方案设计</p>
@@ -202,5 +214,7 @@
       <p><strong>全栈开发：</strong>TypeScript、JavaScript、Angular、Python、FastAPI、HTML/CSS、Git、Docker、CI/CD</p>
     </section>
   </main>
+  </div>
+  </div>
 </body>
 </html>
