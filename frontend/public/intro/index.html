@@ -338,7 +338,7 @@
       padding: 12px 15px;
       border-radius: 10px;
       background: var(--soft);
-      margin: 0 0 22px 22px;
+      margin: 0 0 22px;
       font-size: 13px;
       color: #4b231f
     }
@@ -619,29 +619,6 @@
       margin-top: 10px;
       color: var(--brand);
       font-size: 11px
-    }
-
-    .demo-result.flash {
-      animation: appear .4s both
-    }
-
-    .demo-actions {
-      display: flex;
-      align-items: center;
-      gap: 16px;
-      margin-top: 20px
-    }
-
-    .demo-actions .btn {
-      background: var(--brand);
-      color: white;
-      border-color: var(--brand);
-      padding: 9px 17px
-    }
-
-    .demo-actions span {
-      font-size: 11px;
-      color: var(--muted)
     }
 
     .btn:disabled {
@@ -1191,12 +1168,6 @@
         padding: 24px 20px
       }
 
-      .demo-actions {
-        align-items: flex-start;
-        flex-direction: column;
-        gap: 9px
-      }
-
       .data-grid {
         gap: 10px
       }
@@ -1263,7 +1234,6 @@
 
       .top,
       .hero-actions,
-      .demo-actions,
       .scenario,
       .closing .btn,
       .progress {
@@ -1373,7 +1343,7 @@
     <div class="wrap nav"><a class="brand" href="#home" aria-label="FinQuery Studio 返回顶部"><span
           class="mark">FinQ</span><span>FinQuery<small>STUDIO / PROJECT INTRODUCTION</small></span></a>
       <nav class="links" aria-label="页面导航"><a href="#overview">项目概览</a><a href="#experience">体验方式</a><a
-          href="#data">数据范围</a><a href="#how">如何工作</a><a href="#scale">Scale Up</a></nav>
+          href="#data">数据范围</a><a href="#how">如何工作</a><a href="#scale">Scale Up with 阿里云</a></nav>
     </div>
     <div class="progress" aria-hidden="true"></div>
   </header>
@@ -1389,9 +1359,9 @@
           <div class="hero-note">中文提问 · 真实数据查询 · 可查看 SQL · 连续分析</div>
         </div>
         <div class="preview" aria-label="FinQuery 交互示意，图形不代表真实行情">
-          <div class="preview-head"><strong>FinQuery Studio</strong><span class="pill">交互示意</span></div>
+          <div class="preview-head"><strong>FinQuery Studio</strong></div>
           <div class="preview-body">
-            <div class="bubble">比较几只 ETF 的成交额，并绘制柱状图。</div>
+            <div class="bubble">获取最近一个月A股交易量前20的ETF及数据，并绘制柱状图。</div>
             <div class="preview-label">QUERY → DATA → INSIGHT</div>
             <h3>从一个问题，到一份可读的结果</h3>
             <div class="chart" aria-hidden="true">
@@ -1441,37 +1411,6 @@
             <p>收藏结果表和常用字段，将历史结果加入工作区，为后续分析提供上下文；表格可导出，报告可保存为 Markdown 或通过打印保存 PDF。</p>
             <div class="example">例如：结合已收藏的结果，整理一份分析报告。</div>
           </article>
-        </div>
-      </div>
-    </section>
-    <section class="content" id="experience">
-      <div class="wrap">
-        <div class="section-top reveal">
-          <div>
-            <div class="eyebrow">A SMALL WALKTHROUGH</div>
-            <h2>你提问，系统把过程展开。</h2>
-            <p>选择一种场景，看看问题会怎样被处理。下方是本地交互演示，不会调用模型或查询数据库。</p>
-          </div><span class="section-index" aria-hidden="true">02</span>
-        </div>
-        <div class="demo-layout reveal">
-          <div class="demo-side">
-            <div class="eyebrow">选择一个场景</div><button class="scenario active" data-case="0"
-              aria-pressed="true">01　查询新数据<span>筛选、排序、返回结果表</span></button><button class="scenario" data-case="1"
-              aria-pressed="false">02　查询并生成图表<span>从日线数据到走势展示</span></button><button class="scenario" data-case="2"
-              aria-pressed="false">03　分析已有结果<span>延续上下文，整理报告</span></button>
-            <p>实际查询需要已接入的数据、相应权限与可用的模型服务。</p>
-          </div>
-          <div class="demo-main">
-            <div class="demo-heading"><span>YOU → FINQUERY</span><span class="pill">流程演示</span></div>
-            <div class="question" id="demo-question">查询 2026 年 9 月 1 日 A 股涨幅最大的 20 只股票。</div>
-            <div class="demo-steps" id="demo-steps"><span class="on">理解问题</span><span class="on">查找字段</span><span
-                class="on">执行查询</span><span class="on">呈现结果</span></div>
-            <div class="demo-result" id="demo-result" aria-live="polite"><b>得到一张可检查的结果表</b>
-              <p>系统按交易日筛选，依据收盘价与前收盘价计算涨幅，再排序返回股票和相关指标。</p><small>可以查看 SQL、收藏结果，并继续追问。</small>
-            </div>
-            <div class="demo-actions"><button class="btn" id="play">播放处理过程 <span
-                  aria-hidden="true">→</span></button><span id="demo-status" role="status">点击播放，逐步了解系统的处理方式</span></div>
-          </div>
         </div>
       </div>
     </section>
@@ -1587,7 +1526,7 @@
         <div class="section-top reveal">
           <div>
             <div class="eyebrow">THE NEXT CHAPTER · ALIBABA CLOUD</div>
-            <h2>可提升的内容（Scale Up）</h2>
+            <h2>Scale Up with 阿里云</h2>
             <p>把八项提升方向与阿里云产品对应起来：哪些能力可以上云，哪些业务逻辑还需要继续建设。</p>
           </div><span class="section-index" aria-hidden="true">05</span>
         </div>
@@ -1599,7 +1538,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>对象存储 OSS</span><span>AnalyticDB PostgreSQL</span></div>
             <p><b>当前：</b>当前不是一台可直接迁移的数据库服务器，而是本地 CSV / Parquet 文件，由进程内 DuckDB 临时注册成视图并查询。</p>
             <p><b>对应产品与用法：</b>建议在 OSS 中分开保存原始文件与整理后的 Parquet，记录来源、批次及版本清单，保留可回溯快照；由 AnalyticDB PostgreSQL 通过外表查询或导入内部表，向 FinQuery 返回结果。RDS 则承接第 04 项中的会话与任务状态。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>OSS 是文件存储，不负责 SQL 计算。替换 DuckDB 需新增查询适配器，调整 SQL 方言、字段类型、只读账号与安全校验，同步更新 MCP / Skill 契约和测试；现有 200 行应用上限不会自动消失。</p></details>
             <div class="success">验收关注：黄金查询结果一致、只读权限有效、云端延迟和成本符合目标。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/analyticdb/analyticdb-for-postgresql/product-overview/cost-effectiveness" target="_blank" rel="noopener noreferrer">AnalyticDB PostgreSQL · OSS 外表与存储 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/oss/user-guide/manage-objects-in-a-versioning-enabled-bucket" target="_blank" rel="noopener noreferrer">OSS · 对象版本控制 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1609,7 +1547,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>DataWorks · 开发与调度</span><span>OSS · 原始层与整理层</span></div>
             <p><b>当前：</b>现有 Python 管道依次执行 convert → validate → compact，依赖本机目录与 Windows 定时任务。</p>
             <p><b>对应产品与用法：</b>将源文件接入 OSS 原始层，用 DataWorks 的 Python / Shell 节点编排“转换 → 校验 → 压实 → 发布”，配置周期调度与失败重跑；仅在校验成功后发布至 OSS 整理层，供分析引擎读取。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>Windows 路径、增量 manifest 和发布步骤需适配对象存储；可保留临时工作目录。第三方依赖需配套运行镜像与资源组。若源数据仍只在本机，必须补充上传或云端采集，否则链路仍依赖本机在线。</p></details>
             <div class="success">验收关注：校验失败不发布、重复运行不重复入库、可补跑和回溯、更新不依赖个人电脑。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/dataworks/user-guide/schedule/" target="_blank" rel="noopener noreferrer">DataWorks · 调度依赖与重跑 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/dataworks/user-guide/official-mirror" target="_blank" rel="noopener noreferrer">DataWorks · Python 运行环境 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/dataworks/user-guide/image-management" target="_blank" rel="noopener noreferrer">DataWorks · 自定义镜像 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1619,8 +1556,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>百炼 Model Studio</span></div>
             <p><b>当前：</b>已有单元测试、黄金 SQL 结果快照与字段召回评估；仍需把意图、查询结果和报告结论串成端到端质量基线。</p>
             <p><b>对应产品与用法：</b>百炼支持自定义维度、自动评分及人工标注。可将 FinQuery 跑出的问答导出为推理结果集，评估说明质量、拒答与金融口径表达。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>SQL 字符串相似不代表执行结果相同。黄金结果比对、权限测试、澄清恢复测试仍由项目脚本执行；不能把模型评测当成整个 LangGraph 应用的自动验收。</p></details>
-            <div class="success">验收关注：结果正确率、报告数值一致性、澄清有效性与版本回归。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/model-studio/model-evaluation-overview" target="_blank" rel="noopener noreferrer">百炼 · 模型评测 <span aria-hidden="true">↗</span></a></div>
           </article>
           <article class="scale-item reveal">
@@ -1629,7 +1564,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>RDS PostgreSQL</span><span>应用身份服务 IDaaS</span></div>
             <p><b>当前：</b>活动任务、认证令牌和澄清检查点在进程内；可选会话归档与收藏采用本地存储。</p>
             <p><b>对应产品与用法：</b>建议用 RDS PostgreSQL 存放任务、会话、收藏与检查点数据，利用其备份恢复能力；通过 IDaaS 的 OIDC 单点登录接入正式用户身份。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>需实现共享存储适配、LangGraph 检查点读写和恢复逻辑，迁移本地 JSON / SQLite 数据。IDaaS 解决登录身份，FinQuery 仍负责数据库、表与任务的业务权限。</p></details>
             <div class="success">验收关注：重启后继续澄清、跨实例状态一致、权限隔离与恢复演练。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/rds/apsaradb-rds-for-postgresql/back-up-an-apsaradb-rds-for-postgresql-instance" target="_blank" rel="noopener noreferrer">RDS PostgreSQL · 备份恢复 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/idaas/eiam/user-guide/oidc-sso-configurations/" target="_blank" rel="noopener noreferrer">IDaaS · OIDC 单点登录 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1639,7 +1573,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>Serverless 应用引擎 SAE</span><span>日志服务 SLS</span><span>OpenSearch（按规模选用）</span></div>
             <p><b>当前：</b>查询通过后台线程运行，字段索引主要在本地计算；已有索引缓存和精简 SQL 重试上下文。</p>
             <p><b>对应产品与用法：</b>SAE 可托管后端镜像并按策略扩缩容；SLS 汇集日志与观测数据，帮助定位慢阶段。字段量增长后，可评估 OpenSearch 的文本、向量混合检索及条件过滤。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>先完成第 04 项共享状态，再扩容。任务队列、取消、超时与模型调用配额仍需控制；模型 Token 用量需自行采集。更换检索服务时要重做权限过滤、融合排序与召回评估。</p></details>
             <div class="success">验收关注：高分位响应时间、并发量、单次成本与检索质量；扩容不等于模型额度增加。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/sae/" target="_blank" rel="noopener noreferrer">SAE · 应用托管与弹性 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/sls/" target="_blank" rel="noopener noreferrer">SLS · 日志与可观测 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/open-search/vector-search-edition/query-data/" target="_blank" rel="noopener noreferrer">OpenSearch · 混合检索 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1649,7 +1582,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>DataWorks · 数据建模</span></div>
             <p><b>当前：</b>已有字段说明、同义词与查询规则，但当前 Schema 尚未声明表间关系。</p>
             <p><b>对应产品与用法：</b>DataWorks 提供维度、数据标准、原子指标及派生指标管理，可用于统一维护“按什么范围、什么公式计算”的定义。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>本次未找到可直接替代本项目金融语义规则的成品能力。交易日历、复权、收益率、财报披露时点及防止重复统计的关联规则，仍需业务定义并同步到 Schema 与查询提示词。</p></details>
             <div class="success">验收关注：同一指标口径一致、历史时点不使用未来披露数据、关联后不重复计数。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/dataworks/user-guide/perform-dimensional-modeling" target="_blank" rel="noopener noreferrer">DataWorks · 维度与指标建模 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1659,7 +1591,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>AnalyticDB PostgreSQL · 联邦分析</span></div>
             <p><b>当前：</b>支持注册多个数据库，但跨数据库问题仍进入未实现的多库处理路径。</p>
             <p><b>对应产品与用法：</b>AnalyticDB PostgreSQL 的 Database 外表可访问部分外部关系型数据库，为联邦查询提供执行底座；也可先将需要的数据汇入统一分析库。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>外表能力不等于 Agent 已具备多库编排。仍需实现问题拆分、实体映射、独立授权与结果合并。官方该特性说明限定存储弹性模式、同 VPC，并需工单配置，不能假设任意实例即开即用。</p></details>
             <div class="success">验收关注：跨库口径正确、权限不扩大、合并结果可追溯。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/analyticdb/analyticdb-for-postgresql/user-guide/use-external-tables-for-federated-analytics-of-external-sql-databases" target="_blank" rel="noopener noreferrer">AnalyticDB PostgreSQL · 联邦分析 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1669,7 +1600,6 @@
             <div class="cloud-products" aria-label="对应阿里云产品"><span>对象存储 OSS</span></div>
             <p><b>当前：</b>查询最多返回 200 行，分析上下文也有行数限制；已有结果收藏和报告导出。</p>
             <p><b>对应产品与用法：</b>OSS 可存放数据快照、完整导出文件与报告；版本控制保留对象历史，签名 URL 支持有时限的文件访问。</p>
-            <details class="cloud-detail"><summary>接入改造与能力边界</summary><p>“样本 / 全量”“截至哪个交易日”“结果是否截断”等提示没有可直接替代的云产品，需修改 API 与界面。全量导出也需独立的授权任务；对象版本不等于整个数据集的一致快照，要保存发布清单。</p></details>
             <div class="success">验收关注：用户能看懂结果范围，下载前校验归属，结论绑定数据版本与业务日期。</div>
             <div class="cloud-references" aria-label="阿里云官方资料"><a href="https://help.aliyun.com/zh/oss/user-guide/manage-objects-in-a-versioning-enabled-bucket" target="_blank" rel="noopener noreferrer">OSS · 对象版本控制 <span aria-hidden="true">↗</span></a><a href="https://help.aliyun.com/zh/oss/developer-reference/add-signatures-to-urls" target="_blank" rel="noopener noreferrer">OSS · 签名下载链接 <span aria-hidden="true">↗</span></a></div>
           </article>
@@ -1701,7 +1631,6 @@
   <script>
     (function () {
       'use strict';
-      var reduced = window.matchMedia('(prefers-reduced-motion: reduce)');
       if ('IntersectionObserver' in window) {
         document.documentElement.classList.add('motion');
         var observer = new IntersectionObserver(function (entries) { entries.forEach(function (e) { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target) } }) }, { threshold: .08 });
@@ -1713,16 +1642,14 @@
       function progress() { var d = document.documentElement; document.querySelector('.progress').style.width = (d.scrollHeight > d.clientHeight ? d.scrollTop / (d.scrollHeight - d.clientHeight) * 100 : 0) + '%'; scrollPending = false }
       window.addEventListener('scroll', function () { if (!scrollPending) { scrollPending = true; requestAnimationFrame(progress) } }, { passive: true }); window.addEventListener('resize', progress); progress();
       var cases = [
-        { q: '查询 2026 年 9 月 1 日 A 股涨幅最大的 20 只股票。', steps: ['理解问题', '查找字段', '执行查询', '呈现结果'], title: '得到一张可检查的结果表', body: '系统按交易日筛选，依据收盘价与前收盘价计算涨幅，再排序返回股票和相关指标。', foot: '可以查看 SQL、收藏结果，并继续追问。', messages: ['确认日期、指标和返回数量', '定位股票、交易日、收盘价与前收盘价字段', '校验只读 SQL 和权限，再执行查询', '整理表格与文字说明'] },
-        { q: '查询沪深 300 指数 2026 年 9 月的日行情，用 K 线图展示走势并配一段解读。', steps: ['理解问题', '查询行情', '绑定结果', '生成图表'], title: '表格、K 线图与说明在同一轮返回', body: '先查询指数代码、日期及开高低收字段，再将新结果交给分析智能体生成图表配置与文字解读。', foot: '图表使用查询结果中的列；图表生成失败时仍保留表格。', messages: ['识别查数需求及 K 线展示要求', '查询指定指数与日期范围的 OHLC 行情', '校验图表来源与必需字段', '前端绘制图表并展示解读'] },
-        { q: '基于刚才的结果，整理一份分析报告，说明主要差异和分析范围。', steps: ['读取上下文', '分析结果', '组织报告', '保存分享'], title: '围绕已有数据继续分析', body: '从最近结果或工作区选定的历史结果中提取上下文，生成包含范围、发现与限制的 Markdown 报告。', foot: '已有结果分析路径不重新查询数据库；报告可导出 Markdown 或打印为 PDF。', messages: ['识别这是已有结果分析', '读取可用结果与选定的分析表', '组织发现、说明及数据范围', '用户可在应用中导出报告'] }
+        { q: '查询 2026 年 9 月 1 日 A 股涨幅最大的 20 只股票。', steps: ['理解问题', '查找字段', '执行查询', '呈现结果'], title: '得到一张可检查的结果表', body: '系统按交易日筛选，依据收盘价与前收盘价计算涨幅，再排序返回股票和相关指标。', foot: '可以查看 SQL、收藏结果，并继续追问。' },
+        { q: '查询沪深 300 指数 2026 年 9 月的日行情，用 K 线图展示走势并配一段解读。', steps: ['理解问题', '查询行情', '绑定结果', '生成图表'], title: '表格、K 线图与说明在同一轮返回', body: '先查询指数代码、日期及开高低收字段，再将新结果交给分析智能体生成图表配置与文字解读。', foot: '图表使用查询结果中的列；图表生成失败时仍保留表格。' },
+        { q: '基于刚才的结果，整理一份分析报告，说明主要差异和分析范围。', steps: ['读取上下文', '分析结果', '组织报告', '保存分享'], title: '围绕已有数据继续分析', body: '从最近结果或工作区选定的历史结果中提取上下文，生成包含范围、发现与限制的 Markdown 报告。', foot: '已有结果分析路径不重新查询数据库；报告可导出 Markdown 或打印为 PDF。' }
       ];
-      var current = 0, timer = null, run = 0;
-      var q = document.getElementById('demo-question'), steps = document.getElementById('demo-steps'), result = document.getElementById('demo-result'), play = document.getElementById('play'), status = document.getElementById('demo-status');
-      function showResult(c) { result.replaceChildren(); var b = document.createElement('b'), p = document.createElement('p'), s = document.createElement('small'); b.textContent = c.title; p.textContent = c.body; s.textContent = c.foot; result.append(b, p, s); result.classList.remove('flash'); void result.offsetWidth; result.classList.add('flash') }
-      function select(n) { clearTimeout(timer); run++; current = n; var c = cases[n]; q.textContent = c.q; steps.replaceChildren(); c.steps.forEach(function (text) { var s = document.createElement('span'); s.textContent = text; s.className = 'on'; steps.append(s) }); showResult(c); play.disabled = false; status.textContent = '点击播放，逐步了解系统的处理方式'; document.querySelectorAll('.scenario').forEach(function (b, i) { b.classList.toggle('active', i === n); b.setAttribute('aria-pressed', String(i === n)) }) }
+      var q = document.getElementById('demo-question'), steps = document.getElementById('demo-steps'), result = document.getElementById('demo-result');
+      function showResult(c) { result.replaceChildren(); var b = document.createElement('b'), p = document.createElement('p'), s = document.createElement('small'); b.textContent = c.title; p.textContent = c.body; s.textContent = c.foot; result.append(b, p, s) }
+      function select(n) { var c = cases[n]; q.textContent = c.q; steps.replaceChildren(); c.steps.forEach(function (text) { var s = document.createElement('span'); s.textContent = text; s.className = 'on'; steps.append(s) }); showResult(c); document.querySelectorAll('.scenario').forEach(function (b, i) { b.classList.toggle('active', i === n); b.setAttribute('aria-pressed', String(i === n)) }) }
       document.querySelectorAll('.scenario').forEach(function (b) { b.addEventListener('click', function () { select(Number(b.dataset.case)) }) });
-      play.addEventListener('click', function () { clearTimeout(timer); var token = ++run, c = cases[current]; if (reduced.matches) { showResult(c); status.textContent = '已展示完整流程（减少动态效果）'; return } play.disabled = true; Array.from(steps.children).forEach(function (s) { s.classList.remove('on') }); var i = 0; function tick() { if (token !== run) return; if (i < c.steps.length) { steps.children[i].classList.add('on'); result.replaceChildren(); var b = document.createElement('b'), p = document.createElement('p'); b.textContent = c.steps[i]; p.textContent = c.messages[i]; result.append(b, p); status.textContent = '步骤 ' + (i + 1) + ' / ' + c.steps.length; i++; timer = setTimeout(tick, 1050) } else { showResult(c); play.disabled = false; status.textContent = '演示完成 · 可切换场景或再次播放' } } tick() });
     })();
   </script>
 </body>

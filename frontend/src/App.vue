@@ -49,7 +49,7 @@ const promptGroupsByDatabase: Record<string, PromptGroup[]> = {
     },
     {
       key: "report",
-      title: "分析报告",
+      title: "分析查询",
       hint: "先查询 · 再追问",
       prompts: [
         "获取上一个交易日A股涨幅最大的20只股票",
