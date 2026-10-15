@@ -21,8 +21,9 @@ DEFAULT_LOG_DIR = BACKEND_DIR / "logs"
 class PipelineJob:
     name: str
     script: Path
-    source: Path
+    source: Path | None
     output: Path
+    steps: tuple[str, ...] = ("convert", "validate", "compact")
 
 
 CommandRunner = Callable[[Sequence[str]], subprocess.CompletedProcess[str]]
@@ -62,12 +63,22 @@ def load_jobs(config_path: Path, raw_root: Path, curated_root: Path) -> list[Pip
         script = (BACKEND_DIR / str(item["script"])).resolve()
         if BACKEND_DIR not in script.parents or not script.is_file():
             raise ValueError(f"任务 {name} 的脚本不存在或不在 backend 目录内：{script}")
+        source_subdir = item.get("source_subdir")
+        steps = tuple(item.get("steps", ("convert", "validate", "compact")))
+        if not steps or any(
+            step not in {"convert", "build", "validate", "compact"}
+            for step in steps
+        ):
+            raise ValueError(f"任务 {name} 的执行步骤不合法：{steps!r}")
+        if "convert" in steps and not source_subdir:
+            raise ValueError(f"任务 {name} 包含 convert，但未配置 source_subdir")
         jobs.append(
             PipelineJob(
                 name=name,
                 script=script,
-                source=raw_root / str(item["source_subdir"]),
+                source=raw_root / str(source_subdir) if source_subdir else None,
                 output=curated_root / str(item["database"]),
+                steps=steps,
             )
         )
         names.add(name)
@@ -119,6 +130,8 @@ def _run_step(
 ) -> bool:
     command = [sys.executable, str(job.script), step]
     if step == "convert":
+        if job.source is None:
+            raise ValueError(f"任务 {job.name} 的 convert 步骤缺少源目录")
         command.extend(("--source", str(job.source), "--output", str(job.output)))
     else:
         command.extend(("--output", str(job.output)))
@@ -149,12 +162,17 @@ def run_updates(
 ) -> bool:
     succeeded = True
     for job in jobs:
-        logger.info("task=%s update_started source=%s output=%s", job.name, job.source, job.output)
-        if not job.source.is_dir():
+        logger.info(
+            "task=%s update_started source=%s output=%s",
+            job.name,
+            job.source,
+            job.output,
+        )
+        if job.source is not None and not job.source.is_dir():
             logger.error("task=%s source_directory_missing path=%s", job.name, job.source)
             succeeded = False
             continue
-        for step in ("convert", "validate", "compact"):
+        for step in job.steps:
             if not _run_step(job, step, logger, runner):
                 succeeded = False
                 break

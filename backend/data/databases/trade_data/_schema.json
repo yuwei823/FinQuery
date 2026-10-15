@@ -9,7 +9,7 @@
     "按申万一级行业统计最新交易日的总市值",
     "查询最新交易日市盈率、市净率和资产负债率最低的股票"
   ],
-  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "stock_etf_trading_data"]},
+  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "financial_period", "stock_etf_trading_data"]},
   "tables": [
     {
       "id": "trade_data.stock_daily",
@@ -97,6 +97,50 @@
         {"name": "financing_cash_flow", "label": "筹资活动现金流净额", "type": "数值", "source_type": "DOUBLE", "description": "筹资活动产生的现金流量净额", "role": "metric", "aggregation": "sum"},
         {"name": "net_cash_increase", "label": "现金净增加额", "type": "数值", "source_type": "DOUBLE", "description": "现金及现金等价物净增加额", "role": "metric", "aggregation": "sum"},
         {"name": "ending_cash_balance", "label": "期末现金余额", "type": "数值", "source_type": "DOUBLE", "description": "期末现金及现金等价物余额", "role": "metric", "aggregation": "sum"}
+      ]
+    },
+    {
+      "id": "trade_data.financial_period",
+      "name": "financial_period",
+      "label": "标准化财务期间",
+      "database": "trade_data",
+      "domain": "公司财务",
+      "description": "按股票、报表类型、报告期和披露版本保存YTD、单季度及TTM核心财务值；所有组成项披露日均不晚于当前记录。",
+      "profile_mode": "schema_only",
+      "primary_key": ["symbol", "statement_format", "report_date", "publish_date"],
+      "fields": [
+        {"name":"symbol","label":"股票代码","type":"文本","source_type":"VARCHAR","description":"包含交易所前缀的股票代码","role":"identifier","aggregation":"none"},
+        {"name":"statement_format","label":"报表类型","type":"文本","source_type":"VARCHAR","description":"一般企业、银行、保险或证券等格式","role":"dimension","aggregation":"none"},
+        {"name":"report_date","label":"报告期","type":"日期","source_type":"DATE","description":"财务报告期末","role":"time","aggregation":"none"},
+        {"name":"publish_date","label":"披露日期","type":"日期","source_type":"DATE","description":"当前财报版本可用日期","role":"time","aggregation":"none"},
+        {"name":"fiscal_year","label":"会计年度","type":"数值","source_type":"INTEGER","description":"报告期所属年度","role":"dimension","aggregation":"none"},
+        {"name":"fiscal_quarter","label":"财务季度","type":"数值","source_type":"INTEGER","description":"1至4季度","role":"dimension","aggregation":"none"},
+        {"name":"period_type","label":"期间类型","type":"文本","source_type":"VARCHAR","description":"Q1、H1、Q3、FY或OTHER","role":"dimension","aggregation":"none"},
+        {"name":"months_in_period","label":"累计月数","type":"数值","source_type":"INTEGER","description":"YTD累计覆盖月数","role":"dimension","aggregation":"none"},
+        {"name":"total_assets","label":"资产总计","type":"数值","source_type":"DOUBLE","description":"期末资产总额","role":"metric","aggregation":"sum"},
+        {"name":"total_liabilities","label":"负债合计","type":"数值","source_type":"DOUBLE","description":"期末负债总额","role":"metric","aggregation":"sum"},
+        {"name":"parent_equity","label":"归母股东权益","type":"数值","source_type":"DOUBLE","description":"期末归母权益","role":"metric","aggregation":"sum"},
+        {"name":"total_owner_equity","label":"所有者权益合计","type":"数值","source_type":"DOUBLE","description":"期末所有者权益合计","role":"metric","aggregation":"sum"},
+        {"name":"operating_revenue_ytd","label":"营业收入YTD","type":"数值","source_type":"DOUBLE","description":"本年累计营业收入","role":"metric","aggregation":"sum"},
+        {"name":"operating_revenue_quarter","label":"单季度营业收入","type":"数值","source_type":"DOUBLE","description":"由同格式相邻累计期间还原","role":"metric","aggregation":"sum"},
+        {"name":"operating_revenue_ttm","label":"营业收入TTM","type":"数值","source_type":"DOUBLE","description":"按已披露组成项桥接的滚动收入","role":"metric","aggregation":"sum"},
+        {"name":"net_profit_ytd","label":"净利润YTD","type":"数值","source_type":"DOUBLE","description":"本年累计合并净利润","role":"metric","aggregation":"sum"},
+        {"name":"net_profit_quarter","label":"单季度净利润","type":"数值","source_type":"DOUBLE","description":"单季度合并净利润","role":"metric","aggregation":"sum"},
+        {"name":"net_profit_ttm","label":"净利润TTM","type":"数值","source_type":"DOUBLE","description":"滚动十二个月合并净利润","role":"metric","aggregation":"sum"},
+        {"name":"parent_net_profit_ytd","label":"归母净利润YTD","type":"数值","source_type":"DOUBLE","description":"本年累计归母净利润","role":"metric","aggregation":"sum"},
+        {"name":"parent_net_profit_quarter","label":"单季度归母净利润","type":"数值","source_type":"DOUBLE","description":"单季度归母净利润","role":"metric","aggregation":"sum"},
+        {"name":"parent_net_profit_ttm","label":"归母净利润TTM","type":"数值","source_type":"DOUBLE","description":"滚动十二个月归母净利润","role":"metric","aggregation":"sum"},
+        {"name":"operating_cash_flow_ytd","label":"经营现金流YTD","type":"数值","source_type":"DOUBLE","description":"本年累计经营现金流净额","role":"metric","aggregation":"sum"},
+        {"name":"operating_cash_flow_quarter","label":"单季度经营现金流","type":"数值","source_type":"DOUBLE","description":"单季度经营现金流净额","role":"metric","aggregation":"sum"},
+        {"name":"operating_cash_flow_ttm","label":"经营现金流TTM","type":"数值","source_type":"DOUBLE","description":"滚动十二个月经营现金流净额","role":"metric","aggregation":"sum"},
+        {"name":"quarter_predecessor_report_date","label":"单季度前序报告期","type":"日期","source_type":"DATE","description":"单季度差分使用的前序报告期","role":"time","aggregation":"none"},
+        {"name":"quarter_predecessor_publish_date","label":"单季度前序披露日","type":"日期","source_type":"DATE","description":"单季度差分组成项披露日","role":"time","aggregation":"none"},
+        {"name":"ttm_annual_report_date","label":"TTM上年年报期","type":"日期","source_type":"DATE","description":"TTM桥接使用的上年年报期","role":"time","aggregation":"none"},
+        {"name":"ttm_annual_publish_date","label":"TTM上年年报披露日","type":"日期","source_type":"DATE","description":"TTM上年年报版本披露日","role":"time","aggregation":"none"},
+        {"name":"ttm_prior_report_date","label":"TTM上年同期报告期","type":"日期","source_type":"DATE","description":"TTM桥接使用的上年同期","role":"time","aggregation":"none"},
+        {"name":"ttm_prior_publish_date","label":"TTM上年同期披露日","type":"日期","source_type":"DATE","description":"TTM上年同期版本披露日","role":"time","aggregation":"none"},
+        {"name":"quarter_components_complete","label":"单季度组成完整","type":"布尔","source_type":"BOOLEAN","description":"单季度还原所需期间是否完整","role":"dimension","aggregation":"none"},
+        {"name":"ttm_components_complete","label":"TTM组成完整","type":"布尔","source_type":"BOOLEAN","description":"TTM桥接所需期间是否完整","role":"dimension","aggregation":"none"}
       ]
     },
     {

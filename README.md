@@ -361,9 +361,23 @@ docker compose --env-file .env.docker --profile tools run --rm financial-stateme
   --output /data/curated/trade_data
 ```
 
-输出表为 `financial_statement`，主键是股票代码、报告期和披露日期。查询财务数据时应以
+输出表为 `financial_statement`，主键是股票代码、报表类型、报告期和披露日期。查询财务数据时应以
 `publish_date` 判断当时是否已经披露，避免使用未来才发布的财报。该任务已经注册到每日
 自动更新配置，无需单独修改计划任务。
+
+财报事实表构建完成后，可生成标准化期间表：
+
+```powershell
+Set-Location backend
+.\.venv\Scripts\python.exe scripts\financial_period_pipeline.py build `
+  --output D:\trade_data_curated\trade_data
+.\.venv\Scripts\python.exe scripts\financial_period_pipeline.py validate `
+  --output D:\trade_data_curated\trade_data
+```
+
+输出 `financial_period.parquet`，按股票、报表类型、报告期和披露版本保存YTD、单季度及
+TTM核心财务值，同时记录各计算组成项的报告期和披露日。组成项只会选择当前披露日已经
+可见的同报表类型版本；缺少连续期间或跨越报表格式切换时返回空值，不跨格式相减。
 
 ETF 日线原始目录为 `TRADE_DATA_ROOT/stock-etf-trading-data`，在现有 `trade_data`
 数据库中注册为表 `stock_etf_trading_data`。运行：
@@ -389,7 +403,7 @@ Set-Location D:\FinQuery\backend
 .\.venv\Scripts\python.exe -m scripts.update_curated_data
 ```
 
-脚本依次读取当前进程环境变量、`backend/.env` 和默认路径来确定 `TRADE_DATA_ROOT` 与 `CURATED_DATA_ROOT`。运行日志写入 `backend/logs/curated-data-update.log`，每天轮转并保留 30 份；转换器输出、验证错误、Python 异常和退出码都会进入日志。
+脚本依次读取当前进程环境变量、`backend/.env` 和默认路径来确定 `TRADE_DATA_ROOT` 与 `CURATED_DATA_ROOT`。财报事实表更新并压实后，会自动重建并校验 `financial_period`，因此期间值不会落后于最新财报。运行日志写入 `backend/logs/curated-data-update.log`，每天轮转并保留 30 份；转换器输出、验证错误、Python 异常和退出码都会进入日志。
 
 在 Windows 上以管理员身份打开 PowerShell，然后安装每天凌晨 3 时运行的计划任务。管理员权限用于注册在用户注销后仍能运行的 S4U 任务：
 

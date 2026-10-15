@@ -29,6 +29,13 @@
       "ETF日线",
       "基金净值",
       "基金份额"
+    ],
+    "trade_data.financial_period": [
+      "标准化财务期间",
+      "财务期间",
+      "季度财务",
+      "TTM财务",
+      "期间层"
     ]
   },
   "field_terms": {
@@ -410,6 +417,128 @@
     "trade_data.stock_etf_trading_data.exchange_tradable_shares": [
       "场内流通份额",
       "流通份额"
+    ],
+    "trade_data.financial_period.symbol": [
+      "股票代码"
+    ],
+    "trade_data.financial_period.statement_format": [
+      "报表类型",
+      "财报格式",
+      "报表格式"
+    ],
+    "trade_data.financial_period.report_date": [
+      "报告期"
+    ],
+    "trade_data.financial_period.publish_date": [
+      "披露日期",
+      "公告日期",
+      "财报可用日"
+    ],
+    "trade_data.financial_period.fiscal_year": [
+      "会计年度"
+    ],
+    "trade_data.financial_period.fiscal_quarter": [
+      "财务季度"
+    ],
+    "trade_data.financial_period.period_type": [
+      "期间类型",
+      "报告期类型",
+      "财报期间"
+    ],
+    "trade_data.financial_period.months_in_period": [
+      "累计月数"
+    ],
+    "trade_data.financial_period.total_assets": [
+      "资产总计"
+    ],
+    "trade_data.financial_period.total_liabilities": [
+      "负债合计"
+    ],
+    "trade_data.financial_period.parent_equity": [
+      "归母股东权益"
+    ],
+    "trade_data.financial_period.total_owner_equity": [
+      "所有者权益合计"
+    ],
+    "trade_data.financial_period.operating_revenue_ytd": [
+      "营业收入YTD",
+      "累计营业收入",
+      "年初至今营业收入"
+    ],
+    "trade_data.financial_period.operating_revenue_quarter": [
+      "单季度营业收入",
+      "单季营业收入",
+      "季度营收"
+    ],
+    "trade_data.financial_period.operating_revenue_ttm": [
+      "营业收入TTM",
+      "滚动营业收入",
+      "近十二个月营业收入"
+    ],
+    "trade_data.financial_period.net_profit_ytd": [
+      "净利润YTD",
+      "累计净利润",
+      "年初至今净利润"
+    ],
+    "trade_data.financial_period.net_profit_quarter": [
+      "单季度净利润",
+      "单季净利润",
+      "季度净利润"
+    ],
+    "trade_data.financial_period.net_profit_ttm": [
+      "净利润TTM",
+      "滚动净利润",
+      "近十二个月净利润"
+    ],
+    "trade_data.financial_period.parent_net_profit_ytd": [
+      "归母净利润YTD",
+      "累计归母净利润"
+    ],
+    "trade_data.financial_period.parent_net_profit_quarter": [
+      "单季度归母净利润",
+      "单季归母净利润"
+    ],
+    "trade_data.financial_period.parent_net_profit_ttm": [
+      "归母净利润TTM",
+      "滚动归母净利润",
+      "近十二个月归母净利润"
+    ],
+    "trade_data.financial_period.operating_cash_flow_ytd": [
+      "经营现金流YTD",
+      "累计经营现金流"
+    ],
+    "trade_data.financial_period.operating_cash_flow_quarter": [
+      "单季度经营现金流",
+      "单季经营现金流"
+    ],
+    "trade_data.financial_period.operating_cash_flow_ttm": [
+      "经营现金流TTM",
+      "滚动经营现金流",
+      "近十二个月经营现金流"
+    ],
+    "trade_data.financial_period.quarter_predecessor_report_date": [
+      "单季度前序报告期"
+    ],
+    "trade_data.financial_period.quarter_predecessor_publish_date": [
+      "单季度前序披露日"
+    ],
+    "trade_data.financial_period.ttm_annual_report_date": [
+      "TTM上年年报期"
+    ],
+    "trade_data.financial_period.ttm_annual_publish_date": [
+      "TTM上年年报披露日"
+    ],
+    "trade_data.financial_period.ttm_prior_report_date": [
+      "TTM上年同期报告期"
+    ],
+    "trade_data.financial_period.ttm_prior_publish_date": [
+      "TTM上年同期披露日"
+    ],
+    "trade_data.financial_period.quarter_components_complete": [
+      "单季度组成完整"
+    ],
+    "trade_data.financial_period.ttm_components_complete": [
+      "TTM组成完整"
     ]
   },
   "concept_terms": {

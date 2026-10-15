@@ -23,11 +23,43 @@ class DataUpdateTests(unittest.TestCase):
         )
         self.assertEqual(
             [job.name for job in jobs],
-            ["stock_daily", "index_daily", "stock_fin_data_xbx", "stock_etf_trading_data"],
+            [
+                "stock_daily",
+                "index_daily",
+                "stock_fin_data_xbx",
+                "financial_period",
+                "stock_etf_trading_data",
+            ],
         )
         self.assertEqual(jobs[0].source, Path("D:/raw/stock-trading-data-pro"))
         self.assertEqual(jobs[1].output, Path("D:/curated/trade_data"))
         self.assertEqual(jobs[2].source, Path("D:/raw/stock-fin-data-xbx"))
+        self.assertIsNone(jobs[3].source)
+        self.assertEqual(jobs[3].steps, ("build", "validate"))
+
+    def test_derived_job_runs_without_a_raw_source(self) -> None:
+        output = Path(__file__).parent
+        job = PipelineJob(
+            "derived",
+            Path(__file__),
+            None,
+            output,
+            ("build", "validate"),
+        )
+        calls: list[tuple[str, list[str]]] = []
+
+        def runner(command: list[str]) -> subprocess.CompletedProcess[str]:
+            calls.append((command[2], command[3:]))
+            return subprocess.CompletedProcess(command, 0, stdout="", stderr="")
+
+        self.assertTrue(run_updates([job], self.logger, runner))
+        self.assertEqual(
+            calls,
+            [
+                ("build", ["--output", str(output)]),
+                ("validate", ["--output", str(output)]),
+            ],
+        )
 
     def test_failed_validation_skips_compact_but_continues_next_job(self) -> None:
         existing_source = Path(__file__).parent
