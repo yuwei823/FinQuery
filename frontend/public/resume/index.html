@@ -41,7 +41,7 @@
       html, body { background:#fff; }
       body { min-height:auto; margin:0; padding:0; overflow:visible; }
       .resume-spread { display:block; width:auto; margin:0; }
-      .resume-page { width:auto; min-height:auto; padding:0; box-shadow:none; }
+      .resume-page { width:auto; height:auto; min-height:auto; padding:0; box-shadow:none; }
       .resume-page + .resume-page { break-before:page; page-break-before:always; }
       a { color:inherit; }
     }
@@ -67,7 +67,7 @@
       <ul>
         <li>拥有 <strong>9 年以上微软软件工程经验</strong>，长期参与 Power BI / Microsoft Fabric、Azure Synapse Analytics 与 Azure Portal 等企业级数据云平台建设。</li>
         <li>担任 Microsoft Fabric 工作区模块技术负责人，具备从业务需求理解、技术方案设计、平台集成到工程落地的完整能力，熟悉大型 SaaS 平台、SDK、工作负载接入、数据权限及发布体系，推动不同工作负载以标准化方式接入统一平台。</li>
-        <li>具备 AI Agent 设计及部署经验。能够在业务、产品和工程团队之间梳理需求、明确系统边界并推进方案交付，</li>
+        <li>具备 AI Agent 设计及部署经验。能够在业务、产品和工程团队之间梳理需求、明确系统边界并推进方案交付。</li>
       </ul>
     </section>
 
@@ -139,13 +139,13 @@
 
       <article class="entry">
         <div class="entry-head">
-          <h3 class="entry-title">保宣合规助手 · 保险营销内容智能审核系统</h3>
+          <h3 class="entry-title">合规助手 · 金融营销内容智能审核系统 <a class="project-link" href="https://baoxuanzhushou.app/" target="_blank" rel="noopener noreferrer">（https://baoxuanzhushou.app/）</a></h3>
           <div class="entry-meta">2026.10</div>
         </div>
         <p class="role">独立项目 · RAG 与合规审核解决方案设计</p>
         <ul>
           <li><strong>业务场景：</strong>面向保险机构营销材料的合规审核，支持文本与多图，对照本地法规知识库输出合规 / 违规 / 需复核三态结论，并提供证据与法规引用追溯。</li>
-          <li><strong>知识库工程：</strong>提取三份正式监管法规，构建 172 条文、34 张规则卡与范围台账，建立适用条件和例外情形；未核对的内容禁止上线，已发布版本不可篡改，新法规进入自动生成待审候选。</li>
+          <li><strong>知识库工程：</strong>提取四份正式监管法规，抽取 359 条条文、构建 46 张规则卡与范围台账，建立适用条件和例外情形；未核对的内容禁止上线，已发布版本不可篡改，新法规进入自动生成待审候选。</li>
           <li><strong>检索与判定：</strong>Python + FastAPI 构建，BM25 与 text-embedding-v4 双路 hybrid 检索经 RRF 融合，召回原文进入判定并保留全部必查规则；内置校验器拦截模型编造条文或证据，结论引用的法规原文进行核对回填。</li></li>
           <li><strong>图文评测：</strong>支持文字加最多 5 张图片一起审核，自动识别图中内容并保留图片顺序，图片互相矛盾时如实呈现双方信息；网页端并排展示违规证据与法规原文，可一键导出结果。</li>
         </ul>
