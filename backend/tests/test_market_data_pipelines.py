@@ -98,6 +98,10 @@ class TradeDataPipelineTest(unittest.TestCase):
             table for table in schema["tables"] if table["name"] == "financial_statement"
         )
         self.assertEqual(
+            financial_table["primary_key"],
+            ["symbol", "statement_format", "report_date", "publish_date"],
+        )
+        self.assertEqual(
             [field["name"] for field in financial_table["fields"]],
             [column.target for column in FINANCIAL_SPEC.columns],
         )

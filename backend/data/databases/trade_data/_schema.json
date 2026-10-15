@@ -75,7 +75,7 @@
       "domain": "公司财务",
       "description": "按股票、报告期和披露日期记录资产负债表、利润表与现金流量表核心指标。产品每日更新，但数据粒度是财报披露记录；利润及现金流指标采用源报表口径，不等同于单季度值。",
       "profile_mode": "schema_only",
-      "primary_key": ["symbol", "report_date", "publish_date"],
+      "primary_key": ["symbol", "statement_format", "report_date", "publish_date"],
       "fields": [
         {"name": "symbol", "label": "股票代码", "type": "文本", "source_type": "VARCHAR", "description": "包含交易所前缀的股票代码", "role": "identifier", "aggregation": "none"},
         {"name": "statement_format", "label": "报表类型", "type": "文本", "source_type": "VARCHAR", "description": "一般企业、银行、保险或证券等财务报表格式", "role": "dimension", "aggregation": "none"},

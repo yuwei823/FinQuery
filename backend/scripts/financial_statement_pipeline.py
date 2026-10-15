@@ -54,7 +54,7 @@ SPEC = DatasetSpec(
         ColumnSpec("C_net_increase_in_cce@xbx", "net_cash_increase", "number"),
         ColumnSpec("C_final_balance_of_cce@xbx", "ending_cash_balance", "number"),
     ),
-    key_fields=("symbol", "report_date", "publish_date"),
+    key_fields=("symbol", "statement_format", "report_date", "publish_date"),
     identity_field="symbol",
     recursive=True,
     identity_from_parent=True,
