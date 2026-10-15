@@ -124,7 +124,7 @@ class DatabaseSwitchesTest(unittest.TestCase):
         self.assertEqual(CONCEPT_TERMS["trade_data.trailing_twelve_months"]["label"], "滚动十二个月")
         self.assertEqual(
             DERIVED_METRIC_TERMS["trade_data.pe_ttm"]["label"],
-            "滚动市盈率",
+            "滚动市盈率（合并口径）",
         )
         index = SchemaIndex(index_path=None)
         self.assertEqual(index.index_path.name, "schema_store.trade_data.json")

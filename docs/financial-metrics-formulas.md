@@ -1,7 +1,9 @@
 # 财务派生指标公式表
 
 > 本表定义候选指标的标准公式、依赖和异常值规则。指标名称、别名和概念解释统一登记在
-> `backend/data/databases/trade_data/_terms.json`；本表目前是公式设计基线，不代表所有指标已经可以查询。
+> `backend/data/databases/trade_data/_terms.json`；其中状态为 `active` 的 P0 项同时保存可执行 SQL 公式和异常值规则，本表用于审阅和解释，其余指标仍是设计基线。
+
+当前已上线字段：`pe_ttm`、`pb`、`pcf_ttm`、`earnings_yield_ttm`、`liabilities_to_assets`、`liabilities_to_equity`。它们随 `stock_daily` Parquet 生成，不需要跨表查询。
 
 ## 1. 数据可用性等级
 
@@ -20,7 +22,7 @@
 | `avg_parent_equity` | 平均归母权益 | `(期初归母权益 + 期末归母权益) / 2` | B | 两端均须为当时已披露值；不可把多家公司权益相加后再平均单家公司比率。 |
 | `avg_total_assets` | 平均总资产 | `(期初总资产 + 期末总资产) / 2` | B | 期初通常取十二个月前同口径期末。 |
 | `revenue_ttm` | 营业收入TTM | 年报：本年累计；非年报：`上年年报 + 本年YTD - 上年同期YTD` | B | 必须先去重修订版本；缺任一组成项则为空。 |
-| `parent_net_profit_ttm` | 归母净利润TTM | 同上TTM桥接公式 | A/B | `stock_daily.net_profit_ttm` 可作为一期实现，但需确认其是否为归母口径。 |
+| `parent_net_profit_ttm` | 归母净利润TTM | 同上TTM桥接公式 | B | 抽样已确认 `stock_daily.net_profit_ttm` 是合并净利润口径，不能替代归母净利润。 |
 | `cfo_ttm` | 经营现金流TTM | 同上TTM桥接公式 | A/B | 当前 `stock_daily.cash_flow_ttm` 可直接用，但应确认源口径。 |
 | `gross_profit_ttm` | 毛利润TTM | `营业收入TTM - 营业成本TTM` | C | 银行、保险、券商默认不适用。 |
 | `ebit_ttm` | EBIT TTM | 标准化营业利润TTM，按会计口径调整明确的非经营项目 | C | 不在缺少明细时把营业利润无条件等同于EBIT。 |
@@ -37,16 +39,16 @@
 
 | 指标ID | 中文名/别名 | 标准公式 | 等级 | 无效或特殊处理 |
 |---|---|---|---|---|
-| `pe_ttm` | 滚动市盈率、PE TTM、动态PE | `总市值 / 归母净利润TTM` | A | 分母 `<= 0` 返回空值并标记NM。 |
+| `pe_ttm` | 滚动市盈率（合并口径）、PE TTM | P0：`总市值 / 合并净利润TTM` | A | 分母 `<= 0` 返回空值；不是严格归母口径。标准归母PE将在PIT财报层使用独立指标。 |
 | `pe_static` | 静态市盈率、年报PE | `总市值 / 最近完整年度归母净利润` | B | 分母 `<= 0` 为NM；必须显示所用财年。 |
 | `pe_forward` | 预测市盈率、Forward PE | `总市值 / 未来十二个月预测归母净利润` | D | 需记录预测来源和快照时间。 |
-| `pb` | 市净率、PB、PBV | `总市值 / 最新归母股东权益` | A/B | 当前 `stock_daily.net_assets` 可先用；权益 `<= 0` 为NM。 |
+| `pb` | 市净率（总权益口径）、PB、PBV | P0：`总市值 / 所有者权益合计` | A | `stock_daily.net_assets` 抽样确认通常包含少数股东权益；权益 `<= 0` 为空。标准归母PB将在PIT财报层使用独立指标。 |
 | `ps_ttm` | 滚动市销率、PS TTM | `总市值 / 营业收入TTM` | B | 收入 `<= 0` 为NM。 |
 | `pcf_ttm` | 滚动市现率、P/CF | `总市值 / 经营现金流TTM` | A | 分母 `<= 0` 默认NM，同时保留原始CFO供解释。 |
 | `ev_sales_ttm` | EV/Sales、企业价值营收倍数 | `企业价值 / 营业收入TTM` | C | 收入 `<= 0` 为NM。 |
 | `ev_ebit_ttm` | EV/EBIT | `企业价值 / EBIT TTM` | C | EBIT `<= 0` 为NM。 |
 | `ev_ebitda_ttm` | 企业倍数、EV/EBITDA | `企业价值 / EBITDA TTM` | C | EBITDA `<= 0` 为NM。 |
-| `earnings_yield_ttm` | 盈利收益率、PE倒数 | `归母净利润TTM / 总市值` | A | 可保留负值；总市值 `<= 0` 为空。 |
+| `earnings_yield_ttm` | 盈利收益率（合并口径）、PE倒数 | `合并净利润TTM / 总市值` | A | 可保留负值；总市值 `<= 0` 为空。 |
 | `fcfe_yield` | 股权自由现金流收益率 | `FCFE TTM / 总市值` | C | 可为负；与FCFF/EV收益率分开。 |
 | `fcff_yield` | 企业自由现金流收益率 | `FCFF TTM / 企业价值` | C | EV `<= 0` 为空。 |
 | `peg_forward` | PEG | `PE TTM / 未来盈利增长率百分数` | D | 约定增长率用“百分点数”，如20%以20代入；PE或增长率非正时为NM。 |
@@ -132,7 +134,7 @@
 
 | 批次 | 指标 | 原因 |
 |---|---|---|
-| P0 | PE TTM、PB、PCF TTM、盈利收益率、资产负债率、产权比率 | 当前 `stock_daily` 已有直接依赖，改造最小。 |
+| P0 | 合并口径PE TTM、总权益口径PB、PCF TTM、合并口径盈利收益率、资产负债率、产权比率 | 当前 `stock_daily` 已有直接依赖；名称明确披露与标准归母口径的差异。 |
 | P1 | PS TTM、净利率、标准ROE、ROA、总资产周转率、经营现金含量、营收/利润同比 | 当前核心财报字段大体足够，重点是TTM与PIT处理。 |
 | P2 | 毛利率、EBITDA、EV倍数、流动/速动比率、利息保障、周转天数、CCC、FCF、ROIC | 需要从原始财报扩充明细字段并处理行业格式差异。 |
 | P3 | Forward PE、PEG、股息率、可持续增长率、每股扩展指标 | 需要预测、分红或可靠股本数据。 |

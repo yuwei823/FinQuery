@@ -145,7 +145,9 @@ DuckDB 支持在查询目录中注册 `*.csv`、`*.parquet` 或包含 Parquet �
 
 启动时会验证这些键是否对应真实Schema对象，并把表级词和字段别名注入运行时Schema。
 `concept_terms` 与 `derived_metric_terms` 使用数据库内稳定ID；尚未实现的派生指标应将
-`status` 标为 `planned`，避免把术语登记误解为指标已经可查询。
+`status` 标为 `planned`，避免把术语登记误解为指标已经可查询。可执行指标使用
+`status: "active"`，并登记 `field_id`、`sql_expression`、`invalid_when`、`period_basis` 和单位；
+数据管道应从注册表读取公式，不在另一处维护第二份可执行定义。
 
 数据库仍需在 `backend/app/database_sources/` 提供ID模块，例如
 `backend/app/database_sources/fund_data.py`：
@@ -298,7 +300,9 @@ docker compose --env-file .env.docker --profile tools run --rm stock-daily-data-
 
 转换器跳过数据提供方说明行，将 GB18030 CSV 标准化为 UTF-8 字段和分片 Parquet，
 输出到 `D:\trade_data_curated\trade_data\stock_daily`。它根据源文件大小和修改时间跳过
-未变化文件，可安全地在每日数据更新后重复执行。原始目录始终只读。
+未变化文件，可安全地在每日数据更新后重复执行；管道版本变化会自动使旧 manifest 记录失效并重算。
+转换时还会按照 `_terms.json` 的 active 公式生成合并净利润口径 PE TTM、总权益口径 PB、
+PCF TTM、合并口径盈利收益率、资产负债率和产权比率。原始目录始终只读。
 
 把按股票生成的分片压实成查询文件，避免每次查询打开数千个小文件：
 

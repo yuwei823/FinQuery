@@ -11,7 +11,10 @@ from app.retrieval.graph import SchemaGraphBuilder
 from app.retrieval.service import SchemaIndex
 from scripts.stock_daily_pipeline import (
     COLUMNS,
+    DERIVED_COLUMNS,
     EXPECTED_HEADER,
+    OUTPUT_HEADER,
+    PIPELINE_VERSION,
     compact_dataset,
     convert_dataset,
     inventory,
@@ -35,16 +38,51 @@ SCHEMA_PATH = (
     / "trade_data"
     / "_schema.json"
 )
+TERMS_PATH = SCHEMA_PATH.with_name("_terms.json")
 
 
 class TradeDataPipelineTest(unittest.TestCase):
+    def test_trade_data_terms_are_clean_utf8(self) -> None:
+        raw = TERMS_PATH.read_bytes()
+        decoded = raw.decode("utf-8", errors="strict")
+        terms = json.loads(decoded)
+
+        self.assertFalse(raw.startswith(b"\xef\xbb\xbf"))
+        self.assertNotIn("\ufffd", decoded)
+        self.assertEqual(
+            terms["table_terms"]["trade_data.stock_daily"][:3],
+            ["股票行情", "个股行情", "股票日线"],
+        )
+        self.assertIn(
+            "市盈率", terms["field_terms"]["trade_data.stock_daily.pe_ttm"]
+        )
+        schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
+        for table in schema["tables"]:
+            for field in table["fields"]:
+                field_id = f"{table['id']}.{field['name']}"
+                self.assertEqual(terms["field_terms"][field_id][0], field["label"])
+
+    def test_active_metric_registry_drives_pipeline_contract(self) -> None:
+        terms = json.loads(TERMS_PATH.read_text(encoding="utf-8"))
+        registry = terms["derived_metric_terms"]
+
+        self.assertEqual(terms["schema_version"], 2)
+        for column in DERIVED_COLUMNS:
+            metric = registry[column.target]
+            self.assertEqual(metric["status"], "active")
+            self.assertEqual(
+                metric["field_id"], f"trade_data.stock_daily.{column.target}"
+            )
+            self.assertEqual(metric["sql_expression"], column.expression)
+            self.assertEqual(metric["invalid_when"], column.invalid_when)
+
     def test_schema_matches_converter_columns(self) -> None:
         schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
         fields = schema["tables"][0]["fields"]
         self.assertEqual(schema["database"], "trade_data")
         self.assertEqual(
             [field["name"] for field in fields],
-            [column.target for column in COLUMNS],
+            list(OUTPUT_HEADER),
         )
 
         index_table = next(
@@ -83,7 +121,7 @@ class TradeDataPipelineTest(unittest.TestCase):
         index._append_table_documents(documents, None, table)
 
         self.assertEqual(table["profile_mode"], "schema_only")
-        self.assertEqual(len(documents), len(COLUMNS))
+        self.assertEqual(len(documents), len(OUTPUT_HEADER))
         self.assertTrue(
             all("未在Schema索引阶段扫描全表" in item["profile"] for item in documents)
         )
@@ -135,10 +173,24 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(second["converted_this_run"], 0)
             self.assertEqual(second["skipped_this_run"], 2)
 
+            manifest_path = output / "_pipeline_manifest.json"
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest["files"]["sh600000.csv"].pop("pipeline_version")
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=False), encoding="utf-8"
+            )
+            refreshed = convert_dataset(source, output)
+            self.assertEqual(refreshed["pipeline_version"], PIPELINE_VERSION)
+            self.assertEqual(refreshed["converted_this_run"], 1)
+            self.assertEqual(refreshed["skipped_this_run"], 1)
+
             validation = validate_dataset(output)
             self.assertEqual(validation["errors"], [])
             self.assertEqual(validation["parquet_files"], 2)
             self.assertEqual(validation["row_count"], 4)
+            self.assertTrue(
+                all(count == 0 for count in validation["formula_mismatch_rows"].values())
+            )
 
             compact = compact_dataset(output)
             self.assertEqual(compact["row_count"], 4)
@@ -155,6 +207,18 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertIn(rows[0][0], {"bj920000", "sh600000"})
             self.assertEqual(rows[-1][2], 9.06)
             self.assertTrue(rows[0][3])
+
+            with engine.connect("trade_data") as connection:
+                metrics = connection.execute(
+                    "SELECT pe_ttm, pb, pcf_ttm, earnings_yield_ttm, "
+                    "liabilities_to_assets, liabilities_to_equity "
+                    "FROM stock_daily WHERE symbol = 'sh600000' "
+                    "ORDER BY trade_date"
+                ).fetchall()
+            self.assertEqual(metrics[0], (10.0, 2.0, 5.0, 0.1, 0.4, 1.6))
+            self.assertEqual(metrics[1][:3], (None, None, None))
+            self.assertEqual(metrics[1][3], -0.05)
+            self.assertEqual(metrics[1][4:], (None, None))
 
     def test_index_daily_pipeline_and_duckdb_registration(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
@@ -308,6 +372,12 @@ class TradeDataPipelineTest(unittest.TestCase):
                     "前收盘价": "9.18",
                     "成交量": "72340449.0",
                     "成交额": "656348140.0",
+                    "总市值": "1000",
+                    "净利润TTM": "100" if trade_date == "2026-09-16" else "-50",
+                    "现金流TTM": "200" if trade_date == "2026-09-16" else "0",
+                    "净资产": "500" if trade_date == "2026-09-16" else "-20",
+                    "总资产": "2000" if trade_date == "2026-09-16" else "0",
+                    "总负债": "800" if trade_date == "2026-09-16" else "900",
                     "沪深300成分股": "Y",
                     "新版申万一级行业名称": "银行",
                 }

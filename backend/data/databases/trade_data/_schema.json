@@ -6,7 +6,8 @@
   "example_questions": [
     "查询浦发银行最近20个交易日的收盘价和成交额",
     "比较沪深300、中证500和中证1000最近一个月的涨跌幅",
-    "按申万一级行业统计最新交易日的总市值"
+    "按申万一级行业统计最新交易日的总市值",
+    "查询最新交易日市盈率、市净率和资产负债率最低的股票"
   ],
   "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "stock_etf_trading_data"]},
   "tables": [
@@ -16,7 +17,7 @@
       "label": "股票日行情",
       "database": "trade_data",
       "domain": "股票行情",
-      "description": "按股票和交易日记录的价格、成交、资金流、财务快照、指数成分和申万行业数据。",
+      "description": "按股票和交易日记录的价格、成交、资金流、财务快照、估值与杠杆派生指标、指数成分和申万行业数据。",
       "profile_mode": "schema_only",
       "primary_key": ["symbol", "trade_date"],
       "fields": [
@@ -32,9 +33,9 @@
         {"name": "turnover", "label": "成交额", "type": "数值", "source_type": "DOUBLE", "description": "当日股票成交金额", "role": "metric", "aggregation": "sum"},
         {"name": "float_market_cap", "label": "流通市值", "type": "数值", "source_type": "DOUBLE", "description": "当日流通股份市值", "role": "metric", "aggregation": "avg"},
         {"name": "total_market_cap", "label": "总市值", "type": "数值", "source_type": "DOUBLE", "description": "当日股票总市值", "role": "metric", "aggregation": "avg"},
-        {"name": "net_profit_ttm", "label": "净利润TTM", "type": "数值", "source_type": "DOUBLE", "description": "滚动十二个月净利润", "role": "metric", "aggregation": "avg"},
-        {"name": "cash_flow_ttm", "label": "现金流TTM", "type": "数值", "source_type": "DOUBLE", "description": "滚动十二个月现金流", "role": "metric", "aggregation": "avg"},
-        {"name": "net_assets", "label": "净资产", "type": "数值", "source_type": "DOUBLE", "description": "最新可用财务快照中的净资产", "role": "metric", "aggregation": "avg"},
+        {"name": "net_profit_ttm", "label": "净利润TTM", "type": "数值", "source_type": "DOUBLE", "description": "滚动十二个月合并净利润；抽样确认不是严格归母口径", "role": "metric", "aggregation": "avg"},
+        {"name": "cash_flow_ttm", "label": "现金流TTM", "type": "数值", "source_type": "DOUBLE", "description": "滚动十二个月经营活动现金流量净额", "role": "metric", "aggregation": "avg"},
+        {"name": "net_assets", "label": "净资产", "type": "数值", "source_type": "DOUBLE", "description": "最新可用财务快照中的所有者权益合计，通常包含少数股东权益", "role": "metric", "aggregation": "avg"},
         {"name": "total_assets", "label": "总资产", "type": "数值", "source_type": "DOUBLE", "description": "最新可用财务快照中的总资产", "role": "metric", "aggregation": "avg"},
         {"name": "total_liabilities", "label": "总负债", "type": "数值", "source_type": "DOUBLE", "description": "最新可用财务快照中的总负债", "role": "metric", "aggregation": "avg"},
         {"name": "quarter_net_profit", "label": "当季净利润", "type": "数值", "source_type": "DOUBLE", "description": "最近单季度净利润", "role": "metric", "aggregation": "avg"},
@@ -57,7 +58,13 @@
         {"name": "industry_level_3", "label": "申万三级行业", "type": "文本", "source_type": "VARCHAR", "description": "新版申万三级行业名称", "role": "dimension", "aggregation": "none"},
         {"name": "close_0935", "label": "09:35收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:35时点价格", "role": "metric", "aggregation": "avg"},
         {"name": "close_0945", "label": "09:45收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:45时点价格", "role": "metric", "aggregation": "avg"},
-        {"name": "close_0955", "label": "09:55收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:55时点价格", "role": "metric", "aggregation": "avg"}
+        {"name": "close_0955", "label": "09:55收盘价", "type": "数值", "source_type": "DOUBLE", "description": "09:55时点价格", "role": "metric", "aggregation": "avg"},
+        {"name": "pe_ttm", "label": "滚动市盈率（合并口径）", "type": "数值", "source_type": "DOUBLE", "description": "总市值除以合并净利润TTM；不是严格归母口径，市值或净利润非正时为空", "role": "metric", "aggregation": "avg"},
+        {"name": "pb", "label": "市净率（总权益口径）", "type": "数值", "source_type": "DOUBLE", "description": "总市值除以所有者权益合计；不是严格归母权益口径，市值或权益非正时为空", "role": "metric", "aggregation": "avg"},
+        {"name": "pcf_ttm", "label": "滚动市现率", "type": "数值", "source_type": "DOUBLE", "description": "总市值除以现金流TTM；市值或现金流非正时为空", "role": "metric", "aggregation": "avg"},
+        {"name": "earnings_yield_ttm", "label": "盈利收益率（合并口径）", "type": "数值", "source_type": "DOUBLE", "description": "合并净利润TTM除以总市值；保留亏损企业的负值，市值非正时为空", "role": "metric", "aggregation": "avg"},
+        {"name": "liabilities_to_assets", "label": "资产负债率", "type": "数值", "source_type": "DOUBLE", "description": "总负债除以总资产；总资产非正时为空", "role": "metric", "aggregation": "avg"},
+        {"name": "liabilities_to_equity", "label": "产权比率", "type": "数值", "source_type": "DOUBLE", "description": "总负债除以净资产；净资产非正时为空，不等同于有息债务权益比", "role": "metric", "aggregation": "avg"}
       ]
     },
     {

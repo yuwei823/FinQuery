@@ -16,6 +16,7 @@ import duckdb
 DATABASE_ID = "trade_data"
 TABLE_NAME = "stock_daily"
 SOURCE_ENCODING = "gb18030"
+PIPELINE_VERSION = 2
 
 
 @dataclass(frozen=True)
@@ -23,6 +24,13 @@ class ColumnSpec:
     source: str
     target: str
     kind: str
+
+
+@dataclass(frozen=True)
+class DerivedColumnSpec:
+    target: str
+    expression: str
+    invalid_when: str
 
 
 COLUMNS = (
@@ -68,6 +76,44 @@ COLUMNS = (
 
 EXPECTED_HEADER = tuple(column.source for column in COLUMNS)
 TARGET_HEADER = tuple(column.target for column in COLUMNS)
+
+P0_METRIC_IDS = (
+    "pe_ttm",
+    "pb",
+    "pcf_ttm",
+    "earnings_yield_ttm",
+    "liabilities_to_assets",
+    "liabilities_to_equity",
+)
+
+
+def _load_derived_columns() -> tuple[DerivedColumnSpec, ...]:
+    terms_path = (
+        Path(__file__).resolve().parents[1]
+        / "data"
+        / "databases"
+        / DATABASE_ID
+        / "_terms.json"
+    )
+    terms = json.loads(terms_path.read_text(encoding="utf-8"))
+    registry = terms.get("derived_metric_terms", {})
+    columns: list[DerivedColumnSpec] = []
+    for metric_id in P0_METRIC_IDS:
+        metric = registry.get(metric_id, {})
+        field_id = metric.get("field_id")
+        expected_field_id = f"{DATABASE_ID}.{TABLE_NAME}.{metric_id}"
+        if metric.get("status") != "active" or field_id != expected_field_id:
+            raise ValueError(f"派生指标注册不完整：{metric_id}")
+        expression = metric.get("sql_expression")
+        invalid_when = metric.get("invalid_when")
+        if not expression or not invalid_when:
+            raise ValueError(f"派生指标缺少公式或异常值规则：{metric_id}")
+        columns.append(DerivedColumnSpec(metric_id, expression, invalid_when))
+    return tuple(columns)
+
+
+DERIVED_COLUMNS = _load_derived_columns()
+OUTPUT_HEADER = TARGET_HEADER + tuple(column.target for column in DERIVED_COLUMNS)
 
 
 def _safe_path(path: Path) -> str:
@@ -165,6 +211,13 @@ def _projection_sql() -> str:
     return ",\n            ".join(expressions)
 
 
+def _derived_projection_sql() -> str:
+    return ",\n                    ".join(
+        f'{column.expression}::DOUBLE AS "{column.target}"'
+        for column in DERIVED_COLUMNS
+    )
+
+
 def _normalize_csv(source: Path, destination: Path) -> int:
     row_count = 0
     with source.open("r", encoding=SOURCE_ENCODING, newline="") as input_handle:
@@ -211,14 +264,20 @@ def _convert_file(
         connection.execute(
             f"""
             COPY (
-                SELECT
-                    {_projection_sql()}
-                FROM read_csv(
-                    '{_safe_path(normalized_csv)}',
-                    header=true,
-                    all_varchar=true,
-                    strict_mode=true
+                WITH typed AS (
+                    SELECT
+                        {_projection_sql()}
+                    FROM read_csv(
+                        '{_safe_path(normalized_csv)}',
+                        header=true,
+                        all_varchar=true,
+                        strict_mode=true
+                    )
                 )
+                SELECT
+                    *,
+                    {_derived_projection_sql()}
+                FROM typed
             ) TO '{_safe_path(temporary_parquet)}'
             (FORMAT PARQUET, COMPRESSION ZSTD)
             """
@@ -238,6 +297,7 @@ def _convert_file(
         os.replace(temporary_parquet, final_parquet)
         stat = source.stat()
         return {
+            "pipeline_version": PIPELINE_VERSION,
             "source_size": stat.st_size,
             "source_mtime_ns": stat.st_mtime_ns,
             "rows": row_count,
@@ -307,6 +367,7 @@ def convert_dataset(
         final_path = table_dir / f"{path.stem}.parquet"
         unchanged = (
             existing
+            and existing.get("pipeline_version") == PIPELINE_VERSION
             and existing.get("source_size") == stat.st_size
             and existing.get("source_mtime_ns") == stat.st_mtime_ns
             and final_path.exists()
@@ -354,6 +415,7 @@ def _manifest_summary(
     return {
         "database": DATABASE_ID,
         "table": TABLE_NAME,
+        "pipeline_version": PIPELINE_VERSION,
         "source_encoding": SOURCE_ENCODING,
         "file_count": len(records),
         "row_count": sum(int(item.get("rows", 0)) for item in records.values()),
@@ -379,6 +441,12 @@ def validate_dataset(output: Path) -> dict[str, Any]:
     connection = duckdb.connect(":memory:")
     try:
         connection.execute("PRAGMA disable_progress_bar")
+        actual_columns = [
+            row[0]
+            for row in connection.execute(
+                f"DESCRIBE SELECT * FROM read_parquet('{parquet_glob}', union_by_name=true)"
+            ).fetchall()
+        ]
         row_count, symbol_count, min_date, max_date, null_key_count = connection.execute(
             f"""
             SELECT
@@ -401,6 +469,22 @@ def validate_dataset(output: Path) -> dict[str, Any]:
             )
             """
         ).fetchone()[0]
+
+        invalid_derived_metric_rows: dict[str, int] = {}
+        formula_mismatch_rows: dict[str, int] = {}
+        if set(OUTPUT_HEADER).issubset(actual_columns):
+            for metric in DERIVED_COLUMNS:
+                predicate = (
+                    f'"{metric.target}" IS NOT NULL AND ({metric.invalid_when})'
+                )
+                invalid_derived_metric_rows[metric.target] = connection.execute(
+                    f"SELECT COUNT(*) FROM read_parquet('{parquet_glob}', union_by_name=true) "
+                    f"WHERE {predicate}"
+                ).fetchone()[0]
+                formula_mismatch_rows[metric.target] = connection.execute(
+                    f"SELECT COUNT(*) FROM read_parquet('{parquet_glob}', union_by_name=true) "
+                    f'WHERE "{metric.target}" IS DISTINCT FROM ({metric.expression})'
+                ).fetchone()[0]
     finally:
         connection.close()
 
@@ -415,6 +499,16 @@ def validate_dataset(output: Path) -> dict[str, Any]:
         errors.append(f"存在{null_key_count}行空主键")
     if duplicate_key_groups:
         errors.append(f"存在{duplicate_key_groups}组重复主键")
+    if actual_columns != list(OUTPUT_HEADER):
+        errors.append("Parquet字段与当前行情输出契约不一致")
+    if int(manifest.get("pipeline_version", -1)) != PIPELINE_VERSION:
+        errors.append("manifest管道版本不是当前版本")
+    for metric, invalid_count in invalid_derived_metric_rows.items():
+        if invalid_count:
+            errors.append(f"{metric}存在{invalid_count}行违反异常值规则")
+    for metric, mismatch_count in formula_mismatch_rows.items():
+        if mismatch_count:
+            errors.append(f"{metric}存在{mismatch_count}行与注册公式不一致")
 
     return {
         "database": DATABASE_ID,
@@ -426,6 +520,9 @@ def validate_dataset(output: Path) -> dict[str, Any]:
         "max_date": max_date.isoformat() if max_date else None,
         "null_key_count": null_key_count,
         "duplicate_key_groups": duplicate_key_groups,
+        "pipeline_version": manifest.get("pipeline_version"),
+        "invalid_derived_metric_rows": invalid_derived_metric_rows,
+        "formula_mismatch_rows": formula_mismatch_rows,
         "errors": errors,
     }
 
