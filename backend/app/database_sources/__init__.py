@@ -4,7 +4,6 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from .trade_data import DATABASE_ID as TRADE_DATA_ID
-from .trade_data import SYNONYMS as TRADE_DATA_SYNONYMS
 
 
 @dataclass(frozen=True)
@@ -13,12 +12,15 @@ class DatabaseSource:
 
     database_id: str
     folder: Path
-    synonyms: dict[str, list[str]]
     data_folder: Path | None = None
 
     @property
     def schema_path(self) -> Path:
         return self.folder / "_schema.json"
+
+    @property
+    def terms_path(self) -> Path:
+        return self.folder / "_terms.json"
 
     @property
     def query_folder(self) -> Path:
@@ -34,7 +36,6 @@ def source_registry(
         TRADE_DATA_ID: DatabaseSource(
             database_id=TRADE_DATA_ID,
             folder=database_root / TRADE_DATA_ID,
-            synonyms=TRADE_DATA_SYNONYMS,
             data_folder=(
                 curated_data_root / TRADE_DATA_ID
                 if curated_data_root is not None

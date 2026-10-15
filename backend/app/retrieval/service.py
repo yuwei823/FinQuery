@@ -9,9 +9,9 @@ from ..config import BASE_DIR, Settings, settings
 from ..database import (
     ACTIVE_DATABASES,
     DEFAULT_DATABASE,
+    FIELD_TERMS,
     RELATIONS,
     SCHEMA,
-    SYNONYMS,
     physical_table_name,
 )
 from ..errors import PipelineStageError
@@ -356,10 +356,7 @@ class SchemaIndex:
                 ]
                 profile = self._field_profile(connection, sql_table_name, field)
             field_id = f"{table['id']}.{field['name']}"
-            synonyms = SYNONYMS.get(field_id, [])
-            aliases = list(dict.fromkeys([
-                *field.get("aliases", []), *synonyms,
-            ]))
+            aliases = list(dict.fromkeys(field.get("aliases", [])))
             samples_text = "、".join(str(item) for item in samples)
             relations = [
                 f"{item['left_table']}.{item['left_field']}={item['right_table']}.{item['right_field']}"
@@ -389,11 +386,6 @@ class SchemaIndex:
             keyword_text = str(index_content.get("keyword_text") or default_keyword_text)
             semantic_text = str(index_content.get("vector_text") or default_semantic_text)
             rerank_text = str(index_content.get("rerank_text") or default_rerank_text)
-            if synonyms:
-                synonym_text = "、".join(synonyms)
-                keyword_text = f"{keyword_text} {synonym_text}"
-                semantic_text = f"{semantic_text} 补充业务表达：{synonym_text}。"
-                rerank_text = f"{rerank_text} 补充同义词：{synonym_text}。"
             output.append({
                 "doc_id": f"{table['id']}.{field['name']}",
                 "database_id": table.get("database", DEFAULT_DATABASE),
@@ -494,7 +486,7 @@ class SchemaIndex:
                 "database_switches": sorted(ACTIVE_DATABASES),
                 "schema": SCHEMA,
                 "relations": RELATIONS,
-                "synonyms": SYNONYMS,
+                "field_terms": FIELD_TERMS,
             },
             ensure_ascii=False,
             sort_keys=True,

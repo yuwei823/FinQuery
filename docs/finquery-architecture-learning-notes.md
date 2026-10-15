@@ -183,9 +183,9 @@ backend/data/schema_store.<database-signature>.json
 
 代码：[retrieval/service.py](../backend/app/retrieval/service.py#L46)
 
-## 6. SYNONYMS 和模型分别参与什么
+## 6. 统一术语表和模型分别参与什么
 
-`SYNONYMS` 扩展字段的业务表达，例如“营业收入”“营收”。定义见 [database_sources/trade_data.py](../backend/app/database_sources/trade_data.py#L18)。
+每个数据库的 `_terms.json` 是唯一术语源。它集中保存表级业务词、字段别名、财务概念和派生指标术语；例如“营业收入”“营收”。加载器会校验表/字段ID并把术语注入运行时Schema。定义见 [trade_data/_terms.json](../backend/data/databases/trade_data/_terms.json)。
 
 构建检索文档时，同义词加入：
 
@@ -195,7 +195,7 @@ backend/data/schema_store.<database-signature>.json
 
 代码：[retrieval/service.py](../backend/app/retrieval/service.py#L359)
 
-以下上下文由 Python 按 Session/Workspace 确定性生成，不使用 `SYNONYMS`，构造当下也不会发起新的模型调用：
+以下上下文由 Python 按 Session/Workspace 确定性生成，不读取统一术语表，构造当下也不会发起新的模型调用：
 
 - `route_context`
 - `recent_result_context`
@@ -733,7 +733,7 @@ LIMIT 5;
 | Schema 召回 | [retrieval/service.py](../backend/app/retrieval/service.py#L89) | `retrieve()` |
 | BM25/Dense | [retrieval/store.py](../backend/app/retrieval/store.py#L96) | 两种搜索函数 |
 | RRF/Rerank | [retrieval/service.py](../backend/app/retrieval/service.py#L143) | `fused`、`rerank()` |
-| 同义词 | [trade_data.py](../backend/app/database_sources/trade_data.py#L18) | `SYNONYMS` |
+| 统一术语表 | [trade_data/_terms.json](../backend/data/databases/trade_data/_terms.json) | `table_terms`、`field_terms`、`concept_terms`、`derived_metric_terms` |
 | Schema 图 | [retrieval/graph.py](../backend/app/retrieval/graph.py#L18) | `build()` |
 | SQL Agent | [single_database_agent.py](../backend/app/querying/single_database_agent.py#L29) | `prepare()` |
 | 已有数据分析 | [data_qa_agent.py](../backend/app/querying/data_qa_agent.py#L36) | `run()` |

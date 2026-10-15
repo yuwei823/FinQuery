@@ -44,8 +44,8 @@ npm ci
 ```
 
 `DATABASE_SWITCHES` 是逗号分隔、自动去重的数据库 key 集合，默认值为
-`trade_data`。每个可选数据库需要在 `backend/app/database_sources/` 注册自己的
-Schema 目录和 `SYNONYMS`；切换后端配置后需重启服务。
+`trade_data`。每个可选数据库需要在数据目录提供 `_schema.json` 和统一术语表
+`_terms.json`，并在 `backend/app/database_sources/` 注册；切换后端配置后需重启服务。
 
 ## 注册新的数据库
 
@@ -59,6 +59,7 @@ Schema 目录和 `SYNONYMS`；切换后端配置后需重启服务。
 ```text
 backend/data/databases/fund_data/
 ├── _schema.json
+├── _terms.json
 └── funds.parquet
 ```
 
@@ -84,8 +85,7 @@ DuckDB 支持在查询目录中注册 `*.csv`、`*.parquet` 或包含 Parquet �
           "name": "fund_code",
           "label": "基金代码",
           "type": "文本",
-          "description": "基金唯一代码",
-          "aliases": ["基金代码"]
+          "description": "基金唯一代码"
         }
       ]
     }
@@ -107,31 +107,54 @@ DuckDB 支持在查询目录中注册 `*.csv`、`*.parquet` 或包含 Parquet �
 - `data_profile` 和 `index_content` 可以预生成。表设置 `profile_mode: "schema_only"` 时，
   Schema 索引不会扫描数据表；否则缺少预生信息的字段会从 CSV/Parquet 动态构建样例和分布。
 
-### 2. 添加该数据库的 SYNONYMS
+### 2. 添加统一术语表
 
-新建 `backend/app/database_sources/fund_data.py`：
+新建 `backend/data/databases/fund_data/_terms.json`。表级业务词、字段别名、概念术语和
+派生指标术语都只在这个文件维护：
+
+```json
+{
+  "schema_version": 1,
+  "database": "fund_data",
+  "table_terms": {
+    "fund_data.funds": ["基金", "公募基金"]
+  },
+  "field_terms": {
+    "fund_data.funds.fund_code": ["基金代码", "产品代码"]
+  },
+  "concept_terms": {},
+  "derived_metric_terms": {
+    "nav_growth": {
+      "label": "净值增长率",
+      "aliases": ["基金收益率"],
+      "category": "收益",
+      "definition": "期末单位净值除以期初单位净值减一。",
+      "availability": "A",
+      "status": "active"
+    }
+  }
+}
+```
+
+`table_terms` 和 `field_terms` 的键必须是完整表/字段 ID：
+
+```text
+<database>.<table>
+<database>.<table>.<field>
+```
+
+启动时会验证这些键是否对应真实Schema对象，并把表级词和字段别名注入运行时Schema。
+`concept_terms` 与 `derived_metric_terms` 使用数据库内稳定ID；尚未实现的派生指标应将
+`status` 标为 `planned`，避免把术语登记误解为指标已经可查询。
+
+数据库仍需在 `backend/app/database_sources/` 提供ID模块，例如
+`backend/app/database_sources/fund_data.py`：
 
 ```python
 from __future__ import annotations
 
 
 DATABASE_ID = "fund_data"
-
-SYNONYMS: dict[str, list[str]] = {
-    "fund_data.funds.fund_code": ["基金代码", "产品代码"],
-}
-```
-
-SYNONYMS 的键必须是完整字段 ID：
-
-```text
-<database>.<table>.<field>
-```
-
-启动时会验证每个键是否对应真实字段。没有额外同义词时仍需提供空字典：
-
-```python
-SYNONYMS: dict[str, list[str]] = {}
 ```
 
 ### 3. 注册数据源
@@ -140,7 +163,6 @@ SYNONYMS: dict[str, list[str]] = {}
 
 ```python
 from .fund_data import DATABASE_ID as FUND_DATA_ID
-from .fund_data import SYNONYMS as FUND_DATA_SYNONYMS
 ```
 
 然后在 `source_registry()` 返回值中添加：
@@ -149,7 +171,6 @@ from .fund_data import SYNONYMS as FUND_DATA_SYNONYMS
 FUND_DATA_ID: DatabaseSource(
     database_id=FUND_DATA_ID,
     folder=database_root / FUND_DATA_ID,
-    synonyms=FUND_DATA_SYNONYMS,
     data_folder=(
         curated_data_root / FUND_DATA_ID
         if curated_data_root is not None
@@ -218,7 +239,7 @@ Schema 后不会错误展示其他数据库的问题。
 ### 7. 补充验证（推荐）
 
 - 为新数据库增加数据完整性验证脚本，并覆盖主键、日期范围、重复记录和空值检查。
-- 在 `backend/tests/test_database_switches.py` 中增加注册、切换和 SYNONYMS 校验用例。
+- 在 `backend/tests/test_database_switches.py` 中增加注册、切换和统一术语表校验用例。
 - 运行后端测试和前端构建：
 
 ```powershell

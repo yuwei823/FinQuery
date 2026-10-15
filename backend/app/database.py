@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-"""按 DATABASE_SWITCHES 加载本地 CSV 数据库的 Schema、关系和同义词。"""
+"""按 DATABASE_SWITCHES 加载本地数据库的 Schema、关系和统一术语表。"""
 
 import json
 from typing import Any, Iterable
@@ -13,6 +13,14 @@ DATABASE_ROOT = BASE_DIR / "data" / "databases"
 DATABASE_SOURCES = source_registry(DATABASE_ROOT, settings.curated_data_path)
 
 
+def _term_list(value: Any, *, target: str) -> list[str]:
+    if not isinstance(value, list):
+        raise ValueError(f"术语 {target} 必须是字符串数组")
+    return list(
+        dict.fromkeys(str(item).strip() for item in value if str(item).strip())
+    )
+
+
 def load_database_catalog(
     enabled: Iterable[str],
     sources: dict[str, DatabaseSource] | None = None,
@@ -23,8 +31,10 @@ def load_database_catalog(
     dict[str, list[str]],
     dict[str, frozenset[str]],
     dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
+    dict[str, dict[str, Any]],
 ]:
-    """加载启用数据库，并验证每个数据库的 Schema 与同义词。"""
+    """加载启用数据库，并验证 Schema 与统一术语表。"""
     registry = DATABASE_SOURCES if sources is None else sources
     active = frozenset(str(item).strip() for item in enabled if str(item).strip())
     if not active:
@@ -37,9 +47,11 @@ def load_database_catalog(
 
     tables: list[dict[str, Any]] = []
     relations: list[dict[str, Any]] = []
-    synonyms: dict[str, list[str]] = {}
+    field_terms: dict[str, list[str]] = {}
     role_tables: dict[str, set[str]] = {}
     database_meta: dict[str, dict[str, Any]] = {}
+    concept_terms: dict[str, dict[str, Any]] = {}
+    derived_metric_terms: dict[str, dict[str, Any]] = {}
 
     for database_id in sorted(active):
         source = registry[database_id]
@@ -52,6 +64,15 @@ def load_database_catalog(
                 f"Schema 数据库标识不一致：期望 {database_id}，实际 {declared_database}"
             )
 
+        if not source.terms_path.exists():
+            raise FileNotFoundError(f"未找到数据库术语表：{source.terms_path}")
+        terms_payload = json.loads(source.terms_path.read_text(encoding="utf-8"))
+        terms_database = str(terms_payload.get("database") or database_id)
+        if terms_database != database_id:
+            raise ValueError(
+                f"术语表数据库标识不一致：期望 {database_id}，实际 {terms_database}"
+            )
+
         database_meta[database_id] = {
             "scenario": str(payload.get("scenario") or ""),
             "time_coverage": str(payload.get("time_coverage") or ""),
@@ -62,24 +83,92 @@ def load_database_catalog(
         source_tables = list(payload.get("tables") or [])
         for table in source_tables:
             table.setdefault("database", database_id)
-        tables.extend(source_tables)
-        relations.extend(list(payload.get("relations") or []))
 
+        table_ids = {str(table["id"]) for table in source_tables}
         field_ids = {
             f"{table['id']}.{field['name']}"
             for table in source_tables
             for field in table.get("fields", [])
         }
-        invalid_synonyms = set(source.synonyms) - field_ids
-        if invalid_synonyms:
+        source_table_terms = {
+            str(key): _term_list(value, target=str(key))
+            for key, value in (terms_payload.get("table_terms") or {}).items()
+        }
+        source_field_terms = {
+            str(key): _term_list(value, target=str(key))
+            for key, value in (terms_payload.get("field_terms") or {}).items()
+        }
+        invalid_table_terms = set(source_table_terms) - table_ids
+        if invalid_table_terms:
             raise ValueError(
-                f"数据库 {database_id} 的 SYNONYMS 包含未知字段："
-                f"{', '.join(sorted(invalid_synonyms))}"
+                f"数据库 {database_id} 的 table_terms 包含未知表："
+                f"{', '.join(sorted(invalid_table_terms))}"
             )
-        duplicates = set(synonyms) & set(source.synonyms)
+        invalid_field_terms = set(source_field_terms) - field_ids
+        if invalid_field_terms:
+            raise ValueError(
+                f"数据库 {database_id} 的 field_terms 包含未知字段："
+                f"{', '.join(sorted(invalid_field_terms))}"
+            )
+        duplicates = set(field_terms) & set(source_field_terms)
         if duplicates:
-            raise ValueError(f"SYNONYMS 字段重复：{', '.join(sorted(duplicates))}")
-        synonyms.update(source.synonyms)
+            raise ValueError(f"field_terms 字段重复：{', '.join(sorted(duplicates))}")
+        field_terms.update(source_field_terms)
+
+        for table in source_tables:
+            table["business_terms"] = source_table_terms.get(str(table["id"]), [])
+            for field in table.get("fields", []):
+                field_id = f"{table['id']}.{field['name']}"
+                field["aliases"] = source_field_terms.get(field_id, [])
+
+        source_concept_terms = terms_payload.get("concept_terms") or {}
+        if not isinstance(source_concept_terms, dict):
+            raise ValueError(f"数据库 {database_id} 的 concept_terms 必须是对象")
+        for concept_id, entry in source_concept_terms.items():
+            if not isinstance(entry, dict) or not str(entry.get("label") or "").strip():
+                raise ValueError(f"数据库 {database_id} 的概念术语无有效标签：{concept_id}")
+            normalized_entry = {
+                **entry,
+                "label": str(entry["label"]).strip(),
+                "aliases": _term_list(
+                    entry.get("aliases") or [],
+                    target=f"{database_id}.{concept_id}.aliases",
+                ),
+            }
+            qualified_id = f"{database_id}.{concept_id}"
+            if qualified_id in concept_terms:
+                raise ValueError(f"概念术语重复：{qualified_id}")
+            concept_terms[qualified_id] = {
+                **normalized_entry,
+                "concept_id": str(concept_id),
+                "database": database_id,
+            }
+
+        source_metric_terms = terms_payload.get("derived_metric_terms") or {}
+        if not isinstance(source_metric_terms, dict):
+            raise ValueError(f"数据库 {database_id} 的 derived_metric_terms 必须是对象")
+        for metric_id, entry in source_metric_terms.items():
+            if not isinstance(entry, dict) or not str(entry.get("label") or "").strip():
+                raise ValueError(f"数据库 {database_id} 的派生指标术语无有效标签：{metric_id}")
+            normalized_entry = {
+                **entry,
+                "label": str(entry["label"]).strip(),
+                "aliases": _term_list(
+                    entry.get("aliases") or [],
+                    target=f"{database_id}.{metric_id}.aliases",
+                ),
+            }
+            qualified_id = f"{database_id}.{metric_id}"
+            if qualified_id in derived_metric_terms:
+                raise ValueError(f"派生指标术语重复：{qualified_id}")
+            derived_metric_terms[qualified_id] = {
+                **normalized_entry,
+                "metric_id": str(metric_id),
+                "database": database_id,
+            }
+
+        tables.extend(source_tables)
+        relations.extend(list(payload.get("relations") or []))
 
         tables_by_name = {
             str(table.get("name") or table["id"]).split(".")[-1]: str(table["id"])
@@ -97,15 +186,30 @@ def load_database_catalog(
         active,
         tables,
         relations,
-        synonyms,
+        field_terms,
         {role: frozenset(ids) for role, ids in role_tables.items()},
         database_meta,
+        concept_terms,
+        derived_metric_terms,
     )
 
 
-ACTIVE_DATABASES, SCHEMA, RELATIONS, SYNONYMS, ROLE_TABLES, DATABASE_META = load_database_catalog(
-    settings.database_switches
-)
+(
+    ACTIVE_DATABASES,
+    SCHEMA,
+    RELATIONS,
+    FIELD_TERMS,
+    ROLE_TABLES,
+    DATABASE_META,
+    CONCEPT_TERMS,
+    DERIVED_METRIC_TERMS,
+) = load_database_catalog(settings.database_switches)
+
+TERM_CATALOG = {
+    "fields": FIELD_TERMS,
+    "concepts": CONCEPT_TERMS,
+    "derived_metrics": DERIVED_METRIC_TERMS,
+}
 DEFAULT_DATABASE = sorted(ACTIVE_DATABASES)[0]
 
 

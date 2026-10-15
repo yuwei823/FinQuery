@@ -1,0 +1,2369 @@
+{
+  "schema_version": 1,
+  "database": "trade_data",
+  "table_terms": {
+    "trade_data.stock_daily": [
+      "��Ʊ����",
+      "����",
+      "��������",
+      "A��"
+    ],
+    "trade_data.financial_statement": [
+      "���񱨱�",
+      "�Ʊ�",
+      "�ʲ���ծ��",
+      "�����",
+      "�ֽ�������",
+      "ҵ��"
+    ],
+    "trade_data.index_daily": [
+      "ָ������",
+      "����ָ��",
+      "��Ҫָ��",
+      "ָ������"
+    ],
+    "trade_data.stock_etf_trading_data": [
+      "ETF",
+      "ETF����",
+      "��������",
+      "ETF����",
+      "����ֵ",
+      "����ݶ�"
+    ]
+  },
+  "field_terms": {
+    "trade_data.stock_daily.symbol": [
+      "֤ȯ����",
+      "����",
+      "��Ʊ����"
+    ],
+    "trade_data.stock_daily.stock_name": [
+      "֤ȯ����",
+      "����",
+      "��Ʊ����"
+    ],
+    "trade_data.stock_daily.trade_date": [
+      "������",
+      "����",
+      "��������"
+    ],
+    "trade_data.stock_daily.open": [
+      "���̼۸�"
+    ],
+    "trade_data.stock_daily.high": [
+      "��߼۸�"
+    ],
+    "trade_data.stock_daily.low": [
+      "��ͼ۸�"
+    ],
+    "trade_data.stock_daily.close": [
+      "���̼۸�",
+      "���̼�"
+    ],
+    "trade_data.stock_daily.previous_close": [
+      "���ռ�",
+      "ǰһ�����̼�"
+    ],
+    "trade_data.stock_daily.volume": [
+      "������",
+      "�ɽ���"
+    ],
+    "trade_data.stock_daily.turnover": [
+      "���׶�",
+      "�ɽ���"
+    ],
+    "trade_data.stock_daily.float_market_cap": [
+      "��ͨ��ֵ"
+    ],
+    "trade_data.stock_daily.total_market_cap": [
+      "��ֵ",
+      "����ֵ"
+    ],
+    "trade_data.stock_daily.net_profit_ttm": [
+      "����������"
+    ],
+    "trade_data.stock_daily.cash_flow_ttm": [
+      "�����ֽ���"
+    ],
+    "trade_data.stock_daily.quarter_net_profit": [
+      "�����󵱼�",
+      "����������"
+    ],
+    "trade_data.stock_daily.is_csi_300": [
+      "����300",
+      "CSI300"
+    ],
+    "trade_data.stock_daily.is_sse_50": [
+      "��֤50"
+    ],
+    "trade_data.stock_daily.is_csi_500": [
+      "��֤500",
+      "CSI500"
+    ],
+    "trade_data.stock_daily.is_csi_1000": [
+      "��֤1000",
+      "CSI1000"
+    ],
+    "trade_data.stock_daily.is_csi_2000": [
+      "��֤2000",
+      "CSI2000"
+    ],
+    "trade_data.stock_daily.is_chinext": [
+      "��ҵ��ָ",
+      "��ҵ��ɷֹ�"
+    ],
+    "trade_data.stock_daily.industry_level_1": [
+      "һ����ҵ",
+      "����һ����ҵ"
+    ],
+    "trade_data.stock_daily.industry_level_2": [
+      "������ҵ",
+      "���������ҵ"
+    ],
+    "trade_data.stock_daily.industry_level_3": [
+      "������ҵ",
+      "����������ҵ"
+    ],
+    "trade_data.stock_daily.close_0935": [
+      "�ŵ���ʮ��۸�"
+    ],
+    "trade_data.stock_daily.close_0945": [
+      "�ŵ���ʮ��۸�"
+    ],
+    "trade_data.stock_daily.close_0955": [
+      "�ŵ���ʮ��۸�"
+    ],
+    "trade_data.financial_statement.symbol": [
+      "֤ȯ����",
+      "����",
+      "��Ʊ����"
+    ],
+    "trade_data.financial_statement.statement_format": [
+      "��˾����",
+      "�Ʊ���ʽ"
+    ],
+    "trade_data.financial_statement.report_date": [
+      "�Ʊ�����",
+      "��������",
+      "������"
+    ],
+    "trade_data.financial_statement.publish_date": [
+      "��������",
+      "��������",
+      "��¶����"
+    ],
+    "trade_data.financial_statement.total_assets": [
+      "���ʲ�",
+      "�ʲ��ܼ�"
+    ],
+    "trade_data.financial_statement.total_liabilities": [
+      "�ܸ�ծ",
+      "��ծ�ϼ�"
+    ],
+    "trade_data.financial_statement.parent_equity": [
+      "��ĸ���ʲ�"
+    ],
+    "trade_data.financial_statement.total_owner_equity": [
+      "���ʲ�",
+      "�ɶ�Ȩ��",
+      "������Ȩ��"
+    ],
+    "trade_data.financial_statement.operating_revenue": [
+      "Ӫ��",
+      "Ӫҵ������",
+      "Ӫҵ����"
+    ],
+    "trade_data.financial_statement.net_profit": [
+      "������"
+    ],
+    "trade_data.financial_statement.parent_net_profit": [
+      "������ĸ��˾������",
+      "��ĸ������"
+    ],
+    "trade_data.financial_statement.basic_eps": [
+      "EPS"
+    ],
+    "trade_data.financial_statement.diluted_eps": [
+      "ϡ��EPS"
+    ],
+    "trade_data.financial_statement.operating_cash_flow": [
+      "��Ӫ�ֽ���",
+      "��Ӫ��ֽ�������"
+    ],
+    "trade_data.financial_statement.investing_cash_flow": [
+      "Ͷ���ֽ���"
+    ],
+    "trade_data.financial_statement.financing_cash_flow": [
+      "�����ֽ���"
+    ],
+    "trade_data.index_daily.trade_date": [
+      "������",
+      "����",
+      "��������"
+    ],
+    "trade_data.index_daily.open": [
+      "���̼�",
+      "����ָ��",
+      "���̵�λ"
+    ],
+    "trade_data.index_daily.high": [
+      "��߼�",
+      "���ָ��",
+      "��ߵ�λ"
+    ],
+    "trade_data.index_daily.low": [
+      "��ͼ�",
+      "���ָ��",
+      "��͵�λ"
+    ],
+    "trade_data.index_daily.close": [
+      "���̼�",
+      "����ָ��",
+      "���̵�λ"
+    ],
+    "trade_data.index_daily.turnover": [
+      "���׶�",
+      "amount",
+      "ָ���ɽ���",
+      "�ɽ���"
+    ],
+    "trade_data.index_daily.volume": [
+      "������",
+      "ָ���ɽ���",
+      "�ɽ���"
+    ],
+    "trade_data.index_daily.index_code": [
+      "����",
+      "֤ȯ����",
+      "���̴���",
+      "ָ������"
+    ],
+    "trade_data.stock_etf_trading_data.trade_date": [
+      "������",
+      "����",
+      "��������"
+    ],
+    "trade_data.stock_etf_trading_data.fund_name": [
+      "ETF����",
+      "��������"
+    ],
+    "trade_data.stock_etf_trading_data.fund_code": [
+      "ETF����",
+      "֤ȯ����",
+      "�������"
+    ],
+    "trade_data.stock_etf_trading_data.previous_close": [
+      "���ռ�"
+    ],
+    "trade_data.stock_etf_trading_data.close": [
+      "���̼�",
+      "���̼۸�"
+    ],
+    "trade_data.stock_etf_trading_data.volume": [
+      "������",
+      "�ɽ���"
+    ],
+    "trade_data.stock_etf_trading_data.turnover": [
+      "���׶�",
+      "�ɽ���"
+    ],
+    "trade_data.stock_etf_trading_data.cumulative_nav": [
+      "�ۼƾ�ֵ",
+      "�ۼƵ�λ��ֵ"
+    ],
+    "trade_data.stock_etf_trading_data.unit_nav": [
+      "����ֵ",
+      "��λ��ֵ"
+    ],
+    "trade_data.stock_etf_trading_data.backward_adjustment_factor": [
+      "��Ȩ����",
+      "��Ȩ����"
+    ],
+    "trade_data.stock_etf_trading_data.adjusted_nav": [
+      "��Ȩ��ֵ",
+      "��Ȩ��λ��ֵ"
+    ],
+    "trade_data.stock_etf_trading_data.turnover_rate": [
+      "������"
+    ],
+    "trade_data.stock_etf_trading_data.fund_category": [
+      "��������",
+      "�������"
+    ],
+    "trade_data.stock_etf_trading_data.detailed_category": [
+      "ϸ������",
+      "��ϸ����"
+    ],
+    "trade_data.stock_etf_trading_data.total_fund_shares": [
+      "�ܷݶ�",
+      "����ݶ�ϼ�"
+    ],
+    "trade_data.stock_etf_trading_data.exchange_tradable_shares": [
+      "��ͨ�ݶ�",
+      "������ͨ�ݶ�"
+    ]
+  },
+  "concept_terms": {
+    "monetary_funds": {
+      "label": "货币资金",
+      "aliases": [
+        "B_currency_fund@xbx",
+        "monetary_funds"
+      ],
+      "category": "",
+      "definition": "现金比率、净债务、EV；需识别受限资金。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.monetary_funds"
+    },
+    "notes_receivable": {
+      "label": "应收票据",
+      "aliases": [
+        "B_bill_receivable@xbx",
+        "notes_receivable"
+      ],
+      "category": "",
+      "definition": "应收周转扩展口径、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.notes_receivable"
+    },
+    "accounts_receivable": {
+      "label": "应收账款",
+      "aliases": [
+        "B_account_receivable@xbx",
+        "accounts_receivable"
+      ],
+      "category": "",
+      "definition": "应收周转率、DSO、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.accounts_receivable"
+    },
+    "notes_and_accounts_receivable": {
+      "label": "应收票据及应收账款",
+      "aliases": [
+        "B_bill_and_account_receivable@xbx",
+        "notes_and_accounts_receivable"
+      ],
+      "category": "",
+      "definition": "新旧会计报表列报切换时的兼容字段。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.notes_and_accounts_receivable"
+    },
+    "receivables_financing": {
+      "label": "应收款项融资",
+      "aliases": [
+        "B_receivable_financing@xbx",
+        "receivables_financing"
+      ],
+      "category": "",
+      "definition": "应收扩展口径、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.receivables_financing"
+    },
+    "other_receivables_total": {
+      "label": "其他应收款合计",
+      "aliases": [
+        "B_other_receivables_sum@xbx",
+        "other_receivables_total"
+      ],
+      "category": "",
+      "definition": "非现金营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.other_receivables_total"
+    },
+    "prepayments": {
+      "label": "预付款项",
+      "aliases": [
+        "B_prepays@xbx",
+        "prepayments"
+      ],
+      "category": "",
+      "definition": "速动资产调整、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.prepayments"
+    },
+    "inventory": {
+      "label": "存货",
+      "aliases": [
+        "B_inventory@xbx",
+        "inventory"
+      ],
+      "category": "",
+      "definition": "速动比率、存货周转、DIO。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.inventory"
+    },
+    "total_current_assets": {
+      "label": "流动资产合计",
+      "aliases": [
+        "B_total_current_assets@xbx",
+        "total_current_assets"
+      ],
+      "category": "",
+      "definition": "流动比率、速动比率、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.total_current_assets"
+    },
+    "fixed_assets": {
+      "label": "固定资产",
+      "aliases": [
+        "B_fixed_asset@xbx",
+        "fixed_assets"
+      ],
+      "category": "",
+      "definition": "资本密集度、资产结构和CapEx核验。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.fixed_assets"
+    },
+    "intangible_assets": {
+      "label": "无形资产",
+      "aliases": [
+        "B_intangible_assets@xbx",
+        "intangible_assets"
+      ],
+      "category": "",
+      "definition": "投入资本、摊销与资产结构分析。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.intangible_assets"
+    },
+    "goodwill": {
+      "label": "商誉",
+      "aliases": [
+        "B_goodwill@xbx",
+        "goodwill"
+      ],
+      "category": "",
+      "definition": "ROIC的含商誉/剔除商誉版本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.goodwill"
+    },
+    "short_term_borrowings": {
+      "label": "短期借款",
+      "aliases": [
+        "B_st_borrow@xbx",
+        "short_term_borrowings"
+      ],
+      "category": "",
+      "definition": "有息债务、净债务、D/E。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.short_term_borrowings"
+    },
+    "notes_payable": {
+      "label": "应付票据",
+      "aliases": [
+        "B_bill_payable@xbx",
+        "notes_payable"
+      ],
+      "category": "",
+      "definition": "DPO扩展口径、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.notes_payable"
+    },
+    "accounts_payable": {
+      "label": "应付账款",
+      "aliases": [
+        "B_accounts_payable@xbx",
+        "accounts_payable"
+      ],
+      "category": "",
+      "definition": "应付周转率、DPO、营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.accounts_payable"
+    },
+    "notes_and_accounts_payable": {
+      "label": "应付票据及应付账款",
+      "aliases": [
+        "B_bill_and_account_payable@xbx",
+        "notes_and_accounts_payable"
+      ],
+      "category": "",
+      "definition": "新旧报表列报切换兼容。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.notes_and_accounts_payable"
+    },
+    "contract_liabilities": {
+      "label": "合同负债",
+      "aliases": [
+        "B_contract_liab@xbx",
+        "contract_liabilities"
+      ],
+      "category": "",
+      "definition": "非现金营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.contract_liabilities"
+    },
+    "employee_benefits_payable": {
+      "label": "应付职工薪酬",
+      "aliases": [
+        "B_payroll_payable@xbx",
+        "employee_benefits_payable"
+      ],
+      "category": "",
+      "definition": "非现金营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.employee_benefits_payable"
+    },
+    "taxes_payable": {
+      "label": "应交税费",
+      "aliases": [
+        "B_tax_payable@xbx",
+        "taxes_payable"
+      ],
+      "category": "",
+      "definition": "非现金营运资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.taxes_payable"
+    },
+    "other_payables_total": {
+      "label": "其他应付款合计",
+      "aliases": [
+        "B_other_payables_sum@xbx",
+        "other_payables_total"
+      ],
+      "category": "",
+      "definition": "营运资本；需剔除其中有息项目。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.other_payables_total"
+    },
+    "current_portion_noncurrent_liabilities": {
+      "label": "一年内到期的非流动负债",
+      "aliases": [
+        "B_noncurrent_liab_due_in1y@xbx",
+        "current_portion_noncurrent_liabilities"
+      ],
+      "category": "",
+      "definition": "有息债务；需确认其中非有息组成。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.current_portion_noncurrent_liabilities"
+    },
+    "short_term_bonds_payable": {
+      "label": "短期应付债券",
+      "aliases": [
+        "B_st_bond_payable@xbx",
+        "short_term_bonds_payable"
+      ],
+      "category": "",
+      "definition": "有息债务。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.short_term_bonds_payable"
+    },
+    "total_current_liabilities": {
+      "label": "流动负债合计",
+      "aliases": [
+        "B_total_current_liab@xbx",
+        "total_current_liabilities"
+      ],
+      "category": "",
+      "definition": "流动/速动/现金比率。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.total_current_liabilities"
+    },
+    "long_term_borrowings": {
+      "label": "长期借款",
+      "aliases": [
+        "B_lt_loan@xbx",
+        "long_term_borrowings"
+      ],
+      "category": "",
+      "definition": "有息债务、净债务、EV。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.long_term_borrowings"
+    },
+    "bonds_payable": {
+      "label": "应付债券",
+      "aliases": [
+        "B_bond_payable@xbx",
+        "bonds_payable"
+      ],
+      "category": "",
+      "definition": "有息债务、净债务、EV。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.bonds_payable"
+    },
+    "lease_liabilities": {
+      "label": "租赁负债",
+      "aliases": [
+        "B_lease_libilities@xbx",
+        "lease_liabilities"
+      ],
+      "category": "",
+      "definition": "调整后债务、EV、净杠杆；保留源字段拼写映射。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.lease_liabilities"
+    },
+    "total_noncurrent_liabilities": {
+      "label": "非流动负债合计",
+      "aliases": [
+        "B_total_noncurrent_liab@xbx",
+        "total_noncurrent_liabilities"
+      ],
+      "category": "",
+      "definition": "长期偿债结构。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.total_noncurrent_liabilities"
+    },
+    "preferred_shares_equity": {
+      "label": "优先股权益",
+      "aliases": [
+        "B_preferred_shares@xbx",
+        "preferred_shares_equity"
+      ],
+      "category": "",
+      "definition": "EV桥接；需和负债性优先工具区分。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.preferred_shares_equity"
+    },
+    "minority_interest": {
+      "label": "少数股东权益",
+      "aliases": [
+        "B_minority_equity@xbx",
+        "minority_interest"
+      ],
+      "category": "",
+      "definition": "合并口径EV和ROIC。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.minority_interest"
+    },
+    "total_operating_revenue": {
+      "label": "营业总收入",
+      "aliases": [
+        "R_operating_total_revenue@xbx",
+        "total_operating_revenue"
+      ],
+      "category": "",
+      "definition": "金融及多业务报表收入口径。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.total_operating_revenue"
+    },
+    "total_operating_cost": {
+      "label": "营业总成本",
+      "aliases": [
+        "R_operating_total_cost@xbx",
+        "total_operating_cost"
+      ],
+      "category": "",
+      "definition": "成本结构分析。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.total_operating_cost"
+    },
+    "operating_cost": {
+      "label": "营业成本",
+      "aliases": [
+        "R_operating_cost@xbx",
+        "operating_cost"
+      ],
+      "category": "",
+      "definition": "毛利润、毛利率、存货/应付周转。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.operating_cost"
+    },
+    "taxes_and_surcharges": {
+      "label": "税金及附加",
+      "aliases": [
+        "R_operating_taxes_and_surcharge@xbx",
+        "taxes_and_surcharges"
+      ],
+      "category": "",
+      "definition": "EBIT桥接与成本分析。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.taxes_and_surcharges"
+    },
+    "selling_expenses": {
+      "label": "销售费用",
+      "aliases": [
+        "R_sales_fee@xbx",
+        "selling_expenses"
+      ],
+      "category": "",
+      "definition": "费用率、经营利润桥接。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.selling_expenses"
+    },
+    "administrative_expenses": {
+      "label": "管理费用",
+      "aliases": [
+        "R_manage_fee@xbx",
+        "administrative_expenses"
+      ],
+      "category": "",
+      "definition": "费用率、经营利润桥接。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.administrative_expenses"
+    },
+    "research_and_development_expenses": {
+      "label": "研发费用",
+      "aliases": [
+        "R_rad_cost_sum@xbx",
+        "research_and_development_expenses"
+      ],
+      "category": "",
+      "definition": "研发费用率、调整后投入资本。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.research_and_development_expenses"
+    },
+    "finance_expenses": {
+      "label": "财务费用",
+      "aliases": [
+        "R_financing_expenses@xbx",
+        "finance_expenses"
+      ],
+      "category": "",
+      "definition": "EBIT桥接、资本结构分析。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.finance_expenses"
+    },
+    "interest_expense": {
+      "label": "利息费用",
+      "aliases": [
+        "R_interest_fee@xbx",
+        "interest_expense"
+      ],
+      "category": "",
+      "definition": "利息保障倍数、FCFF桥接。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.interest_expense"
+    },
+    "interest_income_finance_expense_note": {
+      "label": "财务费用中的利息收入",
+      "aliases": [
+        "R_fc_interest_income@xbx",
+        "interest_income_finance_expense_note"
+      ],
+      "category": "",
+      "definition": "净利息调整、EV口径核验。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.interest_income_finance_expense_note"
+    },
+    "income_tax_expense": {
+      "label": "所得税费用",
+      "aliases": [
+        "R_income_tax_cost@xbx",
+        "income_tax_expense"
+      ],
+      "category": "",
+      "definition": "有效税率、NOPAT。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.income_tax_expense"
+    },
+    "minority_profit_loss": {
+      "label": "少数股东损益",
+      "aliases": [
+        "R_minority_gal@xbx",
+        "minority_profit_loss"
+      ],
+      "category": "",
+      "definition": "合并净利润到归母净利润桥接。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.minority_profit_loss"
+    },
+    "beginning_cash_equivalents": {
+      "label": "期初现金及现金等价物",
+      "aliases": [
+        "C_initial_cce_balance@xbx",
+        "beginning_cash_equivalents"
+      ],
+      "category": "",
+      "definition": "现金变动核验。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.beginning_cash_equivalents"
+    },
+    "ending_cash_equivalents": {
+      "label": "期末现金及现金等价物",
+      "aliases": [
+        "C_final_balance_of_cce@xbx",
+        "ending_cash_equivalents"
+      ],
+      "category": "",
+      "definition": "EV现金扣减、现金比率；当前已有字段可沿用。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.ending_cash_equivalents"
+    },
+    "depreciation_fixed_assets": {
+      "label": "固定资产折旧等",
+      "aliases": [
+        "C_depreciation_etc@xbx",
+        "depreciation_fixed_assets"
+      ],
+      "category": "",
+      "definition": "EBITDA、FCFF、FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.depreciation_fixed_assets"
+    },
+    "amortization_intangible_assets": {
+      "label": "无形资产摊销",
+      "aliases": [
+        "C_intangible_assets_amortized@xbx",
+        "amortization_intangible_assets"
+      ],
+      "category": "",
+      "definition": "EBITDA、FCFF、FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.amortization_intangible_assets"
+    },
+    "amortization_long_term_deferred_expenses": {
+      "label": "长期待摊费用摊销",
+      "aliases": [
+        "C_lt_deferred_expenses_amrtzt@xbx",
+        "amortization_long_term_deferred_expenses"
+      ],
+      "category": "",
+      "definition": "EBITDA扩展口径。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.amortization_long_term_deferred_expenses"
+    },
+    "capital_expenditure_cash": {
+      "label": "购建长期资产支付的现金",
+      "aliases": [
+        "C_cash_paid_for_assets@xbx",
+        "capital_expenditure_cash"
+      ],
+      "category": "",
+      "definition": "CapEx、简化FCF、FCFF和FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.capital_expenditure_cash"
+    },
+    "cash_proceeds_from_borrowings": {
+      "label": "取得借款收到的现金",
+      "aliases": [
+        "C_cash_received_of_borrowing@xbx",
+        "cash_proceeds_from_borrowings"
+      ],
+      "category": "",
+      "definition": "净新增债务、FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.cash_proceeds_from_borrowings"
+    },
+    "cash_proceeds_from_bond_issuance": {
+      "label": "发行债券收到的现金",
+      "aliases": [
+        "C_cash_received_from_bond_issue@xbx",
+        "cash_proceeds_from_bond_issuance"
+      ],
+      "category": "",
+      "definition": "净新增债务、FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.cash_proceeds_from_bond_issuance"
+    },
+    "cash_repayment_of_debt": {
+      "label": "偿还债务支付的现金",
+      "aliases": [
+        "C_cash_pay_for_debt@xbx",
+        "cash_repayment_of_debt"
+      ],
+      "category": "",
+      "definition": "净新增债务、FCFE。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.cash_repayment_of_debt"
+    },
+    "cash_paid_for_dividends_interest": {
+      "label": "分配股利、利润或偿付利息支付的现金",
+      "aliases": [
+        "C_cash_paid_of_distribution@xbx",
+        "cash_paid_for_dividends_interest"
+      ],
+      "category": "",
+      "definition": "股东回报与债务现金流；需拆分明细时另寻字段。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.cash_paid_for_dividends_interest"
+    },
+    "dividends_paid_to_minority": {
+      "label": "向少数股东支付的股利",
+      "aliases": [
+        "C_dap_paid_to_minority_holder@xbx",
+        "dividends_paid_to_minority"
+      ],
+      "category": "",
+      "definition": "合并口径现金流桥接。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.dividends_paid_to_minority"
+    },
+    "inventory_decrease_cashflow_adjustment": {
+      "label": "存货减少调整项",
+      "aliases": [
+        "C_inventory_decrease@xbx",
+        "inventory_decrease_cashflow_adjustment"
+      ],
+      "category": "",
+      "definition": "间接法经营现金流核验，不替代资产负债表差额。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.inventory_decrease_cashflow_adjustment"
+    },
+    "operating_receivables_decrease_adjustment": {
+      "label": "经营性应收项目减少",
+      "aliases": [
+        "C_operating_items_decrease@xbx",
+        "operating_receivables_decrease_adjustment"
+      ],
+      "category": "",
+      "definition": "间接法经营现金流核验。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.operating_receivables_decrease_adjustment"
+    },
+    "operating_payables_increase_adjustment": {
+      "label": "经营性应付项目增加",
+      "aliases": [
+        "C_increase_of_operating_item@xbx",
+        "operating_payables_increase_adjustment"
+      ],
+      "category": "",
+      "definition": "间接法经营现金流核验。",
+      "status": "planned",
+      "planned_field": "trade_data.financial_statement.operating_payables_increase_adjustment"
+    },
+    "point_in_time_value": {
+      "label": "时点值",
+      "aliases": [
+        "Point-in-time value",
+        "期末值",
+        "存量"
+      ],
+      "category": "口径约定",
+      "definition": "资产负债表在报告期末的余额，例如总资产、存货、股东权益。回报率与周转率的分母优先使用期初和期末平均值。"
+    },
+    "flow_value": {
+      "label": "期间值",
+      "aliases": [
+        "Flow value",
+        "发生额",
+        "流量"
+      ],
+      "category": "口径约定",
+      "definition": "利润表或现金流量表在一段期间内的累计发生额，例如收入、净利润、经营现金流。"
+    },
+    "single_quarter_value": {
+      "label": "单季度值",
+      "aliases": [
+        "Single-quarter value",
+        "当季值",
+        "季度发生额"
+      ],
+      "category": "口径约定",
+      "definition": "从累计披露值还原的单一季度发生额；Q2、Q3、Q4不能直接使用半年报、三季报、年报累计值。"
+    },
+    "trailing_twelve_months": {
+      "label": "滚动十二个月",
+      "aliases": [
+        "Trailing Twelve Months",
+        "TTM/LTM",
+        "滚动年度",
+        "过去十二个月"
+      ],
+      "category": "口径约定",
+      "definition": "截至指定报告期的连续十二个月期间值。非年报期通常用“上一年年报 + 本年累计 - 上年同期累计”计算。"
+    },
+    "point_in_time": {
+      "label": "披露日可见",
+      "aliases": [
+        "Point-in-time/PIT",
+        "当时可知",
+        "无未来数据"
+      ],
+      "category": "口径约定",
+      "definition": "对任一交易日，只能使用 `publish_date <= trade_date` 的财报；同一报告期有修订时，使用当时已披露的最新版本。"
+    },
+    "average_balance": {
+      "label": "平均余额",
+      "aliases": [
+        "Average balance",
+        "平均资产",
+        "平均权益"
+      ],
+      "category": "口径约定",
+      "definition": "通常为 `(期初余额 + 期末余额) / 2`，用于ROA、ROE、周转率等跨期间指标。"
+    },
+    "attributable_to_owners_of_parent": {
+      "label": "归母口径",
+      "aliases": [
+        "Attributable to owners of parent",
+        "归母",
+        "母公司股东口径"
+      ],
+      "category": "口径约定",
+      "definition": "分子使用归母净利润时，分母应使用归母股东权益，避免与少数股东权益错配。"
+    },
+    "consolidated": {
+      "label": "合并口径",
+      "aliases": [
+        "Consolidated",
+        "集团口径"
+      ],
+      "category": "口径约定",
+      "definition": "包含控股子公司全部资产、负债、收入和利润；涉及EV时需与少数股东权益口径保持一致。"
+    },
+    "industrial": {
+      "label": "一般企业口径",
+      "aliases": [
+        "Industrial/company format",
+        "工商企业",
+        "非金融企业"
+      ],
+      "category": "口径约定",
+      "definition": "适用于通常的流动资产、存货、营业成本、净债务等定义；不应直接套用于银行、券商、保险。"
+    },
+    "not_meaningful": {
+      "label": "无意义值",
+      "aliases": [
+        "Not meaningful",
+        "NM",
+        "不适用",
+        "不可比"
+      ],
+      "category": "口径约定",
+      "definition": "例如净利润小于等于零时的PE、净资产小于等于零时的PB。系统应返回空值及原因，不应给出误导性倍数。"
+    },
+    "market_capitalization": {
+      "label": "总市值",
+      "aliases": [
+        "Market Capitalization",
+        "市值",
+        "权益市值"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "收盘价乘以总股本；当前 `stock_daily.total_market_cap` 已直接提供。"
+    },
+    "float_market_capitalization": {
+      "label": "流通市值",
+      "aliases": [
+        "Float Market Capitalization",
+        "自由流通市值"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "流通股份对应的市值，不应作为标准PE/PB分子。"
+    },
+    "enterprise_value": {
+      "label": "企业价值",
+      "aliases": [
+        "Enterprise Value",
+        "EV",
+        "公司价值",
+        "企业估值"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "权益市值 + 有息债务 + 优先股 + 少数股东权益 - 现金及现金等价物；用于与企业整体经营指标匹配。"
+    },
+    "net_debt": {
+      "label": "净债务",
+      "aliases": [
+        "Net Debt",
+        "有息净负债"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "短期有息债务 + 长期有息债务 + 租赁负债 - 现金及现金等价物。不能用“总负债 - 现金”替代。"
+    },
+    "earnings_per_share": {
+      "label": "每股收益",
+      "aliases": [
+        "Earnings per Share",
+        "EPS",
+        "基本EPS",
+        "稀释EPS"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "归母普通股股东净利润除以加权平均普通股股数；基本与稀释口径必须区分。"
+    },
+    "book_value_per_share": {
+      "label": "每股净资产",
+      "aliases": [
+        "Book Value per Share",
+        "BVPS/BPS",
+        "每股账面价值",
+        "每股净值"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "归母股东权益除以期末普通股股数。"
+    },
+    "price": {
+      "label": "市盈率",
+      "aliases": [
+        "Price/Earnings",
+        "PE/P/E",
+        "本益比",
+        "收益倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "权益市值除以归母净利润，或股价除以EPS；必须标明TTM、静态或预测口径。"
+    },
+    "trailing_pe": {
+      "label": "滚动市盈率",
+      "aliases": [
+        "Trailing PE",
+        "PE TTM",
+        "动态市盈率TTM",
+        "滚动PE"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "总市值除以归母净利润TTM；利润小于等于零时标记NM。"
+    },
+    "static_pe": {
+      "label": "静态市盈率",
+      "aliases": [
+        "Static PE",
+        "年报PE"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "总市值除以上一完整会计年度归母净利润。"
+    },
+    "forward_pe": {
+      "label": "预测市盈率",
+      "aliases": [
+        "Forward PE",
+        "远期PE",
+        "一致预期PE"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "总市值除以未来十二个月或下一财年预测净利润；需要外部分析师预测数据。"
+    },
+    "price_2": {
+      "label": "市净率",
+      "aliases": [
+        "Price/Book",
+        "PB/PBV",
+        "股价净值比"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "权益市值除以归母股东权益，或股价除以每股净资产。"
+    },
+    "price_3": {
+      "label": "市销率",
+      "aliases": [
+        "Price/Sales",
+        "PS/P/S",
+        "营收倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "权益市值除以营业收入TTM；其分子属于股东、分母属于全体资本提供者，跨杠杆比较时EV/Sales更一致。"
+    },
+    "price_4": {
+      "label": "市现率",
+      "aliases": [
+        "Price/Cash Flow",
+        "PCF/P/CF",
+        "现金流倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "权益市值除以经营活动现金流TTM；不是PE的简单替代。"
+    },
+    "ev": {
+      "label": "企业价值倍数",
+      "aliases": [
+        "EV/EBITDA",
+        "企业倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "企业价值除以EBITDA TTM；资本开支高的企业仍可能没有可分配现金。"
+    },
+    "enterprise_value_2": {
+      "label": "EV/EBIT",
+      "aliases": [
+        "Enterprise Value/EBIT",
+        "企业价值营业利润倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "企业价值除以EBIT TTM，包含折旧摊销对利润的影响。"
+    },
+    "enterprise_value_3": {
+      "label": "EV/Sales",
+      "aliases": [
+        "Enterprise Value/Sales",
+        "企业价值营收倍数"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "企业价值除以营业收入TTM，比PS在资本口径上更一致。"
+    },
+    "earnings_yield": {
+      "label": "盈利收益率",
+      "aliases": [
+        "Earnings Yield",
+        "PE倒数",
+        "收益市值比"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "归母净利润TTM除以总市值；负利润可以保留为负值，但应与PE的NM规则区分。"
+    },
+    "fcf_yield": {
+      "label": "自由现金流收益率",
+      "aliases": [
+        "FCF Yield",
+        "自由现金流率"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "自由现金流除以对应价值分子；FCFE对应权益市值，FCFF对应EV。"
+    },
+    "pe": {
+      "label": "PEG",
+      "aliases": [
+        "PE/Growth",
+        "市盈增长比率"
+      ],
+      "category": "市值与估值基础术语",
+      "definition": "PE除以预期盈利增长率；增长率的单位及预测期限必须固定，负PE或非正增长通常为NM。"
+    },
+    "gross_profit": {
+      "label": "毛利润",
+      "aliases": [
+        "Gross Profit",
+        "毛利"
+      ],
+      "category": "盈利能力术语",
+      "definition": "营业收入减营业成本。金融企业通常不适用通用毛利口径。"
+    },
+    "gross_margin": {
+      "label": "毛利率",
+      "aliases": [
+        "Gross Margin",
+        "销售毛利率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "毛利润除以营业收入。"
+    },
+    "ebit": {
+      "label": "息税前利润",
+      "aliases": [
+        "EBIT",
+        "税息前利润"
+      ],
+      "category": "盈利能力术语",
+      "definition": "通常以营业利润为起点调整非经营项目；不能在所有会计格式中机械等同于营业利润。"
+    },
+    "ebitda": {
+      "label": "息税折旧摊销前利润",
+      "aliases": [
+        "EBITDA",
+        "息税折旧前利润"
+      ],
+      "category": "盈利能力术语",
+      "definition": "EBIT加折旧与摊销，是粗略经营现金能力指标，不等于经营现金流或自由现金流。"
+    },
+    "net_operating_profit_after_tax": {
+      "label": "税后经营利润",
+      "aliases": [
+        "Net Operating Profit After Tax",
+        "NOPAT",
+        "税后EBIT"
+      ],
+      "category": "盈利能力术语",
+      "definition": "EBIT乘以 `(1 - 经营适用税率)`，不扣利息，服务于ROIC和FCFF。"
+    },
+    "operating_margin": {
+      "label": "营业利润率",
+      "aliases": [
+        "Operating Margin",
+        "经营利润率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "EBIT或明确的营业利润除以营业收入；实现时必须固定分子定义。"
+    },
+    "ebitda_margin": {
+      "label": "EBITDA利润率",
+      "aliases": [
+        "EBITDA Margin",
+        "EBITDA率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "EBITDA除以营业收入。"
+    },
+    "net_margin": {
+      "label": "净利率",
+      "aliases": [
+        "Net Margin",
+        "销售净利率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "净利润除以营业收入；受资本结构与利息费用影响。"
+    },
+    "return_on_equity": {
+      "label": "净资产收益率",
+      "aliases": [
+        "Return on Equity",
+        "ROE",
+        "权益回报率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "归母净利润TTM除以平均归母股东权益。负权益时通常为NM。"
+    },
+    "return_on_assets": {
+      "label": "总资产收益率",
+      "aliases": [
+        "Return on Assets",
+        "ROA",
+        "资产回报率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "推荐使用净利润TTM除以平均总资产；也可用NOPAT口径，但必须另设指标ID。"
+    },
+    "return_on_invested_capital": {
+      "label": "投入资本回报率",
+      "aliases": [
+        "Return on Invested Capital",
+        "ROIC/ROC",
+        "投资资本回报率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "NOPAT除以平均投入资本，用于和WACC比较。"
+    },
+    "invested_capital": {
+      "label": "投入资本",
+      "aliases": [
+        "Invested Capital",
+        "营运资本投入"
+      ],
+      "category": "盈利能力术语",
+      "definition": "常用口径为归母/总权益 + 有息债务 - 现金及现金等价物；需固定少数股东权益和租赁负债处理。"
+    },
+    "capital_turnover": {
+      "label": "资本周转率",
+      "aliases": [
+        "Capital Turnover",
+        "投入资本周转率"
+      ],
+      "category": "盈利能力术语",
+      "definition": "营业收入TTM除以平均投入资本。ROIC可拆为税后营业利润率乘以资本周转率。"
+    },
+    "dupont_analysis": {
+      "label": "杜邦分析",
+      "aliases": [
+        "DuPont Analysis",
+        "ROE分解"
+      ],
+      "category": "盈利能力术语",
+      "definition": "三因素关系：ROE = 净利率 × 总资产周转率 × 权益乘数。"
+    },
+    "current_ratio": {
+      "label": "流动比率",
+      "aliases": [
+        "Current Ratio",
+        "短期偿债比率"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "流动资产除以流动负债。"
+    },
+    "quick_ratio": {
+      "label": "速动比率",
+      "aliases": [
+        "Quick Ratio",
+        "酸性测试比率"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "`(流动资产 - 存货 - 其他低流动性项目)` 除以流动负债；不同数据商定义可能不同。"
+    },
+    "cash_ratio": {
+      "label": "现金比率",
+      "aliases": [
+        "Cash Ratio",
+        "现金偿债比率"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "现金及现金等价物除以流动负债。"
+    },
+    "liabilities": {
+      "label": "资产负债率",
+      "aliases": [
+        "Liabilities/Assets",
+        "负债率",
+        "总负债率"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "总负债除以总资产；总负债包括无息经营负债，不等同于有息债务率。"
+    },
+    "liabilities_2": {
+      "label": "产权比率",
+      "aliases": [
+        "Liabilities/Equity",
+        "负债权益比"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "总负债除以股东权益；与有息债务/权益必须使用不同指标ID。"
+    },
+    "debt": {
+      "label": "有息债务权益比",
+      "aliases": [
+        "Debt/Equity",
+        "D/E",
+        "杠杆率"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "有息债务除以股东权益。"
+    },
+    "net_debt_2": {
+      "label": "净债务/EBITDA",
+      "aliases": [
+        "Net Debt/EBITDA",
+        "净杠杆倍数"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "净债务除以EBITDA TTM；EBITDA小于等于零时通常为NM。"
+    },
+    "interest_coverage": {
+      "label": "利息保障倍数",
+      "aliases": [
+        "Interest Coverage",
+        "已获利息倍数"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "EBIT TTM除以利息费用TTM；利息费用为零或负值时需单独标记。"
+    },
+    "equity_multiplier": {
+      "label": "权益乘数",
+      "aliases": [
+        "Equity Multiplier",
+        "财务杠杆倍数"
+      ],
+      "category": "偿债与资本结构术语",
+      "definition": "平均总资产除以平均股东权益，是杜邦分解的杠杆项。"
+    },
+    "asset_turnover": {
+      "label": "总资产周转率",
+      "aliases": [
+        "Asset Turnover",
+        "资产周转"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "营业收入TTM除以平均总资产。"
+    },
+    "receivables_turnover": {
+      "label": "应收账款周转率",
+      "aliases": [
+        "Receivables Turnover",
+        "应收周转率"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "营业收入或赊销收入除以平均应收账款；缺少赊销收入时使用营业收入并披露代理口径。"
+    },
+    "days_sales_outstanding": {
+      "label": "应收账款周转天数",
+      "aliases": [
+        "Days Sales Outstanding",
+        "DSO",
+        "应收天数"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "平均应收账款除以营业收入TTM，再乘以365。"
+    },
+    "inventory_turnover": {
+      "label": "存货周转率",
+      "aliases": [
+        "Inventory Turnover",
+        "存货周转"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "营业成本TTM除以平均存货。"
+    },
+    "days_inventory_outstanding": {
+      "label": "存货周转天数",
+      "aliases": [
+        "Days Inventory Outstanding",
+        "DIO",
+        "存货天数"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "平均存货除以营业成本TTM，再乘以365。"
+    },
+    "days_payables_outstanding": {
+      "label": "应付账款周转天数",
+      "aliases": [
+        "Days Payables Outstanding",
+        "DPO",
+        "应付天数"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "平均应付账款除以营业成本或采购额，再乘以365；缺少采购额时应披露代理口径。"
+    },
+    "cash_conversion_cycle": {
+      "label": "现金转换周期",
+      "aliases": [
+        "Cash Conversion Cycle",
+        "CCC",
+        "现金周期"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "DSO + DIO - DPO。"
+    },
+    "working_capital": {
+      "label": "营运资本",
+      "aliases": [
+        "Working Capital",
+        "净营运资本"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "流动资产减流动负债；估值中的“非现金营运资本”会进一步剔除现金和有息短债。"
+    },
+    "capital_expenditure": {
+      "label": "资本开支",
+      "aliases": [
+        "Capital Expenditure",
+        "CapEx",
+        "资本性支出"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "购买长期资产支付的现金；不可简单等同于投资活动现金流净额。"
+    },
+    "free_cash_flow": {
+      "label": "自由现金流",
+      "aliases": [
+        "Free Cash Flow",
+        "FCF",
+        "企业自由现金流"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "必须明确是FCFF还是FCFE；不得只写“经营现金流减投资现金流”。"
+    },
+    "free_cash_flow_to_firm": {
+      "label": "企业自由现金流",
+      "aliases": [
+        "Free Cash Flow to Firm",
+        "FCFF",
+        "公司自由现金流"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "NOPAT + 折旧摊销 - 资本开支 - 非现金营运资本增加额。"
+    },
+    "free_cash_flow_to_equity": {
+      "label": "股权自由现金流",
+      "aliases": [
+        "Free Cash Flow to Equity",
+        "FCFE",
+        "股东自由现金流"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "净利润 + 折旧摊销 - 资本开支 - 营运资本增加额 + 净新增有息债务。"
+    },
+    "cfo": {
+      "label": "经营现金含量",
+      "aliases": [
+        "CFO/Net Income",
+        "盈利现金比",
+        "现金净利比"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "经营现金流TTM除以净利润TTM，用于观察会计利润的现金实现程度。"
+    },
+    "cfo_margin": {
+      "label": "经营现金流率",
+      "aliases": [
+        "CFO Margin",
+        "经营现金流利润率"
+      ],
+      "category": "营运效率与现金流术语",
+      "definition": "经营现金流TTM除以营业收入TTM。"
+    },
+    "year_over_year": {
+      "label": "同比增长率",
+      "aliases": [
+        "Year-over-Year",
+        "YoY",
+        "同比",
+        "年增长率"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "当前期间值除以上年同期间值减一；当前与基期必须是相同季度或相同累计区间。"
+    },
+    "quarter_over_quarter": {
+      "label": "环比增长率",
+      "aliases": [
+        "Quarter-over-Quarter",
+        "QoQ",
+        "季度环比"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "当前单季度值除以上一单季度值减一，不能对累计值直接做环比。"
+    },
+    "compound_annual_growth_rate": {
+      "label": "复合增长率",
+      "aliases": [
+        "Compound Annual Growth Rate",
+        "CAGR",
+        "年复合增速"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "`(期末值 / 期初值)^(1/年数) - 1`；跨零或非正值时通常不计算。"
+    },
+    "dividend_payout_ratio": {
+      "label": "股利支付率",
+      "aliases": [
+        "Dividend Payout Ratio",
+        "分红率"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "普通股现金股利除以归母净利润。需要分红数据。"
+    },
+    "retention_ratio": {
+      "label": "留存率",
+      "aliases": [
+        "Retention Ratio",
+        "利润留存率"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "`1 - 股利支付率`。"
+    },
+    "sustainable_growth_rate": {
+      "label": "可持续增长率",
+      "aliases": [
+        "Sustainable Growth Rate",
+        "内生增长率"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "留存率乘以ROE，是简化稳态关系，不是分析师预测增速。"
+    },
+    "dividend_yield": {
+      "label": "股息率",
+      "aliases": [
+        "Dividend Yield",
+        "现金分红收益率"
+      ],
+      "category": "增长与股东回报术语",
+      "definition": "过去十二个月每股现金股利除以当前股价，或现金股利总额除以总市值。"
+    }
+  },
+  "derived_metric_terms": {
+    "market_cap": {
+      "label": "总市值",
+      "aliases": [
+        "market_cap"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：stock_daily.total_market_cap。使用查询交易日收盘后的总市值。",
+      "availability": "A",
+      "status": "planned"
+    },
+    "avg_parent_equity": {
+      "label": "平均归母权益",
+      "aliases": [
+        "avg_parent_equity"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：(期初归母权益 + 期末归母权益) / 2。两端均须为当时已披露值；不可把多家公司权益相加后再平均单家公司比率。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "avg_total_assets": {
+      "label": "平均总资产",
+      "aliases": [
+        "avg_total_assets"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：(期初总资产 + 期末总资产) / 2。期初通常取十二个月前同口径期末。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "revenue_ttm": {
+      "label": "营业收入TTM",
+      "aliases": [
+        "revenue_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：年报：本年累计；非年报：`上年年报 + 本年YTD - 上年同期YTD。必须先去重修订版本；缺任一组成项则为空。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "parent_net_profit_ttm": {
+      "label": "归母净利润TTM",
+      "aliases": [
+        "parent_net_profit_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：同上TTM桥接公式。`stock_daily.net_profit_ttm` 可作为一期实现，但需确认其是否为归母口径。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "cfo_ttm": {
+      "label": "经营现金流TTM",
+      "aliases": [
+        "cfo_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：同上TTM桥接公式。当前 `stock_daily.cash_flow_ttm` 可直接用，但应确认源口径。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "gross_profit_ttm": {
+      "label": "毛利润TTM",
+      "aliases": [
+        "gross_profit_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：营业收入TTM - 营业成本TTM。银行、保险、券商默认不适用。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "ebit_ttm": {
+      "label": "EBIT TTM",
+      "aliases": [
+        "ebit_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：标准化营业利润TTM，按会计口径调整明确的非经营项目。不在缺少明细时把营业利润无条件等同于EBIT。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "ebitda_ttm": {
+      "label": "EBITDA TTM",
+      "aliases": [
+        "ebitda_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：EBIT TTM + 折旧TTM + 摊销TTM。不等于经营现金流。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "nopat_ttm": {
+      "label": "NOPAT TTM",
+      "aliases": [
+        "nopat_ttm"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：EBIT TTM × (1 - tax_rate)。税率需定义上下限及亏损期处理。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "interest_bearing_debt": {
+      "label": "有息债务",
+      "aliases": [
+        "interest_bearing_debt"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：短期借款 + 一年内到期有息债务 + 长期借款 + 应付债券 + 租赁负债等。不包含应付账款、合同负债等经营负债。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "net_debt": {
+      "label": "净债务",
+      "aliases": [
+        "net_debt"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：有息债务 - 现金及现金等价物。若为负值表示净现金；不得用总负债替代。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "enterprise_value": {
+      "label": "企业价值",
+      "aliases": [
+        "enterprise_value"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：总市值 + 有息债务 + 优先股 + 少数股东权益 - 现金及现金等价物。合并报表分母与少数股东权益必须匹配。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "invested_capital": {
+      "label": "投入资本",
+      "aliases": [
+        "invested_capital"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：股东权益 + 有息债务 - 现金及现金等价物。是否纳入少数股东权益、租赁负债须版本化。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "noncash_working_capital": {
+      "label": "非现金营运资本",
+      "aliases": [
+        "noncash_working_capital"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：(流动资产 - 现金) - (流动负债 - 短期有息债务)。金融企业默认不使用。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "capex": {
+      "label": "资本开支",
+      "aliases": [
+        "capex"
+      ],
+      "category": "通用中间量",
+      "definition": "公式：购建固定资产、无形资产和其他长期资产支付的现金。不用投资活动现金流净额替代。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "pe_ttm": {
+      "label": "滚动市盈率",
+      "aliases": [
+        "pe_ttm",
+        "PE TTM",
+        "动态PE"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 归母净利润TTM。分母 `<= 0` 返回空值并标记NM。",
+      "availability": "A",
+      "status": "planned"
+    },
+    "pe_static": {
+      "label": "静态市盈率",
+      "aliases": [
+        "pe_static",
+        "年报PE"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 最近完整年度归母净利润。分母 `<= 0` 为NM；必须显示所用财年。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "pe_forward": {
+      "label": "预测市盈率",
+      "aliases": [
+        "pe_forward",
+        "Forward PE"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 未来十二个月预测归母净利润。需记录预测来源和快照时间。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "pb": {
+      "label": "市净率",
+      "aliases": [
+        "pb",
+        "PB",
+        "PBV"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 最新归母股东权益。当前 `stock_daily.net_assets` 可先用；权益 `<= 0` 为NM。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "ps_ttm": {
+      "label": "滚动市销率",
+      "aliases": [
+        "ps_ttm",
+        "PS TTM"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 营业收入TTM。收入 `<= 0` 为NM。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "pcf_ttm": {
+      "label": "滚动市现率",
+      "aliases": [
+        "pcf_ttm",
+        "P/CF"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 经营现金流TTM。分母 `<= 0` 默认NM，同时保留原始CFO供解释。",
+      "availability": "A",
+      "status": "planned"
+    },
+    "ev_sales_ttm": {
+      "label": "EV/Sales",
+      "aliases": [
+        "ev_sales_ttm",
+        "企业价值营收倍数"
+      ],
+      "category": "估值指标",
+      "definition": "公式：企业价值 / 营业收入TTM。收入 `<= 0` 为NM。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "ev_ebit_ttm": {
+      "label": "EV/EBIT",
+      "aliases": [
+        "ev_ebit_ttm"
+      ],
+      "category": "估值指标",
+      "definition": "公式：企业价值 / EBIT TTM。EBIT `<= 0` 为NM。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "ev_ebitda_ttm": {
+      "label": "企业倍数",
+      "aliases": [
+        "ev_ebitda_ttm",
+        "EV/EBITDA"
+      ],
+      "category": "估值指标",
+      "definition": "公式：企业价值 / EBITDA TTM。EBITDA `<= 0` 为NM。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "earnings_yield_ttm": {
+      "label": "盈利收益率",
+      "aliases": [
+        "earnings_yield_ttm",
+        "PE倒数"
+      ],
+      "category": "估值指标",
+      "definition": "公式：归母净利润TTM / 总市值。可保留负值；总市值 `<= 0` 为空。",
+      "availability": "A",
+      "status": "planned"
+    },
+    "fcfe_yield": {
+      "label": "股权自由现金流收益率",
+      "aliases": [
+        "fcfe_yield"
+      ],
+      "category": "估值指标",
+      "definition": "公式：FCFE TTM / 总市值。可为负；与FCFF/EV收益率分开。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "fcff_yield": {
+      "label": "企业自由现金流收益率",
+      "aliases": [
+        "fcff_yield"
+      ],
+      "category": "估值指标",
+      "definition": "公式：FCFF TTM / 企业价值。EV `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "peg_forward": {
+      "label": "PEG",
+      "aliases": [
+        "peg_forward"
+      ],
+      "category": "估值指标",
+      "definition": "公式：PE TTM / 未来盈利增长率百分数。约定增长率用“百分点数”，如20%以20代入；PE或增长率非正时为NM。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "dividend_yield_ttm": {
+      "label": "股息率",
+      "aliases": [
+        "dividend_yield_ttm"
+      ],
+      "category": "估值指标",
+      "definition": "公式：过去12个月普通股现金股利 / 总市值。使用除权前后统一口径。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "gross_margin_ttm": {
+      "label": "毛利率TTM",
+      "aliases": [
+        "gross_margin_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：毛利润TTM / 营业收入TTM。金融企业不适用；收入 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "operating_margin_ttm": {
+      "label": "营业利润率TTM",
+      "aliases": [
+        "operating_margin_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：EBIT TTM / 营业收入TTM。同一比较集必须使用相同EBIT定义。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "ebitda_margin_ttm": {
+      "label": "EBITDA利润率TTM",
+      "aliases": [
+        "ebitda_margin_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：EBITDA TTM / 营业收入TTM。收入 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "net_margin_ttm": {
+      "label": "归母净利率TTM",
+      "aliases": [
+        "net_margin_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：归母净利润TTM / 营业收入TTM。归母分子与合并收入存在口径差异，需在描述中明确。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "roe_ttm": {
+      "label": "净资产收益率TTM",
+      "aliases": [
+        "roe_ttm",
+        "ROE"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：归母净利润TTM / 平均归母股东权益。平均权益 `<= 0` 为NM。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "roe_end_ttm": {
+      "label": "期末口径ROE",
+      "aliases": [
+        "roe_end_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：归母净利润TTM / 期末归母股东权益。仅作为过渡/近似指标，不能与标准平均权益ROE混名。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "roa_ttm": {
+      "label": "总资产收益率TTM",
+      "aliases": [
+        "roa_ttm",
+        "ROA"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：净利润TTM / 平均总资产。分子使用合并净利润；平均资产 `<= 0` 为空。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "roic_ttm": {
+      "label": "投入资本回报率TTM",
+      "aliases": [
+        "roic_ttm",
+        "ROIC"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：NOPAT TTM / 平均投入资本。投入资本 `<= 0` 为NM；需固定税率和商誉处理。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "asset_turnover_ttm": {
+      "label": "总资产周转率",
+      "aliases": [
+        "asset_turnover_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：营业收入TTM / 平均总资产。平均资产 `<= 0` 为空。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "equity_multiplier": {
+      "label": "权益乘数",
+      "aliases": [
+        "equity_multiplier"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：平均总资产 / 平均归母股东权益。权益 `<= 0` 为NM。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "capital_turnover_ttm": {
+      "label": "投入资本周转率",
+      "aliases": [
+        "capital_turnover_ttm"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：营业收入TTM / 平均投入资本。投入资本 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "dupont_roe_check": {
+      "label": "杜邦ROE校验",
+      "aliases": [
+        "dupont_roe_check"
+      ],
+      "category": "盈利能力与杜邦指标",
+      "definition": "公式：净利率 × 总资产周转率 × 权益乘数。只做一致性校验；分子若用归母净利润，权益也必须归母。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "current_ratio": {
+      "label": "流动比率",
+      "aliases": [
+        "current_ratio"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：流动资产 / 流动负债。流动负债 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "quick_ratio": {
+      "label": "速动比率",
+      "aliases": [
+        "quick_ratio"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：(流动资产 - 存货) / 流动负债。第一版采用简化口径，后续可增加剔除预付款版本。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "cash_ratio": {
+      "label": "现金比率",
+      "aliases": [
+        "cash_ratio"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：现金及现金等价物 / 流动负债。流动负债 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "liabilities_to_assets": {
+      "label": "资产负债率",
+      "aliases": [
+        "liabilities_to_assets",
+        "总负债率"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：总负债 / 总资产。总资产 `<= 0` 为空；适用于当前行情快照。",
+      "availability": "A",
+      "status": "planned"
+    },
+    "liabilities_to_equity": {
+      "label": "产权比率",
+      "aliases": [
+        "liabilities_to_equity",
+        "总负债权益比"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：总负债 / 股东权益。不称为有息D/E；权益 `<= 0` 为NM。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "debt_to_equity": {
+      "label": "有息债务权益比",
+      "aliases": [
+        "debt_to_equity",
+        "D/E"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：有息债务 / 股东权益。与产权比率严格分开。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "debt_to_capital": {
+      "label": "有息债务资本比",
+      "aliases": [
+        "debt_to_capital"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：有息债务 / (有息债务 + 股东权益)。分母 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "net_debt_to_ebitda": {
+      "label": "净债务/EBITDA",
+      "aliases": [
+        "net_debt_to_ebitda",
+        "净杠杆"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：净债务 / EBITDA TTM。EBITDA `<= 0` 为NM；净现金企业可为负。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "interest_coverage": {
+      "label": "利息保障倍数",
+      "aliases": [
+        "interest_coverage"
+      ],
+      "category": "偿债与资本结构指标",
+      "definition": "公式：EBIT TTM / 利息费用TTM。利息费用 `<= 0` 时标记“不适用”，不制造极大数。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "receivables_turnover": {
+      "label": "应收账款周转率",
+      "aliases": [
+        "receivables_turnover"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：营业收入TTM / 平均应收账款。缺少赊销收入时标记为收入代理口径。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "dso": {
+      "label": "应收账款周转天数",
+      "aliases": [
+        "dso"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：平均应收账款 / 营业收入TTM × 365。收入 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "inventory_turnover": {
+      "label": "存货周转率",
+      "aliases": [
+        "inventory_turnover"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：营业成本TTM / 平均存货。平均存货 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "dio": {
+      "label": "存货周转天数",
+      "aliases": [
+        "dio"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：平均存货 / 营业成本TTM × 365。营业成本 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "payables_turnover": {
+      "label": "应付账款周转率",
+      "aliases": [
+        "payables_turnover"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：营业成本TTM / 平均应付账款。缺采购额时标记为成本代理口径。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "dpo": {
+      "label": "应付账款周转天数",
+      "aliases": [
+        "dpo"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：平均应付账款 / 营业成本TTM × 365。营业成本 `<= 0` 为空。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "cash_conversion_cycle": {
+      "label": "现金转换周期",
+      "aliases": [
+        "cash_conversion_cycle",
+        "CCC"
+      ],
+      "category": "营运效率指标",
+      "definition": "公式：DSO + DIO - DPO。任一组成项缺失则为空；金融企业不适用。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "cfo_to_net_profit": {
+      "label": "经营现金含量",
+      "aliases": [
+        "cfo_to_net_profit",
+        "盈利现金比"
+      ],
+      "category": "现金流质量与自由现金流",
+      "definition": "公式：经营现金流TTM / 净利润TTM。净利润 `<= 0` 时默认不输出倍数，但保留两个基础量。",
+      "availability": "A/B",
+      "status": "planned"
+    },
+    "cfo_margin": {
+      "label": "经营现金流率",
+      "aliases": [
+        "cfo_margin"
+      ],
+      "category": "现金流质量与自由现金流",
+      "definition": "公式：经营现金流TTM / 营业收入TTM。收入 `<= 0` 为空。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "fcff_ttm": {
+      "label": "企业自由现金流",
+      "aliases": [
+        "fcff_ttm"
+      ],
+      "category": "现金流质量与自由现金流",
+      "definition": "公式：NOPAT + 折旧摊销 - CapEx - Δ非现金营运资本。负值有效；必须保留各组成项。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "fcfe_ttm": {
+      "label": "股权自由现金流",
+      "aliases": [
+        "fcfe_ttm"
+      ],
+      "category": "现金流质量与自由现金流",
+      "definition": "公式：净利润 + 折旧摊销 - CapEx - Δ营运资本 + 净新增有息债务。负值有效；不能与FCFF混用。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "simple_fcf": {
+      "label": "简化自由现金流",
+      "aliases": [
+        "simple_fcf"
+      ],
+      "category": "现金流质量与自由现金流",
+      "definition": "公式：经营现金流TTM - CapEx TTM。明确命名为简化FCF，不冒充严格FCFF/FCFE。",
+      "availability": "C",
+      "status": "planned"
+    },
+    "revenue_yoy": {
+      "label": "营收同比",
+      "aliases": [
+        "revenue_yoy"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：本期累计收入 / 上年同期间累计收入 - 1。基期 `<= 0` 默认为空。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "parent_net_profit_yoy": {
+      "label": "归母净利润同比",
+      "aliases": [
+        "parent_net_profit_yoy"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：本期累计归母净利润 / 上年同期累计归母净利润 - 1。跨零时普通百分比会失真，返回空值并提供增减额。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "revenue_qoq": {
+      "label": "单季度营收环比",
+      "aliases": [
+        "revenue_qoq"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：本单季度收入 / 上一单季度收入 - 1。必须先还原单季度值。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "profit_qoq": {
+      "label": "单季度归母净利润环比",
+      "aliases": [
+        "profit_qoq"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：本单季度归母净利润 / 上一单季度归母净利润 - 1。跨零时为空并提供增减额。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "revenue_cagr_3y": {
+      "label": "三年营收复合增速",
+      "aliases": [
+        "revenue_cagr_3y"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：(末期收入 / 初期收入)^(1/3) - 1。两端必须为正且为同类年度值。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "profit_cagr_3y": {
+      "label": "三年利润复合增速",
+      "aliases": [
+        "profit_cagr_3y"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：(末期利润 / 初期利润)^(1/3) - 1。两端必须为正；跨零不计算。",
+      "availability": "B",
+      "status": "planned"
+    },
+    "sustainable_growth": {
+      "label": "可持续增长率",
+      "aliases": [
+        "sustainable_growth"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：留存率 × ROE。需要现金分红；这是稳态估算而非预测。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "book_value_per_share": {
+      "label": "每股净资产",
+      "aliases": [
+        "book_value_per_share",
+        "BVPS"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：归母股东权益 / 期末普通股股数。当前可由市值/股价反推股数，但不建议以反推值作为权威股本。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "sales_per_share_ttm": {
+      "label": "每股营收",
+      "aliases": [
+        "sales_per_share_ttm"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：营业收入TTM / 加权平均普通股股数。股数口径需与期间匹配。",
+      "availability": "D",
+      "status": "planned"
+    },
+    "cfo_per_share_ttm": {
+      "label": "每股经营现金流",
+      "aliases": [
+        "cfo_per_share_ttm"
+      ],
+      "category": "增长与每股指标",
+      "definition": "公式：经营现金流TTM / 加权平均普通股股数。股数口径需与期间匹配。",
+      "availability": "D",
+      "status": "planned"
+    }
+  }
+}

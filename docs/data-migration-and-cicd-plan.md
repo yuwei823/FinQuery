@@ -198,7 +198,7 @@ oss://finquery-data-prod/
 - 自动识别 UTF-8 与 GB18030。
 - 对存在说明文字的文件跳过首行，从第二行读取表头。
 - 将中文、`@`、冒号等转换为安全 `snake_case` 字段名。
-- 在 Schema 中保留原中文名称作为 label 和 aliases。
+- 在 Schema 中保留规范中文 `label`，把别名和业务表达写入同数据库目录的 `_terms.json`。
 - 从文件名补充 `stock_code`、`trade_date` 或数据来源。
 - 统一日期、数字、布尔、空值和百分比格式。
 - 按自然主键去重。
