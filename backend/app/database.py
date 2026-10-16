@@ -167,6 +167,45 @@ def load_database_catalog(
                 "database": database_id,
             }
 
+        fields_by_id = {
+            f"{table['id']}.{field['name']}": field
+            for table in source_tables
+            for field in table.get("fields", [])
+        }
+        for qualified_metric_id, metric in tuple(derived_metric_terms.items()):
+            if metric.get("database") != database_id or metric.get("status") != "active":
+                continue
+            field_id = str(metric.get("field_id") or "").strip()
+            if not field_id:
+                raise ValueError(f"已启用派生指标缺少 field_id：{qualified_metric_id}")
+            field = fields_by_id.get(field_id)
+            if field is None:
+                raise ValueError(
+                    f"已启用派生指标 {qualified_metric_id} 指向未知字段：{field_id}"
+                )
+            metric_aliases = [metric["label"], *metric.get("aliases", [])]
+            field["aliases"] = list(
+                dict.fromkeys([*field.get("aliases", []), *metric_aliases])
+            )
+            field["derived_metric"] = {
+                key: metric[key]
+                for key in (
+                    "metric_id",
+                    "label",
+                    "aliases",
+                    "category",
+                    "definition",
+                    "availability",
+                    "sql_expression",
+                    "invalid_when",
+                    "unit",
+                    "period_basis",
+                    "formula_version",
+                    "quality_note",
+                )
+                if metric.get(key) not in (None, "", [])
+            }
+
         tables.extend(source_tables)
         relations.extend(list(payload.get("relations") or []))
 

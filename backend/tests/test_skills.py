@@ -36,6 +36,9 @@ class SkillRegistryTest(unittest.TestCase):
         self.assertIn("query_*", skill.allowed_tools)
         self.assertEqual(skill.output_actions, ("call_tool", "clarify"))
         self.assertIn("Schema图", skill.instructions)
+        self.assertIn("优先直接查询该物化字段", skill.instructions)
+        self.assertIn("通用P2指标", skill.instructions)
+        self.assertIn("stock_financial_daily", skill.instructions)
 
 
 if __name__ == "__main__":

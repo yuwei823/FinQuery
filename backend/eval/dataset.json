@@ -116,6 +116,41 @@
         ],
         "rows": [
           {
+            "trade_date": "2026-10-15",
+            "close": 9.64,
+            "turnover": 658627633.0
+          },
+          {
+            "trade_date": "2026-10-14",
+            "close": 9.65,
+            "turnover": 573962854.0
+          },
+          {
+            "trade_date": "2026-10-13",
+            "close": 9.59,
+            "turnover": 654402287.0
+          },
+          {
+            "trade_date": "2026-10-12",
+            "close": 9.67,
+            "turnover": 640471791.0
+          },
+          {
+            "trade_date": "2026-10-09",
+            "close": 9.54,
+            "turnover": 915309833.0
+          },
+          {
+            "trade_date": "2026-10-08",
+            "close": 9.7,
+            "turnover": 1106982193.0
+          },
+          {
+            "trade_date": "2026-09-30",
+            "close": 9.48,
+            "turnover": 1386209937.0
+          },
+          {
             "trade_date": "2026-09-29",
             "close": 9.18,
             "turnover": 739740988.0
@@ -179,41 +214,6 @@
             "trade_date": "2026-09-10",
             "close": 9.35,
             "turnover": 555882181.0
-          },
-          {
-            "trade_date": "2026-09-09",
-            "close": 9.23,
-            "turnover": 467549947.0
-          },
-          {
-            "trade_date": "2026-09-08",
-            "close": 9.28,
-            "turnover": 374763157.0
-          },
-          {
-            "trade_date": "2026-09-07",
-            "close": 9.23,
-            "turnover": 806326225.0
-          },
-          {
-            "trade_date": "2026-09-04",
-            "close": 9.43,
-            "turnover": 712270967.0
-          },
-          {
-            "trade_date": "2026-09-03",
-            "close": 9.27,
-            "turnover": 841972880.0
-          },
-          {
-            "trade_date": "2026-09-02",
-            "close": 9.28,
-            "turnover": 625374762.0
-          },
-          {
-            "trade_date": "2026-09-01",
-            "close": 9.35,
-            "turnover": 952382710.0
           }
         ]
       },
@@ -272,103 +272,103 @@
         "rows": [
           {
             "stock_name": "中际旭创",
-            "trade_date": "2026-09-29",
-            "turnover": 13099145541.12
-          },
-          {
-            "stock_name": "亨通光电",
-            "trade_date": "2026-09-29",
-            "turnover": 11344313714.0
+            "trade_date": "2026-10-15",
+            "turnover": 21778343697.14
           },
           {
             "stock_name": "新易盛",
-            "trade_date": "2026-09-29",
-            "turnover": 10061899943.16
-          },
-          {
-            "stock_name": "宁德时代",
-            "trade_date": "2026-09-29",
-            "turnover": 8608636254.1
+            "trade_date": "2026-10-15",
+            "turnover": 17135757463.76
           },
           {
             "stock_name": "长鑫科技",
-            "trade_date": "2026-09-29",
-            "turnover": 8202052877.0
+            "trade_date": "2026-10-15",
+            "turnover": 12355164217.0
+          },
+          {
+            "stock_name": "宁德时代",
+            "trade_date": "2026-10-15",
+            "turnover": 11587748213.08
           },
           {
             "stock_name": "兆易创新",
-            "trade_date": "2026-09-29",
-            "turnover": 7587701015.0
-          },
-          {
-            "stock_name": "天孚通信",
-            "trade_date": "2026-09-29",
-            "turnover": 7359507758.66
+            "trade_date": "2026-10-15",
+            "turnover": 10365265972.0
           },
           {
             "stock_name": "寒武纪",
-            "trade_date": "2026-09-29",
-            "turnover": 7339177495.0
+            "trade_date": "2026-10-15",
+            "turnover": 9401393301.0
+          },
+          {
+            "stock_name": "沪电股份",
+            "trade_date": "2026-10-15",
+            "turnover": 8728786070.52
           },
           {
             "stock_name": "东山精密",
-            "trade_date": "2026-09-29",
-            "turnover": 6157783215.19
+            "trade_date": "2026-10-15",
+            "turnover": 8689623651.35
           },
           {
             "stock_name": "澜起科技",
-            "trade_date": "2026-09-29",
-            "turnover": 5996162940.0
+            "trade_date": "2026-10-15",
+            "turnover": 8100845279.0
           },
           {
-            "stock_name": "江淮汽车",
-            "trade_date": "2026-09-29",
-            "turnover": 5815861568.0
+            "stock_name": "贵州茅台",
+            "trade_date": "2026-10-15",
+            "turnover": 7537706224.0
           },
           {
-            "stock_name": "京东方A",
-            "trade_date": "2026-09-29",
-            "turnover": 5032126577.2
+            "stock_name": "中国船舶",
+            "trade_date": "2026-10-15",
+            "turnover": 6954077083.0
           },
           {
-            "stock_name": "源杰科技",
-            "trade_date": "2026-09-29",
-            "turnover": 5005963868.0
+            "stock_name": "北方华创",
+            "trade_date": "2026-10-15",
+            "turnover": 6900196254.25
           },
           {
-            "stock_name": "药明康德",
-            "trade_date": "2026-09-29",
-            "turnover": 4927714396.0
+            "stock_name": "天孚通信",
+            "trade_date": "2026-10-15",
+            "turnover": 6583828823.95
+          },
+          {
+            "stock_name": "中微公司",
+            "trade_date": "2026-10-15",
+            "turnover": 6500352803.0
           },
           {
             "stock_name": "生益科技",
-            "trade_date": "2026-09-29",
-            "turnover": 4812206364.0
+            "trade_date": "2026-10-15",
+            "turnover": 5941979553.0
+          },
+          {
+            "stock_name": "紫金矿业",
+            "trade_date": "2026-10-15",
+            "turnover": 5799561297.0
+          },
+          {
+            "stock_name": "长川科技",
+            "trade_date": "2026-10-15",
+            "turnover": 5495851917.13
+          },
+          {
+            "stock_name": "超声电子",
+            "trade_date": "2026-10-15",
+            "turnover": 5466007523.91
           },
           {
             "stock_name": "中国巨石",
-            "trade_date": "2026-09-29",
-            "turnover": 4754132278.0
-          },
-          {
-            "stock_name": "欣旺达",
-            "trade_date": "2026-09-29",
-            "turnover": 4229595034.76
-          },
-          {
-            "stock_name": "有研新材",
-            "trade_date": "2026-09-29",
-            "turnover": 4216846897.0
+            "trade_date": "2026-10-15",
+            "turnover": 5275579728.0
           },
           {
             "stock_name": "海光信息",
-            "trade_date": "2026-09-29",
-            "turnover": 4154813728.0
-          },
-          {
-            "stock_name": "永鼎股份",
-            "trade_date": "2026-09-29",
-            "turnover": 4068873635.0
+            "trade_date": "2026-10-15",
+            "turnover": 5192243718.0
           }
         ]
       },
@@ -458,103 +458,103 @@
         "rows": [
           {
             "fund_name": "华夏上证科创板半导体材料设备主题ETF",
-            "fund_code": "588170.SH",
-            "total_volume": 68251002614.0
-          },
-          {
-            "fund_name": "国泰中证全指通信设备ETF",
-            "fund_code": "515880.SH",
-            "total_volume": 64216448901.0
-          },
-          {
-            "fund_name": "国泰中证半导体材料设备主题ETF",
-            "fund_code": "159516.SZ",
-            "total_volume": 59036739416.0
-          },
-          {
-            "fund_name": "广发中证香港创新药(QDII-ETF)",
-            "fund_code": "513120.SH",
-            "total_volume": 57888847418.0
-          },
-          {
-            "fund_name": "华夏上证科创板50成份ETF",
-            "fund_code": "588000.SH",
-            "total_volume": 49130630197.0
-          },
-          {
-            "fund_name": "华泰柏瑞南方东英恒生科技指数ETF(QDII)",
-            "fund_code": "513130.SH",
-            "total_volume": 48370073711.0
-          },
-          {
-            "fund_name": "华夏恒生互联网科技业ETF(QDII)",
-            "fund_code": "513330.SH",
-            "total_volume": 48277131512.0
-          },
-          {
-            "fund_name": "华泰柏瑞中证A500ETF",
-            "fund_code": "563360.SH",
-            "total_volume": 47388423128.0
-          },
-          {
-            "fund_name": "华夏恒生科技ETF(QDII)",
-            "fund_code": "513180.SH",
-            "total_volume": 43137097219.0
-          },
-          {
-            "fund_name": "南方中证A500ETF",
-            "fund_code": "159352.SZ",
-            "total_volume": 41564516850.0
-          },
-          {
-            "fund_name": "国泰中证A500ETF",
-            "fund_code": "159338.SZ",
-            "total_volume": 37298588962.0
-          },
-          {
-            "fund_name": "富国中证港股通互联网ETF",
-            "fund_code": "159792.SZ",
-            "total_volume": 36830180723.0
-          },
-          {
-            "fund_name": "华夏上证科创板半导体材料设备主题ETF",
             "fund_code": "sh588170",
-            "total_volume": 32071924647.0
-          },
-          {
-            "fund_name": "嘉实上证科创板芯片ETF",
-            "fund_code": "588200.SH",
-            "total_volume": 31540702489.0
-          },
-          {
-            "fund_name": "国泰中证全指通信设备ETF",
-            "fund_code": "sh515880",
-            "total_volume": 30147867027.0
-          },
-          {
-            "fund_name": "华泰柏瑞中证韩交所中韩半导体ETF(QDII)",
-            "fund_code": "513310.SH",
-            "total_volume": 29099769976.0
+            "total_volume": 77612308798.0
           },
           {
             "fund_name": "广发中证香港创新药(QDII-ETF)",
             "fund_code": "sh513120",
-            "total_volume": 28939462392.0
+            "total_volume": 72216176625.0
           },
           {
-            "fund_name": "华宝中证全指证券公司ETF",
-            "fund_code": "512000.SH",
-            "total_volume": 26547260271.0
+            "fund_name": "国泰中证全指通信设备ETF",
+            "fund_code": "sh515880",
+            "total_volume": 69327898593.0
           },
           {
-            "fund_name": "易方达中证香港证券投资主题(港股通)ETF",
-            "fund_code": "513090.SH",
-            "total_volume": 25541798471.0
+            "fund_name": "华夏上证科创板50成份ETF",
+            "fund_code": "sh588000",
+            "total_volume": 66190636503.0
+          },
+          {
+            "fund_name": "华夏恒生互联网科技业ETF(QDII)",
+            "fund_code": "sh513330",
+            "total_volume": 57745520596.0
           },
           {
             "fund_name": "国泰中证半导体材料设备主题ETF",
             "fund_code": "sz159516",
-            "total_volume": 24301686107.0
+            "total_volume": 56844384745.0
+          },
+          {
+            "fund_name": "华泰柏瑞南方东英恒生科技指数ETF(QDII)",
+            "fund_code": "sh513130",
+            "total_volume": 51496277678.0
+          },
+          {
+            "fund_name": "华夏恒生科技ETF(QDII)",
+            "fund_code": "sh513180",
+            "total_volume": 48635326235.0
+          },
+          {
+            "fund_name": "华泰柏瑞中证A500ETF",
+            "fund_code": "sh563360",
+            "total_volume": 45706441307.0
+          },
+          {
+            "fund_name": "南方中证A500ETF",
+            "fund_code": "sz159352",
+            "total_volume": 38753977307.0
+          },
+          {
+            "fund_name": "富国中证港股通互联网ETF",
+            "fund_code": "sz159792",
+            "total_volume": 36522053799.0
+          },
+          {
+            "fund_name": "国泰中证A500ETF",
+            "fund_code": "sz159338",
+            "total_volume": 34886752767.0
+          },
+          {
+            "fund_name": "嘉实上证科创板芯片ETF",
+            "fund_code": "sh588200",
+            "total_volume": 32609414206.0
+          },
+          {
+            "fund_name": "易方达创业板ETF",
+            "fund_code": "sz159915",
+            "total_volume": 28772127482.0
+          },
+          {
+            "fund_name": "华泰柏瑞中证韩交所中韩半导体ETF(QDII)",
+            "fund_code": "sh513310",
+            "total_volume": 25668372455.0
+          },
+          {
+            "fund_name": "易方达中证海外中国互联网50(QDII-ETF)",
+            "fund_code": "sh513050",
+            "total_volume": 23404679790.0
+          },
+          {
+            "fund_name": "华宝中证全指证券公司ETF",
+            "fund_code": "sh512000",
+            "total_volume": 21726267994.0
+          },
+          {
+            "fund_name": "大成恒生科技ETF(QDII)",
+            "fund_code": "sz159740",
+            "total_volume": 20916716865.0
+          },
+          {
+            "fund_name": "港股创新药ETF",
+            "fund_code": "sz159567",
+            "total_volume": 20379525005.0
+          },
+          {
+            "fund_name": "易方达中证香港证券投资主题(港股通)ETF",
+            "fund_code": "sh513090",
+            "total_volume": 20343095196.0
           }
         ]
       },
@@ -591,7 +591,65 @@
       "forbidden_in_answer": []
     },
     {
-      "id": "c008",
+      "id": "q008",
+      "category": "complex_query",
+      "query": "筛选最新交易日归母PE TTM低于15且ROE高于10%的股票",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "最新交易日",
+        "归母PE TTM",
+        "ROE",
+        "股票"
+      ],
+      "expected_tables": [
+        "trade_data.stock_financial_daily"
+      ],
+      "expected_fields": [
+        "trade_data.stock_financial_daily.stock_name",
+        "trade_data.stock_financial_daily.trade_date",
+        "trade_data.stock_financial_daily.total_market_cap",
+        "trade_data.stock_financial_daily.parent_net_profit_ttm",
+        "trade_data.stock_financial_daily.avg_parent_equity",
+        "trade_data.stock_financial_daily.pe_parent_ttm",
+        "trade_data.stock_financial_daily.roe_ttm"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "q009",
+      "category": "complex_query",
+      "query": "查询一般企业中EV/EBITDA最低且ROIC为正的二十家公司",
+      "expected_route": "database_query",
+      "retrieval_terms": [
+        "一般企业",
+        "EV/EBITDA",
+        "ROIC",
+        "最低",
+        "二十家公司"
+      ],
+      "expected_tables": [
+        "trade_data.stock_financial_daily"
+      ],
+      "expected_fields": [
+        "trade_data.stock_financial_daily.stock_name",
+        "trade_data.stock_financial_daily.trade_date",
+        "trade_data.stock_financial_daily.statement_format",
+        "trade_data.stock_financial_daily.total_market_cap",
+        "trade_data.stock_financial_daily.interest_bearing_debt",
+        "trade_data.stock_financial_daily.cash_and_equivalents",
+        "trade_data.stock_financial_daily.depreciation_and_amortization_ttm",
+        "trade_data.stock_financial_daily.avg_invested_capital",
+        "trade_data.stock_financial_daily.ev_ebitda_ttm",
+        "trade_data.stock_financial_daily.roic_ttm"
+      ],
+      "golden_sql": null,
+      "expected_result": null,
+      "forbidden_in_answer": []
+    },
+    {
+      "id": "c010",
       "category": "clarification",
       "query": "帮我看看最近的行情怎么样",
       "expected_route": "direct_response",

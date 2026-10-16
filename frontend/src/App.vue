@@ -53,6 +53,8 @@ const promptGroupsByDatabase: Record<string, PromptGroup[]> = {
       hint: "先查询 · 再追问",
       prompts: [
         "获取上一个交易日A股涨幅最大的20只股票",
+        "筛选最新交易日归母PE TTM低于15且ROE高于10%的股票",
+        "查询一般企业中EV/EBITDA最低且ROIC为正的20家公司",
         "计算每只 ETF 最近 20 个交易日的收益率、平均换手率和份额变化率。按详细分类分组，保留 10 种分类，返回每类收益率最高的 3 只 ETF",
       ],
     },

@@ -9,6 +9,7 @@ from ..config import BASE_DIR, Settings, settings
 from ..database import (
     ACTIVE_DATABASES,
     DEFAULT_DATABASE,
+    DERIVED_METRIC_TERMS,
     FIELD_TERMS,
     RELATIONS,
     SCHEMA,
@@ -357,6 +358,19 @@ class SchemaIndex:
                 profile = self._field_profile(connection, sql_table_name, field)
             field_id = f"{table['id']}.{field['name']}"
             aliases = list(dict.fromkeys(field.get("aliases", [])))
+            metric = field.get("derived_metric") or {}
+            metric_text = " ".join(
+                str(metric.get(key) or "")
+                for key in (
+                    "label",
+                    "definition",
+                    "availability",
+                    "unit",
+                    "period_basis",
+                    "formula_version",
+                    "quality_note",
+                )
+            ).strip()
             samples_text = "、".join(str(item) for item in samples)
             relations = [
                 f"{item['left_table']}.{item['left_field']}={item['right_table']}.{item['right_field']}"
@@ -368,19 +382,21 @@ class SchemaIndex:
                 table.get("database", DEFAULT_DATABASE), table.get("domain", ""),
                 table["id"], sql_table_name, table["label"], *table.get("business_terms", []),
                 field["name"], field["label"], field.get("description", ""),
-                *aliases, samples_text,
+                *aliases, metric_text, samples_text,
             ])
             default_semantic_text = (
                 f"{field['label']}（{field['name']}）属于{table['label']}。"
                 f"表用途：{table['description']}。字段含义：{field.get('description', '')}。"
-                f"业务表达：{'、'.join(aliases)}。数据特征：{profile}。样例：{samples_text}。"
+                f"业务表达：{'、'.join(aliases)}。"
+                f"派生指标口径：{metric_text or '非注册派生指标'}。"
+                f"数据特征：{profile}。样例：{samples_text}。"
             )
             default_rerank_text = (
                 f"数据库字段 {sql_table_name}.{field['name']}；中文名：{field['label']}；"
                 f"字段含义：{field.get('description', '')}；角色：{field.get('role', '')}；"
                 f"所属表：{table['label']}；表业务：{table['description']}；"
                 f"同义词：{'、'.join(aliases)}；样例：{samples_text}；分布：{profile}；"
-                f"关联：{'、'.join(relations) or '无'}。"
+                f"派生指标口径：{metric_text or '无'}；关联：{'、'.join(relations) or '无'}。"
             )
             index_content = field.get("index_content") or {}
             keyword_text = str(index_content.get("keyword_text") or default_keyword_text)
@@ -487,6 +503,7 @@ class SchemaIndex:
                 "schema": SCHEMA,
                 "relations": RELATIONS,
                 "field_terms": FIELD_TERMS,
+                "derived_metric_terms": DERIVED_METRIC_TERMS,
             },
             ensure_ascii=False,
             sort_keys=True,

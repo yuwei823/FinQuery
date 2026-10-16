@@ -13,6 +13,7 @@ from app.database import (
     CONCEPT_TERMS,
     DERIVED_METRIC_TERMS,
     FIELD_TERMS,
+    SCHEMA,
     load_database_catalog,
 )
 from app.database_sources import DatabaseSource, source_registry
@@ -109,7 +110,14 @@ class DatabaseSwitchesTest(unittest.TestCase):
             self.assertEqual([table["id"] for table in schema], ["second.items"])
             self.assertEqual(field_terms, {"second.items.item_id": ["second_alias"]})
             self.assertEqual(schema[0]["business_terms"], ["second业务"])
-            self.assertEqual(schema[0]["fields"][0]["aliases"], ["second_alias"])
+            self.assertEqual(
+                schema[0]["fields"][0]["aliases"],
+                ["second_alias", "示例比率", "示例指标"],
+            )
+            self.assertEqual(
+                schema[0]["fields"][0]["derived_metric"]["formula_version"],
+                "test.v1",
+            )
             self.assertEqual(role_tables["market_analyst"], frozenset({"second.items"}))
             self.assertEqual(
                 meta["second"],
@@ -128,6 +136,27 @@ class DatabaseSwitchesTest(unittest.TestCase):
         )
         index = SchemaIndex(index_path=None)
         self.assertEqual(index.index_path.name, "schema_store.trade_data.json")
+
+    def test_active_metric_metadata_is_indexed_with_materialized_field(self) -> None:
+        table = next(
+            item for item in SCHEMA if item["id"] == "trade_data.stock_financial_daily"
+        )
+        field = next(item for item in table["fields"] if item["name"] == "roic_ttm")
+        self.assertEqual(field["derived_metric"]["metric_id"], "roic_ttm")
+        self.assertEqual(
+            field["derived_metric"]["formula_version"],
+            "p2.general_enterprise.tax_clamped.pit.v1",
+        )
+        self.assertIn("ROIC", field["aliases"])
+
+        raw_documents = SchemaIndex(index_path=None)._build_raw_documents()
+        document = next(
+            item
+            for item in raw_documents
+            if item["doc_id"] == "trade_data.stock_financial_daily.roic_ttm"
+        )
+        self.assertIn("p2.general_enterprise.tax_clamped.pit.v1", document["keyword_text"])
+        self.assertIn("平均投入资本", document["semantic_text"])
 
     @staticmethod
     def _source(root: Path, database_id: str, alias: str) -> DatabaseSource:
@@ -170,7 +199,13 @@ class DatabaseSwitchesTest(unittest.TestCase):
                     "category": "测试",
                     "definition": "测试用派生指标术语",
                     "availability": "A",
-                    "status": "planned",
+                    "status": "active",
+                    "field_id": f"{database_id}.items.item_id",
+                    "sql_expression": "item_id",
+                    "invalid_when": "item_id IS NULL",
+                    "unit": "比率",
+                    "period_basis": "测试时点",
+                    "formula_version": "test.v1",
                 }
             },
         }
