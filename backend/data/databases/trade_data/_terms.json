@@ -723,10 +723,37 @@
     "trade_data.stock_financial_daily.parent_equity": ["归母股东权益", "归母权益", "归母净资产"],
     "trade_data.stock_financial_daily.avg_total_assets": ["平均总资产", "平均资产"],
     "trade_data.stock_financial_daily.avg_parent_equity": ["平均归母权益", "平均归母股东权益"],
+    "trade_data.stock_financial_daily.total_owner_equity": ["所有者权益合计"],
+    "trade_data.stock_financial_daily.total_current_assets": ["流动资产合计"],
+    "trade_data.stock_financial_daily.inventory": ["存货"],
+    "trade_data.stock_financial_daily.prepayments": ["预付款项"],
+    "trade_data.stock_financial_daily.total_current_liabilities": ["流动负债合计"],
+    "trade_data.stock_financial_daily.preferred_shares_equity": ["优先股权益"],
+    "trade_data.stock_financial_daily.minority_interest": ["少数股东权益"],
+    "trade_data.stock_financial_daily.cash_and_equivalents": ["现金及现金等价物", "现金等价物"],
+    "trade_data.stock_financial_daily.cash_and_equivalents_source": ["现金口径来源"],
+    "trade_data.stock_financial_daily.receivables_for_turnover": ["周转口径应收款"],
+    "trade_data.stock_financial_daily.payables_for_turnover": ["周转口径应付款"],
+    "trade_data.stock_financial_daily.interest_bearing_debt": ["有息债务"],
+    "trade_data.stock_financial_daily.operating_working_capital": ["经营营运资本"],
+    "trade_data.stock_financial_daily.prior_year_operating_working_capital": ["上年同期经营营运资本"],
+    "trade_data.stock_financial_daily.invested_capital": ["投入资本"],
+    "trade_data.stock_financial_daily.avg_invested_capital": ["平均投入资本"],
+    "trade_data.stock_financial_daily.avg_receivables_for_turnover": ["平均周转口径应收款"],
+    "trade_data.stock_financial_daily.avg_payables_for_turnover": ["平均周转口径应付款"],
+    "trade_data.stock_financial_daily.avg_inventory": ["平均存货"],
     "trade_data.stock_financial_daily.operating_revenue_ttm": ["营业收入TTM", "滚动营业收入", "近十二个月营收"],
+    "trade_data.stock_financial_daily.operating_cost_ttm": ["营业成本TTM"],
+    "trade_data.stock_financial_daily.operating_profit_ttm": ["营业利润TTM"],
+    "trade_data.stock_financial_daily.total_profit_ttm": ["利润总额TTM"],
     "trade_data.stock_financial_daily.net_profit_ttm": ["净利润TTM", "合并净利润TTM"],
     "trade_data.stock_financial_daily.parent_net_profit_ttm": ["归母净利润TTM", "滚动归母净利润"],
     "trade_data.stock_financial_daily.operating_cash_flow_ttm": ["经营现金流TTM", "滚动经营现金流"],
+    "trade_data.stock_financial_daily.interest_expense_ttm": ["利息费用TTM"],
+    "trade_data.stock_financial_daily.income_tax_expense_ttm": ["所得税费用TTM"],
+    "trade_data.stock_financial_daily.depreciation_and_amortization_ttm": ["折旧摊销TTM", "D&A TTM"],
+    "trade_data.stock_financial_daily.capital_expenditure_cash_ttm": ["资本开支TTM", "CapEx TTM"],
+    "trade_data.stock_financial_daily.net_debt_issuance_ttm": ["净债务融资TTM"],
     "trade_data.stock_financial_daily.operating_revenue_ytd": ["营业收入YTD", "累计营业收入"],
     "trade_data.stock_financial_daily.parent_net_profit_ytd": ["归母净利润YTD", "累计归母净利润"],
     "trade_data.stock_financial_daily.operating_revenue_quarter": ["单季度营业收入", "单季营收"],
@@ -761,7 +788,24 @@
     "trade_data.stock_financial_daily.revenue_qoq": ["单季度营收环比", "营收环比", "营业收入环比"],
     "trade_data.stock_financial_daily.profit_qoq": ["单季度归母净利润环比", "利润环比", "归母净利润环比"],
     "trade_data.stock_financial_daily.revenue_cagr_3y": ["三年营收复合增长率", "营收三年CAGR"],
-    "trade_data.stock_financial_daily.profit_cagr_3y": ["三年利润复合增长率", "利润三年CAGR"]
+    "trade_data.stock_financial_daily.profit_cagr_3y": ["三年利润复合增长率", "利润三年CAGR"],
+    "trade_data.stock_financial_daily.gross_margin_ttm": ["毛利率TTM", "毛利率"],
+    "trade_data.stock_financial_daily.ebitda_margin_ttm": ["EBITDA利润率TTM", "EBITDA Margin"],
+    "trade_data.stock_financial_daily.ev_sales_ttm": ["EV/Sales", "企业价值营收倍数"],
+    "trade_data.stock_financial_daily.ev_ebit_ttm": ["EV/EBIT"],
+    "trade_data.stock_financial_daily.ev_ebitda_ttm": ["企业倍数", "EV/EBITDA"],
+    "trade_data.stock_financial_daily.current_ratio": ["流动比率"],
+    "trade_data.stock_financial_daily.quick_ratio": ["速动比率"],
+    "trade_data.stock_financial_daily.debt_to_equity": ["有息债务权益比", "D/E"],
+    "trade_data.stock_financial_daily.net_debt_to_ebitda": ["净债务/EBITDA", "净杠杆"],
+    "trade_data.stock_financial_daily.interest_coverage": ["利息保障倍数"],
+    "trade_data.stock_financial_daily.dso": ["应收账款周转天数", "DSO"],
+    "trade_data.stock_financial_daily.dio": ["存货周转天数", "DIO"],
+    "trade_data.stock_financial_daily.dpo": ["应付账款周转天数", "DPO"],
+    "trade_data.stock_financial_daily.cash_conversion_cycle": ["现金转换周期", "CCC"],
+    "trade_data.stock_financial_daily.fcff_ttm": ["企业自由现金流", "FCFF TTM"],
+    "trade_data.stock_financial_daily.fcfe_ttm": ["股权自由现金流", "FCFE TTM"],
+    "trade_data.stock_financial_daily.roic_ttm": ["投入资本回报率TTM", "ROIC"]
   },
   "concept_terms": {
     "monetary_funds": {
@@ -2372,7 +2416,13 @@
       "category": "估值指标",
       "definition": "公式：企业价值 / 营业收入TTM。收入 `<= 0` 为NM。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.ev_sales_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_revenue_ttm > 0 AND total_market_cap > 0 AND interest_bearing_debt IS NOT NULL AND cash_and_equivalents IS NOT NULL THEN (total_market_cap + interest_bearing_debt + COALESCE(preferred_shares_equity, 0) + COALESCE(minority_interest, 0) - cash_and_equivalents) / operating_revenue_ttm END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_revenue_ttm <= 0 OR total_market_cap <= 0 OR debt/cash unavailable",
+      "unit": "倍",
+      "period_basis": "交易日总市值加期末有息债务、优先股和少数股东权益并扣除现金",
+      "formula_version": "p2.general_enterprise.ev.pit.v1"
     },
     "ev_ebit_ttm": {
       "label": "EV/EBIT",
@@ -2382,7 +2432,13 @@
       "category": "估值指标",
       "definition": "公式：企业价值 / EBIT TTM。EBIT `<= 0` 为NM。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.ev_ebit_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_profit_ttm + interest_expense_ttm > 0 AND total_market_cap > 0 AND interest_bearing_debt IS NOT NULL AND cash_and_equivalents IS NOT NULL THEN (total_market_cap + interest_bearing_debt + COALESCE(preferred_shares_equity, 0) + COALESCE(minority_interest, 0) - cash_and_equivalents) / (total_profit_ttm + interest_expense_ttm) END",
+      "invalid_when": "statement_format <> '一般企业' OR EBIT TTM <= 0 OR total_market_cap <= 0 OR debt/cash unavailable",
+      "unit": "倍",
+      "period_basis": "EBIT采用利润总额加利息费用；企业价值使用交易日PIT口径",
+      "formula_version": "p2.general_enterprise.ev.pit.v1"
     },
     "ev_ebitda_ttm": {
       "label": "企业倍数",
@@ -2393,7 +2449,13 @@
       "category": "估值指标",
       "definition": "公式：企业价值 / EBITDA TTM。EBITDA `<= 0` 为NM。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.ev_ebitda_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_profit_ttm + interest_expense_ttm + depreciation_and_amortization_ttm > 0 AND total_market_cap > 0 AND interest_bearing_debt IS NOT NULL AND cash_and_equivalents IS NOT NULL THEN (total_market_cap + interest_bearing_debt + COALESCE(preferred_shares_equity, 0) + COALESCE(minority_interest, 0) - cash_and_equivalents) / (total_profit_ttm + interest_expense_ttm + depreciation_and_amortization_ttm) END",
+      "invalid_when": "statement_format <> '一般企业' OR EBITDA TTM <= 0 OR total_market_cap <= 0 OR debt/cash unavailable",
+      "unit": "倍",
+      "period_basis": "EBITDA采用利润总额加利息费用和折旧摊销；企业价值使用交易日PIT口径",
+      "formula_version": "p2.general_enterprise.ev.pit.v1"
     },
     "earnings_yield_ttm": {
       "label": "盈利收益率（合并口径）",
@@ -2461,7 +2523,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：毛利润TTM / 营业收入TTM。金融企业不适用；收入 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.gross_margin_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_revenue_ttm > 0 AND operating_cost_ttm IS NOT NULL THEN (operating_revenue_ttm - operating_cost_ttm) / operating_revenue_ttm END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_revenue_ttm <= 0 OR operating_cost_ttm IS NULL",
+      "unit": "比率",
+      "period_basis": "按交易日PIT关联的营业收入TTM与营业成本TTM",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "operating_margin_ttm": {
       "label": "营业利润率TTM",
@@ -2481,7 +2549,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：EBITDA TTM / 营业收入TTM。收入 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.ebitda_margin_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_revenue_ttm > 0 AND total_profit_ttm IS NOT NULL AND interest_expense_ttm IS NOT NULL AND depreciation_and_amortization_ttm IS NOT NULL THEN (total_profit_ttm + interest_expense_ttm + depreciation_and_amortization_ttm) / operating_revenue_ttm END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_revenue_ttm <= 0 OR total_profit_ttm IS NULL OR interest_expense_ttm IS NULL OR depreciation_and_amortization_ttm IS NULL",
+      "unit": "比率",
+      "period_basis": "EBIT采用利润总额加利息费用，按交易日PIT关联TTM折旧摊销",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "net_margin_ttm": {
       "label": "归母净利率TTM",
@@ -2552,7 +2626,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：NOPAT TTM / 平均投入资本。投入资本 `<= 0` 为NM；需固定税率和商誉处理。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.roic_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND avg_invested_capital > 0 AND total_profit_ttm IS NOT NULL AND interest_expense_ttm IS NOT NULL THEN (total_profit_ttm + interest_expense_ttm) * (1 - CASE WHEN total_profit_ttm > 0 AND income_tax_expense_ttm >= 0 THEN LEAST(GREATEST(income_tax_expense_ttm / total_profit_ttm, 0), 0.35) ELSE 0.25 END) / avg_invested_capital END",
+      "invalid_when": "statement_format <> '一般企业' OR avg_invested_capital <= 0 OR total_profit_ttm IS NULL OR interest_expense_ttm IS NULL",
+      "unit": "比率",
+      "period_basis": "NOPAT除以本期与上年同期投入资本的简单平均；有效税率限制在0至35%，非盈利期使用25%",
+      "formula_version": "p2.general_enterprise.tax_clamped.pit.v1"
     },
     "asset_turnover_ttm": {
       "label": "总资产周转率",
@@ -2608,7 +2688,13 @@
       "category": "偿债与资本结构指标",
       "definition": "公式：流动资产 / 流动负债。流动负债 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.current_ratio",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_current_liabilities > 0 THEN total_current_assets / total_current_liabilities END",
+      "invalid_when": "statement_format <> '一般企业' OR total_current_liabilities <= 0",
+      "unit": "倍",
+      "period_basis": "交易日当时最新可见财报期末余额",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "quick_ratio": {
       "label": "速动比率",
@@ -2618,7 +2704,13 @@
       "category": "偿债与资本结构指标",
       "definition": "公式：(流动资产 - 存货) / 流动负债。第一版采用简化口径，后续可增加剔除预付款版本。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.quick_ratio",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_current_liabilities > 0 AND total_current_assets IS NOT NULL AND inventory IS NOT NULL THEN (total_current_assets - inventory) / total_current_liabilities END",
+      "invalid_when": "statement_format <> '一般企业' OR total_current_liabilities <= 0 OR total_current_assets IS NULL OR inventory IS NULL",
+      "unit": "倍",
+      "period_basis": "第一版简化口径为流动资产减存货，使用交易日当时最新可见财报",
+      "formula_version": "p2.general_enterprise.quick_simple.pit.v1"
     },
     "cash_ratio": {
       "label": "现金比率",
@@ -2671,7 +2763,13 @@
       "category": "偿债与资本结构指标",
       "definition": "公式：有息债务 / 股东权益。与产权比率严格分开。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.debt_to_equity",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND parent_equity > 0 AND interest_bearing_debt IS NOT NULL THEN interest_bearing_debt / parent_equity END",
+      "invalid_when": "statement_format <> '一般企业' OR parent_equity <= 0 OR interest_bearing_debt IS NULL",
+      "unit": "倍",
+      "period_basis": "有息债务除以交易日当时最新可见归母权益",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "debt_to_capital": {
       "label": "有息债务资本比",
@@ -2692,7 +2790,13 @@
       "category": "偿债与资本结构指标",
       "definition": "公式：净债务 / EBITDA TTM。EBITDA `<= 0` 为NM；净现金企业可为负。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.net_debt_to_ebitda",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_profit_ttm + interest_expense_ttm + depreciation_and_amortization_ttm > 0 AND interest_bearing_debt IS NOT NULL AND cash_and_equivalents IS NOT NULL THEN (interest_bearing_debt - cash_and_equivalents) / (total_profit_ttm + interest_expense_ttm + depreciation_and_amortization_ttm) END",
+      "invalid_when": "statement_format <> '一般企业' OR EBITDA TTM <= 0 OR interest_bearing_debt IS NULL OR cash_and_equivalents IS NULL",
+      "unit": "倍",
+      "period_basis": "期末净债务除以交易日当时可见EBITDA TTM",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "interest_coverage": {
       "label": "利息保障倍数",
@@ -2702,7 +2806,13 @@
       "category": "偿债与资本结构指标",
       "definition": "公式：EBIT TTM / 利息费用TTM。利息费用 `<= 0` 时标记“不适用”，不制造极大数。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.interest_coverage",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND interest_expense_ttm > 0 AND total_profit_ttm IS NOT NULL THEN (total_profit_ttm + interest_expense_ttm) / interest_expense_ttm END",
+      "invalid_when": "statement_format <> '一般企业' OR interest_expense_ttm <= 0 OR total_profit_ttm IS NULL",
+      "unit": "倍",
+      "period_basis": "EBIT采用利润总额加利息费用，除以利息费用TTM",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "receivables_turnover": {
       "label": "应收账款周转率",
@@ -2722,7 +2832,13 @@
       "category": "营运效率指标",
       "definition": "公式：平均应收账款 / 营业收入TTM × 365。收入 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.dso",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_revenue_ttm > 0 AND avg_receivables_for_turnover IS NOT NULL THEN avg_receivables_for_turnover / operating_revenue_ttm * 365 END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_revenue_ttm <= 0 OR average receivables unavailable",
+      "unit": "天",
+      "period_basis": "收入代理口径；平均应收为本期与上年同期简单平均",
+      "formula_version": "p2.general_enterprise.turnover.pit.v1"
     },
     "inventory_turnover": {
       "label": "存货周转率",
@@ -2742,7 +2858,13 @@
       "category": "营运效率指标",
       "definition": "公式：平均存货 / 营业成本TTM × 365。营业成本 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.dio",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_cost_ttm > 0 AND avg_inventory IS NOT NULL THEN avg_inventory / operating_cost_ttm * 365 END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_cost_ttm <= 0 OR average inventory unavailable",
+      "unit": "天",
+      "period_basis": "营业成本TTM与本期/上年同期平均存货",
+      "formula_version": "p2.general_enterprise.turnover.pit.v1"
     },
     "payables_turnover": {
       "label": "应付账款周转率",
@@ -2762,7 +2884,13 @@
       "category": "营运效率指标",
       "definition": "公式：平均应付账款 / 营业成本TTM × 365。营业成本 `<= 0` 为空。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.dpo",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_cost_ttm > 0 AND avg_payables_for_turnover IS NOT NULL THEN avg_payables_for_turnover / operating_cost_ttm * 365 END",
+      "invalid_when": "statement_format <> '一般企业' OR operating_cost_ttm <= 0 OR average payables unavailable",
+      "unit": "天",
+      "period_basis": "成本代理口径；平均应付为本期与上年同期简单平均",
+      "formula_version": "p2.general_enterprise.turnover.pit.v1"
     },
     "cash_conversion_cycle": {
       "label": "现金转换周期",
@@ -2773,7 +2901,13 @@
       "category": "营运效率指标",
       "definition": "公式：DSO + DIO - DPO。任一组成项缺失则为空；金融企业不适用。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.cash_conversion_cycle",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND operating_revenue_ttm > 0 AND operating_cost_ttm > 0 AND avg_receivables_for_turnover IS NOT NULL AND avg_inventory IS NOT NULL AND avg_payables_for_turnover IS NOT NULL THEN avg_receivables_for_turnover / operating_revenue_ttm * 365 + avg_inventory / operating_cost_ttm * 365 - avg_payables_for_turnover / operating_cost_ttm * 365 END",
+      "invalid_when": "statement_format <> '一般企业' OR DSO/DIO/DPO component unavailable",
+      "unit": "天",
+      "period_basis": "DSO加DIO减DPO；收入与成本代理口径",
+      "formula_version": "p2.general_enterprise.turnover.pit.v1"
     },
     "cfo_to_net_profit": {
       "label": "经营现金含量",
@@ -2816,7 +2950,13 @@
       "category": "现金流质量与自由现金流",
       "definition": "公式：NOPAT + 折旧摊销 - CapEx - Δ非现金营运资本。负值有效；必须保留各组成项。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.fcff_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND total_profit_ttm IS NOT NULL AND interest_expense_ttm IS NOT NULL AND depreciation_and_amortization_ttm IS NOT NULL AND capital_expenditure_cash_ttm IS NOT NULL AND operating_working_capital IS NOT NULL AND prior_year_operating_working_capital IS NOT NULL THEN (total_profit_ttm + interest_expense_ttm) * (1 - CASE WHEN total_profit_ttm > 0 AND income_tax_expense_ttm >= 0 THEN LEAST(GREATEST(income_tax_expense_ttm / total_profit_ttm, 0), 0.35) ELSE 0.25 END) + depreciation_and_amortization_ttm - capital_expenditure_cash_ttm - (operating_working_capital - prior_year_operating_working_capital) END",
+      "invalid_when": "statement_format <> '一般企业' OR any NOPAT/D&A/CapEx/working-capital component unavailable",
+      "unit": "元",
+      "period_basis": "TTM NOPAT、折旧摊销和资本开支减本期相对上年同期经营营运资本增量",
+      "formula_version": "p2.general_enterprise.tax_clamped.pit.v1"
     },
     "fcfe_ttm": {
       "label": "股权自由现金流",
@@ -2826,7 +2966,13 @@
       "category": "现金流质量与自由现金流",
       "definition": "公式：净利润 + 折旧摊销 - CapEx - Δ营运资本 + 净新增有息债务。负值有效；不能与FCFF混用。",
       "availability": "C",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.fcfe_ttm",
+      "sql_expression": "CASE WHEN statement_format = '一般企业' AND net_profit_ttm IS NOT NULL AND depreciation_and_amortization_ttm IS NOT NULL AND capital_expenditure_cash_ttm IS NOT NULL AND operating_working_capital IS NOT NULL AND prior_year_operating_working_capital IS NOT NULL AND net_debt_issuance_ttm IS NOT NULL THEN net_profit_ttm + depreciation_and_amortization_ttm - capital_expenditure_cash_ttm - (operating_working_capital - prior_year_operating_working_capital) + net_debt_issuance_ttm END",
+      "invalid_when": "statement_format <> '一般企业' OR any net-profit/D&A/CapEx/working-capital/debt component unavailable",
+      "unit": "元",
+      "period_basis": "合并净利润TTM加折旧摊销、减资本开支和营运资本增量、加净债务融资",
+      "formula_version": "p2.general_enterprise.pit.v1"
     },
     "simple_fcf": {
       "label": "简化自由现金流",

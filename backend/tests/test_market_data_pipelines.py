@@ -67,7 +67,8 @@ class TradeDataPipelineTest(unittest.TestCase):
                       ('sh600000', DATE '2024-03-30', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1000.0),
                       ('sh600000', DATE '2024-03-31', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1000.0),
                       ('sh600000', DATE '2024-05-01', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1200.0),
-                      ('sh600000', DATE '2024-05-16', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1300.0)
+                      ('sh600000', DATE '2024-05-16', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1300.0),
+                      ('sh600001', DATE '2024-05-01', '样本公司', '机械设备', '通用设备', '机床工具', 1500.0)
                     ) t(symbol, trade_date, stock_name, industry_level_1,
                         industry_level_2, industry_level_3, total_market_cap)
                     """
@@ -84,13 +85,82 @@ class TradeDataPipelineTest(unittest.TestCase):
                       ('sh600000','商业银行',DATE '2024-03-31',DATE '2024-04-30','Q1',TRUE,
                        220.0,110.0,200.0,100.0,120.0,12.0,10.0,15.0,30.0,3.0,30.0,3.0),
                       ('sh600000','商业银行',DATE '2023-12-31',DATE '2024-05-15','FY',TRUE,
-                       2000.0,1000.0,1800.0,900.0,1000.0,100.0,80.0,120.0,1000.0,80.0,300.0,30.0)
+                       2000.0,1000.0,1800.0,900.0,1000.0,100.0,80.0,120.0,1000.0,80.0,300.0,30.0),
+                      ('sh600001','一般企业',DATE '2023-12-31',DATE '2024-03-31','FY',TRUE,
+                       300.0,100.0,280.0,90.0,200.0,20.0,18.0,25.0,200.0,18.0,50.0,5.0)
                     ) t(symbol,statement_format,report_date,publish_date,period_type,
                         ttm_components_complete,total_assets,parent_equity,avg_total_assets,
                         avg_parent_equity,operating_revenue_ttm,net_profit_ttm,
                         parent_net_profit_ttm,operating_cash_flow_ttm,
                         operating_revenue_ytd,parent_net_profit_ytd,
                         operating_revenue_quarter,parent_net_profit_quarter)
+                    """
+                )
+                for column in (
+                    "total_owner_equity",
+                    "total_current_assets",
+                    "inventory",
+                    "prepayments",
+                    "total_current_liabilities",
+                    "preferred_shares_equity",
+                    "minority_interest",
+                    "cash_and_equivalents",
+                    "receivables_for_turnover",
+                    "payables_for_turnover",
+                    "interest_bearing_debt",
+                    "operating_working_capital",
+                    "prior_year_operating_working_capital",
+                    "invested_capital",
+                    "avg_invested_capital",
+                    "avg_receivables_for_turnover",
+                    "avg_payables_for_turnover",
+                    "avg_inventory",
+                    "operating_cost_ttm",
+                    "operating_profit_ttm",
+                    "total_profit_ttm",
+                    "interest_expense_ttm",
+                    "income_tax_expense_ttm",
+                    "depreciation_and_amortization_ttm",
+                    "capital_expenditure_cash_ttm",
+                    "net_debt_issuance_ttm",
+                ):
+                    connection.execute(
+                        f'ALTER TABLE periods ADD COLUMN "{column}" DOUBLE'
+                    )
+                connection.execute(
+                    "ALTER TABLE periods ADD COLUMN cash_and_equivalents_source VARCHAR"
+                )
+                connection.execute(
+                    """
+                    UPDATE periods SET
+                      total_owner_equity = 105,
+                      total_current_assets = 100,
+                      inventory = 20,
+                      prepayments = 5,
+                      total_current_liabilities = 50,
+                      preferred_shares_equity = 2,
+                      minority_interest = 3,
+                      cash_and_equivalents = 10,
+                      cash_and_equivalents_source = 'ending_cash_balance',
+                      receivables_for_turnover = 30,
+                      payables_for_turnover = 25,
+                      interest_bearing_debt = 40,
+                      operating_working_capital = 20,
+                      prior_year_operating_working_capital = 15,
+                      invested_capital = 135,
+                      avg_invested_capital = 120,
+                      avg_receivables_for_turnover = 25,
+                      avg_payables_for_turnover = 20,
+                      avg_inventory = 15,
+                      operating_cost_ttm = 120,
+                      operating_profit_ttm = 35,
+                      total_profit_ttm = 30,
+                      interest_expense_ttm = 5,
+                      income_tax_expense_ttm = 6,
+                      depreciation_and_amortization_ttm = 10,
+                      capital_expenditure_cash_ttm = 12,
+                      net_debt_issuance_ttm = 4
+                    WHERE symbol = 'sh600001'
                     """
                 )
                 connection.execute(
@@ -103,7 +173,7 @@ class TradeDataPipelineTest(unittest.TestCase):
                 connection.close()
 
             result = build_stock_financial_daily(output)
-            self.assertEqual(result["row_count"], 4)
+            self.assertEqual(result["row_count"], 5)
             self.assertEqual(validate_stock_financial_daily(output)["errors"], [])
             connection = duckdb.connect(":memory:")
             try:
@@ -112,7 +182,7 @@ class TradeDataPipelineTest(unittest.TestCase):
                     f"revenue_yoy, parent_net_profit_yoy, revenue_qoq, profit_qoq, "
                     f"revenue_cagr_3y, profit_cagr_3y "
                     f"FROM read_parquet('{(output / 'stock_financial_daily.parquet').as_posix()}') "
-                    f"ORDER BY trade_date"
+                    f"WHERE symbol = 'sh600000' ORDER BY trade_date"
                 ).fetchall()
             finally:
                 connection.close()
@@ -126,6 +196,45 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(rows[3][6:8], (0.0, 0.0))
             self.assertAlmostEqual(rows[3][8], (1.5 ** (1 / 3)) - 1)
             self.assertAlmostEqual(rows[3][9], (2.0 ** (1 / 3)) - 1)
+            connection = duckdb.connect(":memory:")
+            try:
+                p2 = connection.execute(
+                    f"SELECT gross_margin_ttm, ebitda_margin_ttm, ev_sales_ttm, "
+                    f"ev_ebit_ttm, ev_ebitda_ttm, current_ratio, quick_ratio, "
+                    f"debt_to_equity, net_debt_to_ebitda, interest_coverage, "
+                    f"dso, dio, dpo, cash_conversion_cycle, fcff_ttm, fcfe_ttm, roic_ttm "
+                    f"FROM read_parquet('{(output / 'stock_financial_daily.parquet').as_posix()}') "
+                    f"WHERE symbol = 'sh600001'"
+                ).fetchone()
+                bank_p2 = connection.execute(
+                    f"SELECT gross_margin_ttm, current_ratio, roic_ttm "
+                    f"FROM read_parquet('{(output / 'stock_financial_daily.parquet').as_posix()}') "
+                    f"WHERE symbol = 'sh600000' ORDER BY trade_date DESC LIMIT 1"
+                ).fetchone()
+            finally:
+                connection.close()
+            expected = (
+                0.4,
+                0.225,
+                1535 / 200,
+                1535 / 35,
+                1535 / 45,
+                2.0,
+                1.6,
+                0.4,
+                30 / 45,
+                7.0,
+                25 / 200 * 365,
+                15 / 120 * 365,
+                20 / 120 * 365,
+                25 / 200 * 365 + 15 / 120 * 365 - 20 / 120 * 365,
+                21.0,
+                17.0,
+                28 / 120,
+            )
+            for actual, wanted in zip(p2, expected):
+                self.assertAlmostEqual(actual, wanted)
+            self.assertEqual(bank_p2, (None, None, None))
 
     def test_financial_period_builds_quarter_and_point_in_time_ttm(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
