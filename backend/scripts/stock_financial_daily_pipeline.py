@@ -47,6 +47,25 @@ METRIC_IDS = (
     "fcfe_ttm",
     "roic_ttm",
 )
+GENERAL_ENTERPRISE_METRIC_IDS = (
+    "gross_margin_ttm",
+    "ebitda_margin_ttm",
+    "ev_sales_ttm",
+    "ev_ebit_ttm",
+    "ev_ebitda_ttm",
+    "current_ratio",
+    "quick_ratio",
+    "debt_to_equity",
+    "net_debt_to_ebitda",
+    "interest_coverage",
+    "dso",
+    "dio",
+    "dpo",
+    "cash_conversion_cycle",
+    "fcff_ttm",
+    "fcfe_ttm",
+    "roic_ttm",
+)
 BASE_COLUMNS = (
     "symbol",
     "trade_date",
@@ -412,10 +431,37 @@ def validate_dataset(output: Path) -> dict[str, object]:
             WHERE financial_report_date < previous_report_date
             """
         ).fetchone()[0]
+        profile_values = connection.execute(
+            f"""
+            SELECT {', '.join(
+                f'COUNT({metric_id}), MIN({metric_id}), MAX({metric_id}), '
+                f'COUNT(*) FILTER (WHERE {metric_id} IS NOT NULL AND NOT isfinite({metric_id}))'
+                for metric_id in METRIC_IDS
+            )}
+            FROM read_parquet('{_safe_path(path)}')
+            """
+        ).fetchone()
+        non_general_metric_rows = connection.execute(
+            f"""
+            SELECT COUNT(*) FROM read_parquet('{_safe_path(path)}')
+            WHERE statement_format <> '一般企业'
+              AND ({' OR '.join(f'{metric_id} IS NOT NULL' for metric_id in GENERAL_ENTERPRISE_METRIC_IDS)})
+            """
+        ).fetchone()[0]
     finally:
         connection.close()
     row_count, null_key_rows, future_rows, future_comparison_rows, *formula_counts = summary
     formula_mismatches = dict(zip(METRIC_IDS, formula_counts))
+    metric_profiles = {
+        metric_id: {
+            "non_null_count": profile_values[index * 4],
+            "null_ratio": round(1 - profile_values[index * 4] / row_count, 6),
+            "min": profile_values[index * 4 + 1],
+            "max": profile_values[index * 4 + 2],
+            "non_finite_count": profile_values[index * 4 + 3],
+        }
+        for index, metric_id in enumerate(METRIC_IDS)
+    }
     errors: list[str] = []
     if null_key_rows:
         errors.append(f"{null_key_rows} rows have null keys")
@@ -429,6 +475,17 @@ def validate_dataset(output: Path) -> dict[str, object]:
         errors.append(f"{report_date_regressions} financial report date regressions")
     if any(formula_counts):
         errors.append(f"formula mismatches: {formula_mismatches}")
+    if non_general_metric_rows:
+        errors.append(
+            f"{non_general_metric_rows} non-general rows contain general-enterprise metrics"
+        )
+    non_finite_metrics = {
+        metric_id: profile["non_finite_count"]
+        for metric_id, profile in metric_profiles.items()
+        if profile["non_finite_count"]
+    }
+    if non_finite_metrics:
+        errors.append(f"non-finite metric values: {non_finite_metrics}")
     return {
         "row_count": row_count,
         "null_key_rows": null_key_rows,
@@ -437,6 +494,8 @@ def validate_dataset(output: Path) -> dict[str, object]:
         "future_comparison_rows": future_comparison_rows,
         "financial_report_date_regressions": report_date_regressions,
         "formula_mismatches": formula_mismatches,
+        "non_general_metric_rows": non_general_metric_rows,
+        "metric_profiles": metric_profiles,
         "errors": errors,
     }
 

@@ -174,7 +174,17 @@ class TradeDataPipelineTest(unittest.TestCase):
 
             result = build_stock_financial_daily(output)
             self.assertEqual(result["row_count"], 5)
-            self.assertEqual(validate_stock_financial_daily(output)["errors"], [])
+            validation = validate_stock_financial_daily(output)
+            self.assertEqual(validation["errors"], [])
+            self.assertEqual(validation["non_general_metric_rows"], 0)
+            self.assertEqual(
+                validation["metric_profiles"]["gross_margin_ttm"]["non_null_count"],
+                1,
+            )
+            self.assertEqual(
+                validation["metric_profiles"]["gross_margin_ttm"]["non_finite_count"],
+                0,
+            )
             connection = duckdb.connect(":memory:")
             try:
                 rows = connection.execute(
