@@ -75,16 +75,22 @@ class TradeDataPipelineTest(unittest.TestCase):
                 connection.execute(
                     """
                     CREATE TABLE periods AS SELECT * FROM (VALUES
+                      ('sh600000','商业银行',DATE '2021-03-31',DATE '2021-04-30','Q1',TRUE,
+                       160.0,80.0,150.0,75.0,80.0,8.0,5.0,9.0,20.0,2.0,20.0,2.0),
+                      ('sh600000','商业银行',DATE '2023-03-31',DATE '2023-04-30','Q1',TRUE,
+                       180.0,90.0,170.0,85.0,100.0,10.0,8.0,11.0,25.0,2.5,25.0,2.5),
                       ('sh600000','商业银行',DATE '2023-12-31',DATE '2024-03-31','FY',TRUE,
-                       200.0,100.0,180.0,90.0,100.0,10.0,8.0,12.0),
+                       200.0,100.0,180.0,90.0,100.0,10.0,8.0,12.0,100.0,8.0,30.0,3.0),
                       ('sh600000','商业银行',DATE '2024-03-31',DATE '2024-04-30','Q1',TRUE,
-                       220.0,110.0,200.0,100.0,120.0,12.0,10.0,15.0),
+                       220.0,110.0,200.0,100.0,120.0,12.0,10.0,15.0,30.0,3.0,30.0,3.0),
                       ('sh600000','商业银行',DATE '2023-12-31',DATE '2024-05-15','FY',TRUE,
-                       2000.0,1000.0,1800.0,900.0,1000.0,100.0,80.0,120.0)
+                       2000.0,1000.0,1800.0,900.0,1000.0,100.0,80.0,120.0,1000.0,80.0,300.0,30.0)
                     ) t(symbol,statement_format,report_date,publish_date,period_type,
                         ttm_components_complete,total_assets,parent_equity,avg_total_assets,
                         avg_parent_equity,operating_revenue_ttm,net_profit_ttm,
-                        parent_net_profit_ttm,operating_cash_flow_ttm)
+                        parent_net_profit_ttm,operating_cash_flow_ttm,
+                        operating_revenue_ytd,parent_net_profit_ytd,
+                        operating_revenue_quarter,parent_net_profit_quarter)
                     """
                 )
                 connection.execute(
@@ -102,17 +108,24 @@ class TradeDataPipelineTest(unittest.TestCase):
             connection = duckdb.connect(":memory:")
             try:
                 rows = connection.execute(
-                    f"SELECT trade_date, financial_report_date, pe_parent_ttm, roe_ttm "
+                    f"SELECT trade_date, financial_report_date, pe_parent_ttm, roe_ttm, "
+                    f"revenue_yoy, parent_net_profit_yoy, revenue_qoq, profit_qoq, "
+                    f"revenue_cagr_3y, profit_cagr_3y "
                     f"FROM read_parquet('{(output / 'stock_financial_daily.parquet').as_posix()}') "
                     f"ORDER BY trade_date"
                 ).fetchall()
             finally:
                 connection.close()
-            self.assertIsNone(rows[0][1])
+            self.assertEqual(str(rows[0][1]), "2023-03-31")
             self.assertEqual(str(rows[1][1]), "2023-12-31")
             self.assertEqual(str(rows[2][1]), "2024-03-31")
             self.assertEqual(str(rows[3][1]), "2024-03-31")
-            self.assertEqual(rows[3][2:], (130.0, 0.1))
+            self.assertEqual(rows[3][2:4], (130.0, 0.1))
+            self.assertAlmostEqual(rows[3][4], 0.2)
+            self.assertAlmostEqual(rows[3][5], 0.2)
+            self.assertEqual(rows[3][6:8], (0.0, 0.0))
+            self.assertAlmostEqual(rows[3][8], (1.5 ** (1 / 3)) - 1)
+            self.assertAlmostEqual(rows[3][9], (2.0 ** (1 / 3)) - 1)
 
     def test_financial_period_builds_quarter_and_point_in_time_ttm(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:

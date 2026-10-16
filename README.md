@@ -391,8 +391,9 @@ Set-Location backend
 
 输出 `stock_financial_daily.parquet`。该表与 `stock_daily` 使用股票代码和交易日期一对一
 关联，已经预先完成披露日约束；查询历史估值与ROE等指标时应优先使用该表，不要直接用
-报告期把行情与财报等值连接。首批指标包括归母口径PE/PB、PS TTM、归母净利率、ROE、
-ROA、总资产周转率、经营现金含量和经营现金流率。
+报告期把行情与财报等值连接。指标包括归母口径PE/PB、PS TTM、归母净利率、ROE、
+ROA、总资产周转率、经营现金含量、经营现金流率，以及营收/归母净利润同比、单季度环比
+和三年CAGR。增长率基期不为正时返回空值，并保留同比或环比绝对增减额供解释。
 
 ETF 日线原始目录为 `TRADE_DATA_ROOT/stock-etf-trading-data`，在现有 `trade_data`
 数据库中注册为表 `stock_etf_trading_data`。运行：

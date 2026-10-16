@@ -12,7 +12,7 @@ import duckdb
 
 DATABASE_ID = "trade_data"
 TABLE_NAME = "stock_financial_daily"
-PIPELINE_VERSION = 1
+PIPELINE_VERSION = 2
 METRIC_IDS = (
     "pe_parent_ttm",
     "pb_parent",
@@ -23,6 +23,12 @@ METRIC_IDS = (
     "asset_turnover_ttm",
     "cfo_to_net_profit",
     "cfo_margin",
+    "revenue_yoy",
+    "parent_net_profit_yoy",
+    "revenue_qoq",
+    "profit_qoq",
+    "revenue_cagr_3y",
+    "profit_cagr_3y",
 )
 BASE_COLUMNS = (
     "symbol",
@@ -45,6 +51,26 @@ BASE_COLUMNS = (
     "net_profit_ttm",
     "parent_net_profit_ttm",
     "operating_cash_flow_ttm",
+    "operating_revenue_ytd",
+    "parent_net_profit_ytd",
+    "operating_revenue_quarter",
+    "parent_net_profit_quarter",
+    "yoy_base_report_date",
+    "yoy_base_publish_date",
+    "operating_revenue_yoy_base",
+    "parent_net_profit_yoy_base",
+    "operating_revenue_yoy_change",
+    "parent_net_profit_yoy_change",
+    "qoq_base_report_date",
+    "qoq_base_publish_date",
+    "operating_revenue_qoq_base",
+    "parent_net_profit_qoq_base",
+    "operating_revenue_qoq_change",
+    "parent_net_profit_qoq_change",
+    "cagr_base_report_date",
+    "cagr_base_publish_date",
+    "operating_revenue_cagr_3y_base",
+    "parent_net_profit_cagr_3y_base",
 )
 OUTPUT_COLUMNS = BASE_COLUMNS + METRIC_IDS
 
@@ -93,13 +119,67 @@ def _metric_projection(metrics: tuple[MetricSpec, ...]) -> str:
 
 def _build_query(stock_path: Path, period_path: Path, metrics: tuple[MetricSpec, ...]) -> str:
     return f"""
-    WITH periods_with_current_report AS (
+    WITH periods AS (
+        SELECT * FROM read_parquet('{_safe_path(period_path)}')
+    ),
+    prepared_periods AS (
+        SELECT *,
+          report_date - INTERVAL 1 YEAR AS yoy_date,
+          CASE period_type
+            WHEN 'Q1' THEN MAKE_DATE(YEAR(report_date) - 1, 12, 31)
+            WHEN 'H1' THEN MAKE_DATE(YEAR(report_date), 3, 31)
+            WHEN 'Q3' THEN MAKE_DATE(YEAR(report_date), 6, 30)
+            WHEN 'FY' THEN MAKE_DATE(YEAR(report_date), 9, 30)
+          END AS qoq_date,
+          report_date - INTERVAL 3 YEAR AS cagr_date
+        FROM periods
+    ),
+    enriched_periods AS (
+        SELECT c.* EXCLUDE (yoy_date, qoq_date, cagr_date),
+          y.report_date AS yoy_base_report_date,
+          y.publish_date AS yoy_base_publish_date,
+          y.operating_revenue_ytd AS operating_revenue_yoy_base,
+          y.parent_net_profit_ytd AS parent_net_profit_yoy_base,
+          c.operating_revenue_ytd - y.operating_revenue_ytd
+            AS operating_revenue_yoy_change,
+          c.parent_net_profit_ytd - y.parent_net_profit_ytd
+            AS parent_net_profit_yoy_change,
+          prior_q.report_date AS qoq_base_report_date,
+          prior_q.publish_date AS qoq_base_publish_date,
+          prior_q.operating_revenue_quarter AS operating_revenue_qoq_base,
+          prior_q.parent_net_profit_quarter AS parent_net_profit_qoq_base,
+          c.operating_revenue_quarter - prior_q.operating_revenue_quarter
+            AS operating_revenue_qoq_change,
+          c.parent_net_profit_quarter - prior_q.parent_net_profit_quarter
+            AS parent_net_profit_qoq_change,
+          cagr.report_date AS cagr_base_report_date,
+          cagr.publish_date AS cagr_base_publish_date,
+          cagr.operating_revenue_ttm AS operating_revenue_cagr_3y_base,
+          cagr.parent_net_profit_ttm AS parent_net_profit_cagr_3y_base
+        FROM prepared_periods c
+        ASOF LEFT JOIN periods y
+          ON c.symbol = y.symbol
+         AND c.statement_format = y.statement_format
+         AND c.yoy_date = y.report_date
+         AND c.publish_date >= y.publish_date
+        ASOF LEFT JOIN periods prior_q
+          ON c.symbol = prior_q.symbol
+         AND c.statement_format = prior_q.statement_format
+         AND c.qoq_date = prior_q.report_date
+         AND c.publish_date >= prior_q.publish_date
+        ASOF LEFT JOIN periods cagr
+          ON c.symbol = cagr.symbol
+         AND c.statement_format = cagr.statement_format
+         AND c.cagr_date = cagr.report_date
+         AND c.publish_date >= cagr.publish_date
+    ),
+    periods_with_current_report AS (
         SELECT *,
           MAX(report_date) OVER (
             PARTITION BY symbol ORDER BY publish_date
             RANGE BETWEEN UNBOUNDED PRECEDING AND CURRENT ROW
           ) AS current_report_date
-        FROM read_parquet('{_safe_path(period_path)}')
+        FROM enriched_periods
     ),
     current_report_events AS (
         SELECT *,
@@ -143,7 +223,27 @@ def _build_query(stock_path: Path, period_path: Path, metrics: tuple[MetricSpec,
           f.operating_revenue_ttm,
           f.net_profit_ttm,
           f.parent_net_profit_ttm,
-          f.operating_cash_flow_ttm
+          f.operating_cash_flow_ttm,
+          f.operating_revenue_ytd,
+          f.parent_net_profit_ytd,
+          f.operating_revenue_quarter,
+          f.parent_net_profit_quarter,
+          f.yoy_base_report_date,
+          f.yoy_base_publish_date,
+          f.operating_revenue_yoy_base,
+          f.parent_net_profit_yoy_base,
+          f.operating_revenue_yoy_change,
+          f.parent_net_profit_yoy_change,
+          f.qoq_base_report_date,
+          f.qoq_base_publish_date,
+          f.operating_revenue_qoq_base,
+          f.parent_net_profit_qoq_base,
+          f.operating_revenue_qoq_change,
+          f.parent_net_profit_qoq_change,
+          f.cagr_base_report_date,
+          f.cagr_base_publish_date,
+          f.operating_revenue_cagr_3y_base,
+          f.parent_net_profit_cagr_3y_base
         FROM read_parquet('{_safe_path(stock_path)}') s
         ASOF LEFT JOIN snapshots f
           ON s.symbol = f.symbol AND s.trade_date >= f.publish_date
@@ -213,6 +313,9 @@ def validate_dataset(output: Path) -> dict[str, object]:
             SELECT COUNT(*) AS row_count,
               COUNT(*) FILTER (WHERE symbol IS NULL OR trade_date IS NULL) AS null_key_rows,
               COUNT(*) FILTER (WHERE financial_publish_date > trade_date) AS future_rows,
+              COUNT(*) FILTER (WHERE yoy_base_publish_date > financial_publish_date
+                OR qoq_base_publish_date > financial_publish_date
+                OR cagr_base_publish_date > financial_publish_date) AS future_comparison_rows,
               {mismatches}
             FROM read_parquet('{_safe_path(path)}')
             """
@@ -240,7 +343,7 @@ def validate_dataset(output: Path) -> dict[str, object]:
         ).fetchone()[0]
     finally:
         connection.close()
-    row_count, null_key_rows, future_rows, *formula_counts = summary
+    row_count, null_key_rows, future_rows, future_comparison_rows, *formula_counts = summary
     formula_mismatches = dict(zip(METRIC_IDS, formula_counts))
     errors: list[str] = []
     if null_key_rows:
@@ -249,6 +352,8 @@ def validate_dataset(output: Path) -> dict[str, object]:
         errors.append(f"{duplicate_groups} duplicate key groups")
     if future_rows:
         errors.append(f"{future_rows} rows use future financial data")
+    if future_comparison_rows:
+        errors.append(f"{future_comparison_rows} rows use future comparison data")
     if report_date_regressions:
         errors.append(f"{report_date_regressions} financial report date regressions")
     if any(formula_counts):
@@ -258,6 +363,7 @@ def validate_dataset(output: Path) -> dict[str, object]:
         "null_key_rows": null_key_rows,
         "duplicate_key_groups": duplicate_groups,
         "future_financial_rows": future_rows,
+        "future_comparison_rows": future_comparison_rows,
         "financial_report_date_regressions": report_date_regressions,
         "formula_mismatches": formula_mismatches,
         "errors": errors,

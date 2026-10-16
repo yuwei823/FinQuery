@@ -583,6 +583,26 @@
     "trade_data.stock_financial_daily.net_profit_ttm": ["净利润TTM", "合并净利润TTM"],
     "trade_data.stock_financial_daily.parent_net_profit_ttm": ["归母净利润TTM", "滚动归母净利润"],
     "trade_data.stock_financial_daily.operating_cash_flow_ttm": ["经营现金流TTM", "滚动经营现金流"],
+    "trade_data.stock_financial_daily.operating_revenue_ytd": ["营业收入YTD", "累计营业收入"],
+    "trade_data.stock_financial_daily.parent_net_profit_ytd": ["归母净利润YTD", "累计归母净利润"],
+    "trade_data.stock_financial_daily.operating_revenue_quarter": ["单季度营业收入", "单季营收"],
+    "trade_data.stock_financial_daily.parent_net_profit_quarter": ["单季度归母净利润", "单季归母净利润"],
+    "trade_data.stock_financial_daily.yoy_base_report_date": ["同比基期报告期", "上年同期报告期"],
+    "trade_data.stock_financial_daily.yoy_base_publish_date": ["同比基期披露日"],
+    "trade_data.stock_financial_daily.operating_revenue_yoy_base": ["营业收入同比基数", "上年同期营收"],
+    "trade_data.stock_financial_daily.parent_net_profit_yoy_base": ["归母净利润同比基数", "上年同期归母净利润"],
+    "trade_data.stock_financial_daily.operating_revenue_yoy_change": ["营业收入同比增减额", "营收同比增量"],
+    "trade_data.stock_financial_daily.parent_net_profit_yoy_change": ["归母净利润同比增减额", "归母净利润同比增量"],
+    "trade_data.stock_financial_daily.qoq_base_report_date": ["环比基期报告期", "上一季度报告期"],
+    "trade_data.stock_financial_daily.qoq_base_publish_date": ["环比基期披露日"],
+    "trade_data.stock_financial_daily.operating_revenue_qoq_base": ["营业收入环比基数", "上季度营收"],
+    "trade_data.stock_financial_daily.parent_net_profit_qoq_base": ["归母净利润环比基数", "上季度归母净利润"],
+    "trade_data.stock_financial_daily.operating_revenue_qoq_change": ["营业收入环比增减额", "营收环比增量"],
+    "trade_data.stock_financial_daily.parent_net_profit_qoq_change": ["归母净利润环比增减额", "归母净利润环比增量"],
+    "trade_data.stock_financial_daily.cagr_base_report_date": ["三年复合增长基期", "三年前同期"],
+    "trade_data.stock_financial_daily.cagr_base_publish_date": ["三年复合增长基期披露日"],
+    "trade_data.stock_financial_daily.operating_revenue_cagr_3y_base": ["三年营收复合增长基数", "三年前营收TTM"],
+    "trade_data.stock_financial_daily.parent_net_profit_cagr_3y_base": ["三年归母净利润复合增长基数", "三年前归母净利润TTM"],
     "trade_data.stock_financial_daily.pe_parent_ttm": ["滚动市盈率（归母口径）", "归母PE", "标准PE TTM"],
     "trade_data.stock_financial_daily.pb_parent": ["市净率（归母权益口径）", "归母PB", "标准PB"],
     "trade_data.stock_financial_daily.ps_ttm": ["滚动市销率", "PS TTM", "市销率"],
@@ -591,7 +611,13 @@
     "trade_data.stock_financial_daily.roa_ttm": ["总资产收益率TTM", "ROA", "总资产收益率"],
     "trade_data.stock_financial_daily.asset_turnover_ttm": ["总资产周转率TTM", "总资产周转率"],
     "trade_data.stock_financial_daily.cfo_to_net_profit": ["经营现金含量", "盈利现金比"],
-    "trade_data.stock_financial_daily.cfo_margin": ["经营现金流率", "CFO Margin"]
+    "trade_data.stock_financial_daily.cfo_margin": ["经营现金流率", "CFO Margin"],
+    "trade_data.stock_financial_daily.revenue_yoy": ["营收同比", "营业收入同比", "营收同比增长率"],
+    "trade_data.stock_financial_daily.parent_net_profit_yoy": ["归母净利润同比", "利润同比", "归母利润同比增长率"],
+    "trade_data.stock_financial_daily.revenue_qoq": ["单季度营收环比", "营收环比", "营业收入环比"],
+    "trade_data.stock_financial_daily.profit_qoq": ["单季度归母净利润环比", "利润环比", "归母净利润环比"],
+    "trade_data.stock_financial_daily.revenue_cagr_3y": ["三年营收复合增长率", "营收三年CAGR"],
+    "trade_data.stock_financial_daily.profit_cagr_3y": ["三年利润复合增长率", "利润三年CAGR"]
   },
   "concept_terms": {
     "monetary_funds": {
@@ -2676,7 +2702,13 @@
       "category": "增长与每股指标",
       "definition": "公式：本期累计收入 / 上年同期间累计收入 - 1。基期 `<= 0` 默认为空。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.revenue_yoy",
+      "sql_expression": "CASE WHEN operating_revenue_yoy_base > 0 THEN operating_revenue_ytd / operating_revenue_yoy_base - 1 END",
+      "invalid_when": "operating_revenue_yoy_base <= 0",
+      "unit": "比率",
+      "period_basis": "本期YTD与交易日当时可见的上年同期YTD比较",
+      "formula_version": "p1.growth.pit.v1"
     },
     "parent_net_profit_yoy": {
       "label": "归母净利润同比",
@@ -2686,7 +2718,13 @@
       "category": "增长与每股指标",
       "definition": "公式：本期累计归母净利润 / 上年同期累计归母净利润 - 1。跨零时普通百分比会失真，返回空值并提供增减额。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.parent_net_profit_yoy",
+      "sql_expression": "CASE WHEN parent_net_profit_yoy_base > 0 THEN parent_net_profit_ytd / parent_net_profit_yoy_base - 1 END",
+      "invalid_when": "parent_net_profit_yoy_base <= 0",
+      "unit": "比率",
+      "period_basis": "本期归母净利润YTD与交易日当时可见的上年同期YTD比较；基期不为正时仅保留增减额",
+      "formula_version": "p1.growth.pit.v1"
     },
     "revenue_qoq": {
       "label": "单季度营收环比",
@@ -2696,7 +2734,13 @@
       "category": "增长与每股指标",
       "definition": "公式：本单季度收入 / 上一单季度收入 - 1。必须先还原单季度值。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.revenue_qoq",
+      "sql_expression": "CASE WHEN operating_revenue_qoq_base > 0 THEN operating_revenue_quarter / operating_revenue_qoq_base - 1 END",
+      "invalid_when": "operating_revenue_qoq_base <= 0",
+      "unit": "比率",
+      "period_basis": "已还原单季度营业收入与上一单季度比较",
+      "formula_version": "p1.growth.pit.v1"
     },
     "profit_qoq": {
       "label": "单季度归母净利润环比",
@@ -2706,7 +2750,13 @@
       "category": "增长与每股指标",
       "definition": "公式：本单季度归母净利润 / 上一单季度归母净利润 - 1。跨零时为空并提供增减额。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.profit_qoq",
+      "sql_expression": "CASE WHEN parent_net_profit_qoq_base > 0 THEN parent_net_profit_quarter / parent_net_profit_qoq_base - 1 END",
+      "invalid_when": "parent_net_profit_qoq_base <= 0",
+      "unit": "比率",
+      "period_basis": "已还原单季度归母净利润与上一单季度比较；基期不为正时仅保留增减额",
+      "formula_version": "p1.growth.pit.v1"
     },
     "revenue_cagr_3y": {
       "label": "三年营收复合增速",
@@ -2716,7 +2766,13 @@
       "category": "增长与每股指标",
       "definition": "公式：(末期收入 / 初期收入)^(1/3) - 1。两端必须为正且为同类年度值。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.revenue_cagr_3y",
+      "sql_expression": "CASE WHEN operating_revenue_ttm > 0 AND operating_revenue_cagr_3y_base > 0 THEN POWER(operating_revenue_ttm / operating_revenue_cagr_3y_base, 1.0 / 3) - 1 END",
+      "invalid_when": "operating_revenue_ttm <= 0 OR operating_revenue_cagr_3y_base <= 0",
+      "unit": "年化比率",
+      "period_basis": "本期营业收入TTM与三年前同报告期TTM比较",
+      "formula_version": "p1.growth.pit.v1"
     },
     "profit_cagr_3y": {
       "label": "三年利润复合增速",
@@ -2726,7 +2782,13 @@
       "category": "增长与每股指标",
       "definition": "公式：(末期利润 / 初期利润)^(1/3) - 1。两端必须为正；跨零不计算。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.profit_cagr_3y",
+      "sql_expression": "CASE WHEN parent_net_profit_ttm > 0 AND parent_net_profit_cagr_3y_base > 0 THEN POWER(parent_net_profit_ttm / parent_net_profit_cagr_3y_base, 1.0 / 3) - 1 END",
+      "invalid_when": "parent_net_profit_ttm <= 0 OR parent_net_profit_cagr_3y_base <= 0",
+      "unit": "年化比率",
+      "period_basis": "本期归母净利润TTM与三年前同报告期TTM比较；两端均须为正",
+      "formula_version": "p1.growth.pit.v1"
     },
     "sustainable_growth": {
       "label": "可持续增长率",
