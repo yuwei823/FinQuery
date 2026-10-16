@@ -148,6 +148,74 @@ class TradeDataPipelineTest(unittest.TestCase):
                         operating_revenue,net_profit,parent_net_profit,operating_cash_flow)
                     """
                 )
+                existing_columns = {
+                    row[1] for row in connection.execute("PRAGMA table_info('source')").fetchall()
+                }
+                for column in FINANCIAL_SPEC.columns:
+                    if column.target not in existing_columns:
+                        connection.execute(
+                            f'ALTER TABLE source ADD COLUMN "{column.target}" DOUBLE'
+                        )
+                connection.execute(
+                    """
+                    UPDATE source SET
+                      ending_cash_balance = 10,
+                      monetary_funds = 12,
+                      notes_and_accounts_receivable = 20,
+                      accounts_receivable = 200,
+                      receivables_financing = 0,
+                      notes_and_accounts_payable = 10,
+                      inventory = 8,
+                      short_term_borrowings = 5,
+                      long_term_borrowings = 15,
+                      depreciation_fixed_assets = 4,
+                      amortization_intangible_assets = 0.5,
+                      amortization_long_term_deferred_expenses = 0.2,
+                      cash_proceeds_from_borrowings = 8,
+                      cash_proceeds_from_bond_issuance = 2,
+                      cash_repayment_of_debt = 4
+                    WHERE report_date = DATE '2024-06-30'
+                      AND publish_date = DATE '2024-08-30';
+                    UPDATE source SET
+                      depreciation_fixed_assets = 10,
+                      amortization_intangible_assets = 2,
+                      amortization_long_term_deferred_expenses = 1,
+                      cash_proceeds_from_borrowings = 20,
+                      cash_proceeds_from_bond_issuance = 5,
+                      cash_repayment_of_debt = 10
+                    WHERE report_date = DATE '2024-12-31'
+                      AND publish_date = DATE '2025-03-30';
+                    UPDATE source SET
+                      ending_cash_balance = 20,
+                      monetary_funds = 25,
+                      notes_and_accounts_receivable = 30,
+                      accounts_receivable = 300,
+                      receivables_financing = 2,
+                      notes_and_accounts_payable = 15,
+                      notes_payable = 3,
+                      accounts_payable = 7,
+                      inventory = 12,
+                      prepayments = 2,
+                      other_receivables_total = 1,
+                      contract_liabilities = 4,
+                      employee_benefits_payable = 1,
+                      taxes_payable = 1,
+                      other_payables_total = 2,
+                      short_term_borrowings = 10,
+                      short_term_bonds_payable = 1,
+                      current_portion_noncurrent_liabilities = 2,
+                      long_term_borrowings = 20,
+                      bonds_payable = 5,
+                      lease_liabilities = 3,
+                      depreciation_fixed_assets = 6,
+                      amortization_intangible_assets = 1,
+                      amortization_long_term_deferred_expenses = 0.5,
+                      cash_proceeds_from_borrowings = 12,
+                      cash_proceeds_from_bond_issuance = 3,
+                      cash_repayment_of_debt = 6
+                    WHERE report_date = DATE '2025-06-30';
+                    """
+                )
                 connection.execute(
                     f"COPY source TO '{(source_dir / 'sample.parquet').as_posix()}' (FORMAT PARQUET)"
                 )
@@ -162,7 +230,13 @@ class TradeDataPipelineTest(unittest.TestCase):
                 row = connection.execute(
                     f"SELECT operating_revenue_quarter, operating_revenue_ttm, "
                     f"avg_total_assets, avg_parent_equity, "
-                    f"quarter_predecessor_publish_date, ttm_annual_publish_date "
+                    f"quarter_predecessor_publish_date, ttm_annual_publish_date, "
+                    f"cash_and_equivalents, cash_and_equivalents_source, "
+                    f"receivables_for_turnover, payables_for_turnover, "
+                    f"interest_bearing_debt, operating_working_capital, "
+                    f"invested_capital, avg_receivables_for_turnover, "
+                    f"avg_payables_for_turnover, avg_inventory, avg_invested_capital, "
+                    f"depreciation_and_amortization_ttm, net_debt_issuance_ttm "
                     f"FROM read_parquet('{(output / 'financial_period.parquet').as_posix()}') "
                     f"WHERE report_date = DATE '2025-06-30'"
                 ).fetchone()
@@ -171,6 +245,10 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(row[:4], (35.0, 120.0, 1.0, 1.0))
             self.assertEqual(str(row[4]), "2025-04-30")
             self.assertEqual(str(row[5]), "2025-03-30")
+            self.assertEqual(row[6:13], (20.0, "ending_cash_balance", 32.0, 15.0, 41.0, 24.0, 22.0))
+            self.assertEqual(row[13:17], (26.0, 12.5, 10.0, 16.5))
+            self.assertAlmostEqual(row[17], 15.8)
+            self.assertEqual(row[18], 18.0)
 
     def test_trade_data_terms_are_clean_utf8(self) -> None:
         raw = TERMS_PATH.read_bytes()
