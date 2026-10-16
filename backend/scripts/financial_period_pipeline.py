@@ -12,7 +12,7 @@ import duckdb
 DATABASE_ID = "trade_data"
 SOURCE_TABLE = "financial_statement"
 TABLE_NAME = "financial_period"
-PIPELINE_VERSION = 1
+PIPELINE_VERSION = 2
 FLOW_FIELDS = (
     "operating_revenue",
     "net_profit",
@@ -30,6 +30,10 @@ OUTPUT_COLUMNS = (
     "total_liabilities",
     "parent_equity",
     "total_owner_equity",
+    "prior_year_total_assets",
+    "prior_year_parent_equity",
+    "avg_total_assets",
+    "avg_parent_equity",
     *(
         f"{field}_{basis}"
         for field in FLOW_FIELDS
@@ -132,6 +136,12 @@ def _build_query(source_glob: Path) -> str:
         c.symbol, c.statement_format, c.report_date, c.publish_date,
         c.fiscal_year, c.fiscal_quarter, c.period_type, c.months_in_period,
         c.total_assets, c.total_liabilities, c.parent_equity, c.total_owner_equity,
+        y.total_assets AS prior_year_total_assets,
+        y.parent_equity AS prior_year_parent_equity,
+        CASE WHEN c.total_assets > 0 AND y.total_assets > 0
+             THEN (c.total_assets + y.total_assets) / 2 END AS avg_total_assets,
+        CASE WHEN c.parent_equity > 0 AND y.parent_equity > 0
+             THEN (c.parent_equity + y.parent_equity) / 2 END AS avg_parent_equity,
         {_derived_columns()},
         p.report_date AS quarter_predecessor_report_date,
         p.publish_date AS quarter_predecessor_publish_date,

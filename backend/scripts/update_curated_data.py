@@ -24,6 +24,7 @@ class PipelineJob:
     source: Path | None
     output: Path
     steps: tuple[str, ...] = ("convert", "validate", "compact")
+    depends_on: tuple[str, ...] = ()
 
 
 CommandRunner = Callable[[Sequence[str]], subprocess.CompletedProcess[str]]
@@ -72,6 +73,12 @@ def load_jobs(config_path: Path, raw_root: Path, curated_root: Path) -> list[Pip
             raise ValueError(f"任务 {name} 的执行步骤不合法：{steps!r}")
         if "convert" in steps and not source_subdir:
             raise ValueError(f"任务 {name} 包含 convert，但未配置 source_subdir")
+        depends_on = tuple(item.get("depends_on", ()))
+        unknown_dependencies = sorted(set(depends_on) - names)
+        if unknown_dependencies:
+            raise ValueError(
+                f"任务 {name} 依赖未定义或未排在前面的任务：{unknown_dependencies}"
+            )
         jobs.append(
             PipelineJob(
                 name=name,
@@ -79,6 +86,7 @@ def load_jobs(config_path: Path, raw_root: Path, curated_root: Path) -> list[Pip
                 source=raw_root / str(source_subdir) if source_subdir else None,
                 output=curated_root / str(item["database"]),
                 steps=steps,
+                depends_on=depends_on,
             )
         )
         names.add(name)
@@ -161,6 +169,7 @@ def run_updates(
     runner: CommandRunner = _default_runner,
 ) -> bool:
     succeeded = True
+    completed: set[str] = set()
     for job in jobs:
         logger.info(
             "task=%s update_started source=%s output=%s",
@@ -168,6 +177,15 @@ def run_updates(
             job.source,
             job.output,
         )
+        unmet_dependencies = [name for name in job.depends_on if name not in completed]
+        if unmet_dependencies:
+            logger.error(
+                "task=%s dependencies_failed dependencies=%s",
+                job.name,
+                ",".join(unmet_dependencies),
+            )
+            succeeded = False
+            continue
         if job.source is not None and not job.source.is_dir():
             logger.error("task=%s source_directory_missing path=%s", job.name, job.source)
             succeeded = False
@@ -178,6 +196,7 @@ def run_updates(
                 break
         else:
             logger.info("task=%s update_completed", job.name)
+            completed.add(job.name)
     return succeeded
 
 

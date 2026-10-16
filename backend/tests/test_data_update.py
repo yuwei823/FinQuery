@@ -28,6 +28,7 @@ class DataUpdateTests(unittest.TestCase):
                 "index_daily",
                 "stock_fin_data_xbx",
                 "financial_period",
+                "stock_financial_daily",
                 "stock_etf_trading_data",
             ],
         )
@@ -36,6 +37,10 @@ class DataUpdateTests(unittest.TestCase):
         self.assertEqual(jobs[2].source, Path("D:/raw/stock-fin-data-xbx"))
         self.assertIsNone(jobs[3].source)
         self.assertEqual(jobs[3].steps, ("build", "validate"))
+        self.assertEqual(jobs[3].depends_on, ("stock_fin_data_xbx",))
+        self.assertIsNone(jobs[4].source)
+        self.assertEqual(jobs[4].steps, ("build", "validate"))
+        self.assertEqual(jobs[4].depends_on, ("stock_daily", "financial_period"))
 
     def test_derived_job_runs_without_a_raw_source(self) -> None:
         output = Path(__file__).parent
@@ -107,6 +112,28 @@ class DataUpdateTests(unittest.TestCase):
 
         self.assertFalse(run_updates([job], self.logger, runner))
         self.assertEqual(calls, [])
+
+    def test_failed_dependency_skips_derived_job(self) -> None:
+        existing_source = Path(__file__).parent
+        jobs = [
+            PipelineJob("source", Path(__file__), existing_source, existing_source),
+            PipelineJob(
+                "derived",
+                Path(__file__),
+                None,
+                existing_source,
+                ("build", "validate"),
+                ("source",),
+            ),
+        ]
+        calls: list[tuple[str, str]] = []
+
+        def runner(command: list[str]) -> subprocess.CompletedProcess[str]:
+            calls.append((Path(command[1]).stem, command[2]))
+            return subprocess.CompletedProcess(command, 1, stdout="", stderr="failed")
+
+        self.assertFalse(run_updates(jobs, self.logger, runner))
+        self.assertEqual(calls, [(Path(__file__).stem, "convert")])
 
 
 if __name__ == "__main__":

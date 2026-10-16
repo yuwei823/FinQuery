@@ -9,7 +9,7 @@
     "按申万一级行业统计最新交易日的总市值",
     "查询最新交易日市盈率、市净率和资产负债率最低的股票"
   ],
-  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "financial_period", "stock_etf_trading_data"]},
+  "role_tables": {"market_analyst": ["stock_daily", "index_daily", "financial_statement", "financial_period", "stock_financial_daily", "stock_etf_trading_data"]},
   "tables": [
     {
       "id": "trade_data.stock_daily",
@@ -121,6 +121,10 @@
         {"name":"total_liabilities","label":"负债合计","type":"数值","source_type":"DOUBLE","description":"期末负债总额","role":"metric","aggregation":"sum"},
         {"name":"parent_equity","label":"归母股东权益","type":"数值","source_type":"DOUBLE","description":"期末归母权益","role":"metric","aggregation":"sum"},
         {"name":"total_owner_equity","label":"所有者权益合计","type":"数值","source_type":"DOUBLE","description":"期末所有者权益合计","role":"metric","aggregation":"sum"},
+        {"name":"prior_year_total_assets","label":"上年同期总资产","type":"数值","source_type":"DOUBLE","description":"当前披露日可见的上年同期总资产","role":"metric","aggregation":"sum"},
+        {"name":"prior_year_parent_equity","label":"上年同期归母权益","type":"数值","source_type":"DOUBLE","description":"当前披露日可见的上年同期归母股东权益","role":"metric","aggregation":"sum"},
+        {"name":"avg_total_assets","label":"平均总资产","type":"数值","source_type":"DOUBLE","description":"本期期末与上年同期期末总资产的简单平均","role":"metric","aggregation":"avg"},
+        {"name":"avg_parent_equity","label":"平均归母权益","type":"数值","source_type":"DOUBLE","description":"本期期末与上年同期期末归母权益的简单平均","role":"metric","aggregation":"avg"},
         {"name":"operating_revenue_ytd","label":"营业收入YTD","type":"数值","source_type":"DOUBLE","description":"本年累计营业收入","role":"metric","aggregation":"sum"},
         {"name":"operating_revenue_quarter","label":"单季度营业收入","type":"数值","source_type":"DOUBLE","description":"由同格式相邻累计期间还原","role":"metric","aggregation":"sum"},
         {"name":"operating_revenue_ttm","label":"营业收入TTM","type":"数值","source_type":"DOUBLE","description":"按已披露组成项桥接的滚动收入","role":"metric","aggregation":"sum"},
@@ -141,6 +145,47 @@
         {"name":"ttm_prior_publish_date","label":"TTM上年同期披露日","type":"日期","source_type":"DATE","description":"TTM上年同期版本披露日","role":"time","aggregation":"none"},
         {"name":"quarter_components_complete","label":"单季度组成完整","type":"布尔","source_type":"BOOLEAN","description":"单季度还原所需期间是否完整","role":"dimension","aggregation":"none"},
         {"name":"ttm_components_complete","label":"TTM组成完整","type":"布尔","source_type":"BOOLEAN","description":"TTM桥接所需期间是否完整","role":"dimension","aggregation":"none"}
+      ]
+    },
+    {
+      "id": "trade_data.stock_financial_daily",
+      "name": "stock_financial_daily",
+      "label": "股票每日PIT财务指标",
+      "database": "trade_data",
+      "domain": "股票财务指标",
+      "description": "按股票和交易日保存当日已披露的最新财报快照及P1财务指标；不会读取交易日之后披露的数据。",
+      "profile_mode": "schema_only",
+      "primary_key": ["symbol", "trade_date"],
+      "fields": [
+        {"name":"symbol","label":"股票代码","type":"文本","source_type":"VARCHAR","description":"包含交易所前缀的股票代码","role":"identifier","aggregation":"none"},
+        {"name":"trade_date","label":"交易日期","type":"日期","source_type":"DATE","description":"指标对应的行情交易日","role":"time","aggregation":"none"},
+        {"name":"stock_name","label":"股票名称","type":"文本","source_type":"VARCHAR","description":"股票在该交易日使用的简称","role":"entity_name","aggregation":"none"},
+        {"name":"industry_level_1","label":"申万一级行业","type":"文本","source_type":"VARCHAR","description":"交易日对应的新版申万一级行业","role":"dimension","aggregation":"none"},
+        {"name":"industry_level_2","label":"申万二级行业","type":"文本","source_type":"VARCHAR","description":"交易日对应的新版申万二级行业","role":"dimension","aggregation":"none"},
+        {"name":"industry_level_3","label":"申万三级行业","type":"文本","source_type":"VARCHAR","description":"交易日对应的新版申万三级行业","role":"dimension","aggregation":"none"},
+        {"name":"total_market_cap","label":"总市值","type":"数值","source_type":"DOUBLE","description":"交易日收盘总市值","role":"metric","aggregation":"sum"},
+        {"name":"financial_report_date","label":"财务报告期","type":"日期","source_type":"DATE","description":"交易日当时最新可见财报的报告期","role":"time","aggregation":"none"},
+        {"name":"financial_publish_date","label":"财报披露日期","type":"日期","source_type":"DATE","description":"所用财报版本的披露日期，不晚于交易日","role":"time","aggregation":"none"},
+        {"name":"statement_format","label":"报表类型","type":"文本","source_type":"VARCHAR","description":"一般企业、银行、保险或证券等格式","role":"dimension","aggregation":"none"},
+        {"name":"period_type","label":"期间类型","type":"文本","source_type":"VARCHAR","description":"Q1、H1、Q3、FY或OTHER","role":"dimension","aggregation":"none"},
+        {"name":"financial_data_available","label":"财务数据可用","type":"布尔","source_type":"BOOLEAN","description":"该交易日是否已有可关联财报","role":"dimension","aggregation":"none"},
+        {"name":"total_assets","label":"资产总计","type":"数值","source_type":"DOUBLE","description":"最新财报期末总资产","role":"metric","aggregation":"sum"},
+        {"name":"parent_equity","label":"归母股东权益","type":"数值","source_type":"DOUBLE","description":"最新财报期末归母股东权益","role":"metric","aggregation":"sum"},
+        {"name":"avg_total_assets","label":"平均总资产","type":"数值","source_type":"DOUBLE","description":"本期与上年同期期末总资产的简单平均","role":"metric","aggregation":"avg"},
+        {"name":"avg_parent_equity","label":"平均归母权益","type":"数值","source_type":"DOUBLE","description":"本期与上年同期期末归母权益的简单平均","role":"metric","aggregation":"avg"},
+        {"name":"operating_revenue_ttm","label":"营业收入TTM","type":"数值","source_type":"DOUBLE","description":"交易日当时可得的滚动十二个月营业收入","role":"metric","aggregation":"sum"},
+        {"name":"net_profit_ttm","label":"净利润TTM","type":"数值","source_type":"DOUBLE","description":"交易日当时可得的滚动十二个月合并净利润","role":"metric","aggregation":"sum"},
+        {"name":"parent_net_profit_ttm","label":"归母净利润TTM","type":"数值","source_type":"DOUBLE","description":"交易日当时可得的滚动十二个月归母净利润","role":"metric","aggregation":"sum"},
+        {"name":"operating_cash_flow_ttm","label":"经营现金流TTM","type":"数值","source_type":"DOUBLE","description":"交易日当时可得的滚动十二个月经营现金流净额","role":"metric","aggregation":"sum"},
+        {"name":"pe_parent_ttm","label":"滚动市盈率（归母口径）","type":"数值","source_type":"DOUBLE","description":"总市值除以归母净利润TTM；分母不为正时为空","role":"metric","aggregation":"avg"},
+        {"name":"pb_parent","label":"市净率（归母权益口径）","type":"数值","source_type":"DOUBLE","description":"总市值除以期末归母权益；权益不为正时为空","role":"metric","aggregation":"avg"},
+        {"name":"ps_ttm","label":"滚动市销率","type":"数值","source_type":"DOUBLE","description":"总市值除以营业收入TTM；收入不为正时为空","role":"metric","aggregation":"avg"},
+        {"name":"net_margin_ttm","label":"归母净利率TTM","type":"数值","source_type":"DOUBLE","description":"归母净利润TTM除以营业收入TTM","role":"metric","aggregation":"avg"},
+        {"name":"roe_ttm","label":"净资产收益率TTM","type":"数值","source_type":"DOUBLE","description":"归母净利润TTM除以平均归母权益","role":"metric","aggregation":"avg"},
+        {"name":"roa_ttm","label":"总资产收益率TTM","type":"数值","source_type":"DOUBLE","description":"合并净利润TTM除以平均总资产","role":"metric","aggregation":"avg"},
+        {"name":"asset_turnover_ttm","label":"总资产周转率TTM","type":"数值","source_type":"DOUBLE","description":"营业收入TTM除以平均总资产","role":"metric","aggregation":"avg"},
+        {"name":"cfo_to_net_profit","label":"经营现金含量","type":"数值","source_type":"DOUBLE","description":"经营现金流TTM除以合并净利润TTM；净利润不为正时为空","role":"metric","aggregation":"avg"},
+        {"name":"cfo_margin","label":"经营现金流率","type":"数值","source_type":"DOUBLE","description":"经营现金流TTM除以营业收入TTM","role":"metric","aggregation":"avg"}
       ]
     },
     {

@@ -36,6 +36,13 @@
       "季度财务",
       "TTM财务",
       "期间层"
+    ],
+    "trade_data.stock_financial_daily": [
+      "股票每日PIT财务指标",
+      "每日财务指标",
+      "股票财务指标",
+      "历史时点财务指标",
+      "PIT指标"
     ]
   },
   "field_terms": {
@@ -460,6 +467,22 @@
     "trade_data.financial_period.total_owner_equity": [
       "所有者权益合计"
     ],
+    "trade_data.financial_period.prior_year_total_assets": [
+      "上年同期总资产",
+      "期初总资产"
+    ],
+    "trade_data.financial_period.prior_year_parent_equity": [
+      "上年同期归母权益",
+      "期初归母权益"
+    ],
+    "trade_data.financial_period.avg_total_assets": [
+      "平均总资产",
+      "平均资产"
+    ],
+    "trade_data.financial_period.avg_parent_equity": [
+      "平均归母权益",
+      "平均归母股东权益"
+    ],
     "trade_data.financial_period.operating_revenue_ytd": [
       "营业收入YTD",
       "累计营业收入",
@@ -539,7 +562,36 @@
     ],
     "trade_data.financial_period.ttm_components_complete": [
       "TTM组成完整"
-    ]
+    ],
+    "trade_data.stock_financial_daily.symbol": ["股票代码", "证券代码"],
+    "trade_data.stock_financial_daily.trade_date": ["交易日期", "交易日"],
+    "trade_data.stock_financial_daily.stock_name": ["股票名称", "证券简称"],
+    "trade_data.stock_financial_daily.industry_level_1": ["申万一级行业", "一级行业"],
+    "trade_data.stock_financial_daily.industry_level_2": ["申万二级行业", "二级行业"],
+    "trade_data.stock_financial_daily.industry_level_3": ["申万三级行业", "三级行业"],
+    "trade_data.stock_financial_daily.total_market_cap": ["总市值", "市值"],
+    "trade_data.stock_financial_daily.financial_report_date": ["财务报告期", "财报期", "报告期"],
+    "trade_data.stock_financial_daily.financial_publish_date": ["财报披露日期", "公告日期", "财报可用日"],
+    "trade_data.stock_financial_daily.statement_format": ["报表类型", "财报格式"],
+    "trade_data.stock_financial_daily.period_type": ["期间类型", "财报期间"],
+    "trade_data.stock_financial_daily.financial_data_available": ["财务数据可用", "已有财报"],
+    "trade_data.stock_financial_daily.total_assets": ["资产总计", "总资产"],
+    "trade_data.stock_financial_daily.parent_equity": ["归母股东权益", "归母权益", "归母净资产"],
+    "trade_data.stock_financial_daily.avg_total_assets": ["平均总资产", "平均资产"],
+    "trade_data.stock_financial_daily.avg_parent_equity": ["平均归母权益", "平均归母股东权益"],
+    "trade_data.stock_financial_daily.operating_revenue_ttm": ["营业收入TTM", "滚动营业收入", "近十二个月营收"],
+    "trade_data.stock_financial_daily.net_profit_ttm": ["净利润TTM", "合并净利润TTM"],
+    "trade_data.stock_financial_daily.parent_net_profit_ttm": ["归母净利润TTM", "滚动归母净利润"],
+    "trade_data.stock_financial_daily.operating_cash_flow_ttm": ["经营现金流TTM", "滚动经营现金流"],
+    "trade_data.stock_financial_daily.pe_parent_ttm": ["滚动市盈率（归母口径）", "归母PE", "标准PE TTM"],
+    "trade_data.stock_financial_daily.pb_parent": ["市净率（归母权益口径）", "归母PB", "标准PB"],
+    "trade_data.stock_financial_daily.ps_ttm": ["滚动市销率", "PS TTM", "市销率"],
+    "trade_data.stock_financial_daily.net_margin_ttm": ["归母净利率TTM", "归母净利率"],
+    "trade_data.stock_financial_daily.roe_ttm": ["净资产收益率TTM", "ROE", "净资产收益率"],
+    "trade_data.stock_financial_daily.roa_ttm": ["总资产收益率TTM", "ROA", "总资产收益率"],
+    "trade_data.stock_financial_daily.asset_turnover_ttm": ["总资产周转率TTM", "总资产周转率"],
+    "trade_data.stock_financial_daily.cfo_to_net_profit": ["经营现金含量", "盈利现金比"],
+    "trade_data.stock_financial_daily.cfo_margin": ["经营现金流率", "CFO Margin"]
   },
   "concept_terms": {
     "monetary_funds": {
@@ -2053,6 +2105,24 @@
       "availability": "D",
       "status": "planned"
     },
+    "pe_parent_ttm": {
+      "label": "滚动市盈率（归母口径）",
+      "aliases": [
+        "pe_parent_ttm",
+        "归母PE",
+        "标准PE TTM"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 归母净利润TTM。归母净利润不为正时返回空值。",
+      "availability": "B",
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.pe_parent_ttm",
+      "sql_expression": "CASE WHEN total_market_cap > 0 AND parent_net_profit_ttm > 0 THEN total_market_cap / parent_net_profit_ttm END",
+      "invalid_when": "total_market_cap <= 0 OR parent_net_profit_ttm <= 0",
+      "unit": "倍",
+      "period_basis": "按交易日PIT关联当时已披露的最新归母净利润TTM",
+      "formula_version": "p1.parent_profit.pit.v1"
+    },
     "pb": {
       "label": "市净率（总权益口径）",
       "aliases": [
@@ -2072,6 +2142,24 @@
       "formula_version": "p0.total_equity.v1",
       "quality_note": "所有者权益合计口径，不等同于严格归母权益PB"
     },
+    "pb_parent": {
+      "label": "市净率（归母权益口径）",
+      "aliases": [
+        "pb_parent",
+        "归母PB",
+        "标准PB"
+      ],
+      "category": "估值指标",
+      "definition": "公式：总市值 / 期末归母股东权益。归母权益不为正时返回空值。",
+      "availability": "B",
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.pb_parent",
+      "sql_expression": "CASE WHEN total_market_cap > 0 AND parent_equity > 0 THEN total_market_cap / parent_equity END",
+      "invalid_when": "total_market_cap <= 0 OR parent_equity <= 0",
+      "unit": "倍",
+      "period_basis": "按交易日PIT关联当时已披露的最新归母股东权益",
+      "formula_version": "p1.parent_equity.pit.v1"
+    },
     "ps_ttm": {
       "label": "滚动市销率",
       "aliases": [
@@ -2081,7 +2169,13 @@
       "category": "估值指标",
       "definition": "公式：总市值 / 营业收入TTM。收入 `<= 0` 为NM。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.ps_ttm",
+      "sql_expression": "CASE WHEN total_market_cap > 0 AND operating_revenue_ttm > 0 THEN total_market_cap / operating_revenue_ttm END",
+      "invalid_when": "total_market_cap <= 0 OR operating_revenue_ttm <= 0",
+      "unit": "倍",
+      "period_basis": "按交易日PIT关联当时已披露的营业收入TTM",
+      "formula_version": "p1.pit.v1"
     },
     "pcf_ttm": {
       "label": "滚动市现率",
@@ -2227,7 +2321,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：归母净利润TTM / 营业收入TTM。归母分子与合并收入存在口径差异，需在描述中明确。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.net_margin_ttm",
+      "sql_expression": "CASE WHEN operating_revenue_ttm > 0 THEN parent_net_profit_ttm / operating_revenue_ttm END",
+      "invalid_when": "operating_revenue_ttm <= 0",
+      "unit": "比率",
+      "period_basis": "按交易日PIT关联的归母净利润TTM与营业收入TTM",
+      "formula_version": "p1.pit.v1"
     },
     "roe_ttm": {
       "label": "净资产收益率TTM",
@@ -2238,7 +2338,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：归母净利润TTM / 平均归母股东权益。平均权益 `<= 0` 为NM。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.roe_ttm",
+      "sql_expression": "CASE WHEN avg_parent_equity > 0 THEN parent_net_profit_ttm / avg_parent_equity END",
+      "invalid_when": "avg_parent_equity <= 0",
+      "unit": "比率",
+      "period_basis": "归母净利润TTM除以本期与上年同期归母权益的简单平均",
+      "formula_version": "p1.average_balance.pit.v1"
     },
     "roe_end_ttm": {
       "label": "期末口径ROE",
@@ -2259,7 +2365,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：净利润TTM / 平均总资产。分子使用合并净利润；平均资产 `<= 0` 为空。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.roa_ttm",
+      "sql_expression": "CASE WHEN avg_total_assets > 0 THEN net_profit_ttm / avg_total_assets END",
+      "invalid_when": "avg_total_assets <= 0",
+      "unit": "比率",
+      "period_basis": "合并净利润TTM除以本期与上年同期总资产的简单平均",
+      "formula_version": "p1.average_balance.pit.v1"
     },
     "roic_ttm": {
       "label": "投入资本回报率TTM",
@@ -2280,7 +2392,13 @@
       "category": "盈利能力与杜邦指标",
       "definition": "公式：营业收入TTM / 平均总资产。平均资产 `<= 0` 为空。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.asset_turnover_ttm",
+      "sql_expression": "CASE WHEN avg_total_assets > 0 THEN operating_revenue_ttm / avg_total_assets END",
+      "invalid_when": "avg_total_assets <= 0",
+      "unit": "次",
+      "period_basis": "营业收入TTM除以本期与上年同期总资产的简单平均",
+      "formula_version": "p1.average_balance.pit.v1"
     },
     "equity_multiplier": {
       "label": "权益乘数",
@@ -2496,7 +2614,13 @@
       "category": "现金流质量与自由现金流",
       "definition": "公式：经营现金流TTM / 净利润TTM。净利润 `<= 0` 时默认不输出倍数，但保留两个基础量。",
       "availability": "A/B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.cfo_to_net_profit",
+      "sql_expression": "CASE WHEN net_profit_ttm > 0 THEN operating_cash_flow_ttm / net_profit_ttm END",
+      "invalid_when": "net_profit_ttm <= 0",
+      "unit": "倍",
+      "period_basis": "按交易日PIT关联的经营现金流TTM与合并净利润TTM",
+      "formula_version": "p1.pit.v1"
     },
     "cfo_margin": {
       "label": "经营现金流率",
@@ -2506,7 +2630,13 @@
       "category": "现金流质量与自由现金流",
       "definition": "公式：经营现金流TTM / 营业收入TTM。收入 `<= 0` 为空。",
       "availability": "B",
-      "status": "planned"
+      "status": "active",
+      "field_id": "trade_data.stock_financial_daily.cfo_margin",
+      "sql_expression": "CASE WHEN operating_revenue_ttm > 0 THEN operating_cash_flow_ttm / operating_revenue_ttm END",
+      "invalid_when": "operating_revenue_ttm <= 0",
+      "unit": "比率",
+      "period_basis": "按交易日PIT关联的经营现金流TTM与营业收入TTM",
+      "formula_version": "p1.pit.v1"
     },
     "fcff_ttm": {
       "label": "企业自由现金流",

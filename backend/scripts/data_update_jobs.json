@@ -22,7 +22,15 @@
       "name": "financial_period",
       "script": "scripts/financial_period_pipeline.py",
       "database": "trade_data",
-      "steps": ["build", "validate"]
+      "steps": ["build", "validate"],
+      "depends_on": ["stock_fin_data_xbx"]
+    },
+    {
+      "name": "stock_financial_daily",
+      "script": "scripts/stock_financial_daily_pipeline.py",
+      "database": "trade_data",
+      "steps": ["build", "validate"],
+      "depends_on": ["stock_daily", "financial_period"]
     },
     {
       "name": "stock_etf_trading_data",

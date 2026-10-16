@@ -30,6 +30,12 @@ from scripts.financial_period_pipeline import (
     build_dataset as build_financial_period,
     validate_dataset as validate_financial_period,
 )
+from scripts.stock_financial_daily_pipeline import (
+    METRIC_IDS as STOCK_FINANCIAL_METRIC_IDS,
+    OUTPUT_COLUMNS as STOCK_FINANCIAL_DAILY_COLUMNS,
+    build_dataset as build_stock_financial_daily,
+    validate_dataset as validate_stock_financial_daily,
+)
 from scripts.csv_parquet_pipeline import (
     compact_dataset as compact_configured_dataset,
     convert_dataset as convert_configured_dataset,
@@ -49,6 +55,65 @@ TERMS_PATH = SCHEMA_PATH.with_name("_terms.json")
 
 
 class TradeDataPipelineTest(unittest.TestCase):
+    def test_stock_financial_daily_is_point_in_time_and_does_not_regress(self) -> None:
+        with tempfile.TemporaryDirectory() as temp_dir:
+            output = Path(temp_dir) / "trade_data"
+            output.mkdir(parents=True)
+            connection = duckdb.connect(":memory:")
+            try:
+                connection.execute(
+                    """
+                    CREATE TABLE stocks AS SELECT * FROM (VALUES
+                      ('sh600000', DATE '2024-03-30', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1000.0),
+                      ('sh600000', DATE '2024-03-31', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1000.0),
+                      ('sh600000', DATE '2024-05-01', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1200.0),
+                      ('sh600000', DATE '2024-05-16', '样本银行', '银行', '银行Ⅱ', '股份制银行', 1300.0)
+                    ) t(symbol, trade_date, stock_name, industry_level_1,
+                        industry_level_2, industry_level_3, total_market_cap)
+                    """
+                )
+                connection.execute(
+                    """
+                    CREATE TABLE periods AS SELECT * FROM (VALUES
+                      ('sh600000','商业银行',DATE '2023-12-31',DATE '2024-03-31','FY',TRUE,
+                       200.0,100.0,180.0,90.0,100.0,10.0,8.0,12.0),
+                      ('sh600000','商业银行',DATE '2024-03-31',DATE '2024-04-30','Q1',TRUE,
+                       220.0,110.0,200.0,100.0,120.0,12.0,10.0,15.0),
+                      ('sh600000','商业银行',DATE '2023-12-31',DATE '2024-05-15','FY',TRUE,
+                       2000.0,1000.0,1800.0,900.0,1000.0,100.0,80.0,120.0)
+                    ) t(symbol,statement_format,report_date,publish_date,period_type,
+                        ttm_components_complete,total_assets,parent_equity,avg_total_assets,
+                        avg_parent_equity,operating_revenue_ttm,net_profit_ttm,
+                        parent_net_profit_ttm,operating_cash_flow_ttm)
+                    """
+                )
+                connection.execute(
+                    f"COPY stocks TO '{(output / 'stock_daily.parquet').as_posix()}' (FORMAT PARQUET)"
+                )
+                connection.execute(
+                    f"COPY periods TO '{(output / 'financial_period.parquet').as_posix()}' (FORMAT PARQUET)"
+                )
+            finally:
+                connection.close()
+
+            result = build_stock_financial_daily(output)
+            self.assertEqual(result["row_count"], 4)
+            self.assertEqual(validate_stock_financial_daily(output)["errors"], [])
+            connection = duckdb.connect(":memory:")
+            try:
+                rows = connection.execute(
+                    f"SELECT trade_date, financial_report_date, pe_parent_ttm, roe_ttm "
+                    f"FROM read_parquet('{(output / 'stock_financial_daily.parquet').as_posix()}') "
+                    f"ORDER BY trade_date"
+                ).fetchall()
+            finally:
+                connection.close()
+            self.assertIsNone(rows[0][1])
+            self.assertEqual(str(rows[1][1]), "2023-12-31")
+            self.assertEqual(str(rows[2][1]), "2024-03-31")
+            self.assertEqual(str(rows[3][1]), "2024-03-31")
+            self.assertEqual(rows[3][2:], (130.0, 0.1))
+
     def test_financial_period_builds_quarter_and_point_in_time_ttm(self) -> None:
         with tempfile.TemporaryDirectory() as temp_dir:
             output = Path(temp_dir) / "trade_data"
@@ -83,15 +148,16 @@ class TradeDataPipelineTest(unittest.TestCase):
             try:
                 row = connection.execute(
                     f"SELECT operating_revenue_quarter, operating_revenue_ttm, "
+                    f"avg_total_assets, avg_parent_equity, "
                     f"quarter_predecessor_publish_date, ttm_annual_publish_date "
                     f"FROM read_parquet('{(output / 'financial_period.parquet').as_posix()}') "
                     f"WHERE report_date = DATE '2025-06-30'"
                 ).fetchone()
             finally:
                 connection.close()
-            self.assertEqual(row[:2], (35.0, 120.0))
-            self.assertEqual(str(row[2]), "2025-04-30")
-            self.assertEqual(str(row[3]), "2025-03-30")
+            self.assertEqual(row[:4], (35.0, 120.0, 1.0, 1.0))
+            self.assertEqual(str(row[4]), "2025-04-30")
+            self.assertEqual(str(row[5]), "2025-03-30")
 
     def test_trade_data_terms_are_clean_utf8(self) -> None:
         raw = TERMS_PATH.read_bytes()
@@ -126,6 +192,15 @@ class TradeDataPipelineTest(unittest.TestCase):
             )
             self.assertEqual(metric["sql_expression"], column.expression)
             self.assertEqual(metric["invalid_when"], column.invalid_when)
+        for metric_id in STOCK_FINANCIAL_METRIC_IDS:
+            metric = registry[metric_id]
+            self.assertEqual(metric["status"], "active")
+            self.assertEqual(
+                metric["field_id"],
+                f"trade_data.stock_financial_daily.{metric_id}",
+            )
+            self.assertTrue(metric["sql_expression"])
+            self.assertTrue(metric["invalid_when"])
 
     def test_schema_matches_converter_columns(self) -> None:
         schema = json.loads(SCHEMA_PATH.read_text(encoding="utf-8"))
@@ -166,6 +241,15 @@ class TradeDataPipelineTest(unittest.TestCase):
             list(FINANCIAL_PERIOD_COLUMNS),
         )
         self.assertIn("financial_period", schema["role_tables"]["market_analyst"])
+
+        stock_financial_table = next(
+            table for table in schema["tables"] if table["name"] == "stock_financial_daily"
+        )
+        self.assertEqual(
+            [field["name"] for field in stock_financial_table["fields"]],
+            list(STOCK_FINANCIAL_DAILY_COLUMNS),
+        )
+        self.assertIn("stock_financial_daily", schema["role_tables"]["market_analyst"])
 
         etf_table = next(
             table for table in schema["tables"] if table["name"] == "stock_etf_trading_data"
