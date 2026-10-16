@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import os
 import shutil
@@ -50,6 +51,26 @@ class DatasetSpec:
 
 def _safe_path(path: Path) -> str:
     return path.resolve().as_posix().replace("'", "''")
+
+
+def _contract_signature(spec: DatasetSpec) -> str:
+    payload = {
+        "columns": [
+            {
+                "source": column.source,
+                "target": column.target,
+                "kind": column.kind,
+                "required": column.required,
+            }
+            for column in spec.columns
+        ],
+        "key_fields": spec.key_fields,
+        "identity_field": spec.identity_field,
+        "encoding": spec.encoding,
+        "skip_rows": spec.skip_rows,
+    }
+    encoded = json.dumps(payload, ensure_ascii=False, sort_keys=True).encode("utf-8")
+    return hashlib.sha256(encoded).hexdigest()[:16]
 
 
 def _header_error(spec: DatasetSpec, header: tuple[str, ...]) -> str | None:
@@ -323,6 +344,8 @@ def convert_dataset(
     staging_dir.mkdir(parents=True, exist_ok=True)
     manifest_path = output / spec.manifest_name
     manifest = _load_manifest(spec, manifest_path)
+    contract_signature = _contract_signature(spec)
+    contract_changed = manifest.get("contract_signature") != contract_signature
     records: dict[str, dict[str, Any]] = manifest.setdefault("files", {})
     pending: list[Path] = []
     skipped = 0
@@ -332,7 +355,8 @@ def convert_dataset(
         existing = records.get(source_key)
         final_path = table_dir / f"{_shard_stem(spec, path)}.parquet"
         unchanged = (
-            existing
+            not contract_changed
+            and existing
             and existing.get("source_size") == stat.st_size
             and existing.get("source_mtime_ns") == stat.st_mtime_ns
             and final_path.exists()
@@ -366,6 +390,7 @@ def convert_dataset(
             "database": spec.database,
             "table": spec.table,
             "source_encoding": spec.encoding,
+            "contract_signature": contract_signature,
             "file_count": len(records),
             "identity_count": report["identity_count"],
             "row_count": sum(int(item.get("rows", 0)) for item in records.values()),

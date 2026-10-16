@@ -455,6 +455,18 @@ class TradeDataPipelineTest(unittest.TestCase):
             self.assertEqual(report["duplicate_shard_count"], 0)
             converted = convert_configured_dataset(FINANCIAL_SPEC, source, output)
             self.assertEqual(converted["converted_this_run"], 1)
+            unchanged = convert_configured_dataset(FINANCIAL_SPEC, source, output)
+            self.assertEqual(unchanged["skipped_this_run"], 1)
+            manifest_path = output / FINANCIAL_SPEC.manifest_name
+            manifest = json.loads(manifest_path.read_text(encoding="utf-8"))
+            manifest.pop("contract_signature")
+            manifest_path.write_text(
+                json.dumps(manifest, ensure_ascii=False), encoding="utf-8"
+            )
+            contract_refresh = convert_configured_dataset(
+                FINANCIAL_SPEC, source, output
+            )
+            self.assertEqual(contract_refresh["converted_this_run"], 1)
             validation = validate_configured_dataset(FINANCIAL_SPEC, output)
             self.assertEqual(validation["errors"], [])
             compact_configured_dataset(FINANCIAL_SPEC, output)
