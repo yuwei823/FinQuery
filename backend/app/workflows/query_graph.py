@@ -297,6 +297,7 @@ class QueryWorkflow:
             workspace,
             state.get("access_scope") or {},
             progress=lambda stage, message, detail="": self.progress.emit(task_id, stage, message, detail),
+            original_query=state["query"],
         )
         if decision["action"] == "clarify":
             return {

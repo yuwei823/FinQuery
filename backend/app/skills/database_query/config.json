@@ -4,6 +4,7 @@
   "allowed_tools": [
     "current_datetime",
     "resolve_date_range",
+    "resolve_stock_entity",
     "query_*"
   ],
   "max_tool_calls": 3,

@@ -11,6 +11,7 @@ from .tools import (
     build_bar_chart,
     build_candlestick_chart,
     build_database_query_tool,
+    build_stock_entity_resolver,
     build_heatmap,
     build_line_chart,
     build_pie_chart,
@@ -54,6 +55,19 @@ def create_local_mcp_server(
         description="将今天、昨天、本周、上周、本月、上月或今年转换为明确起止日期。",
         annotations=READ_ONLY,
     )(resolve_date_range)
+    if (
+        scope.allows_database("trade_data")
+        and scope.allows_table("trade_data", "trade_data.stock_daily")
+    ):
+        server.tool(
+            name="resolve_stock_entity",
+            title="解析股票名称",
+            description=(
+                "根据公司名称或股票简称查询本地stock_daily，返回本地数据库使用的"
+                "股票代码。名称不能直接用于目标表筛选时，必须先调用本工具，不得猜代码。"
+            ),
+            annotations=READ_ONLY,
+        )(build_stock_entity_resolver(database_engine, scope))
     server.tool(
         name="build_bar_chart",
         title="生成柱状图配置",

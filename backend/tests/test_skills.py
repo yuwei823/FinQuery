@@ -34,6 +34,7 @@ class SkillRegistryTest(unittest.TestCase):
         skill = self.registry.get("database_query")
         self.assertEqual(skill.max_tool_calls, 3)
         self.assertIn("query_*", skill.allowed_tools)
+        self.assertIn("resolve_stock_entity", skill.allowed_tools)
         self.assertEqual(skill.output_actions, ("call_tool", "clarify"))
         self.assertIn("Schema图", skill.instructions)
         self.assertIn("优先直接查询该物化字段", skill.instructions)

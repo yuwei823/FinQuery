@@ -29,6 +29,18 @@ class DatabaseQueryResult(BaseModel):
     error: str | None = Field(default=None, description="执行失败时的错误信息")
 
 
+class StockEntityMatch(BaseModel):
+    symbol: str = Field(description="本地数据库使用的股票代码")
+    stock_name: str = Field(description="股票简称")
+    latest_trade_date: str | None = Field(default=None, description="该名称最近出现的交易日")
+
+
+class StockEntityResolution(BaseModel):
+    query: str = Field(description="用户提供的股票名称或简称")
+    matches: list[StockEntityMatch] = Field(default_factory=list, description="本地数据中的匹配项")
+    error: str | None = Field(default=None, description="解析失败时的错误信息")
+
+
 class ChartSpecResult(BaseModel):
     type: str = Field(description="前端图表类型：bar、pie、line、area、scatter、heatmap、candlestick")
     title: str = Field(description="图表标题")
