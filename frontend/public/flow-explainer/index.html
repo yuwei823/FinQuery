@@ -1,0 +1,643 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="description" content="FinQuery 数据准备与实时查询流程交互说明">
+  <title>FinQuery · 从原始数据到可信答案</title>
+  <style>
+    :root {
+      /* 与 frontend/src/styles/_settings.scss 保持一致 */
+      --ink: #17221c;
+      --muted: #7b6f6a;
+      --paper: #fbfcfa;
+      --card: #fff;
+      --line: #e6e9e5;
+      --green: #7a3b32;
+      --green-2: #a96558;
+      --mint: #f5e8e5;
+      --lime: #d8ada4;
+      --amber: #b07b18;
+      --red: #9f493c;
+      --navy: #17221c;
+      --success: #36a96f;
+      --shadow: 0 8px 22px rgba(35, 75, 54, .07);
+      --radius: 11px;
+    }
+
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
+    body {
+      overflow: hidden;
+      color: var(--ink);
+      background: var(--paper);
+      font-family: Inter, "Microsoft YaHei", "Noto Sans SC", sans-serif;
+    }
+    button { font: inherit; }
+    button:focus-visible, [tabindex]:focus-visible { outline: 3px solid rgba(47, 140, 101, .35); outline-offset: 3px; }
+
+    .app { height: 100vh; display: grid; grid-template-rows: 74px 1fr 72px; }
+    .topbar {
+      z-index: 5;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 24px;
+      padding: 0 34px;
+      border-bottom: 1px solid rgba(23, 35, 29, .09);
+      background: rgba(255, 255, 255, .9);
+      backdrop-filter: blur(14px);
+    }
+    .brand { display: flex; align-items: center; gap: 12px; min-width: 185px; }
+    .brand-mark {
+      display: grid;
+      place-items: center;
+      width: 40px;
+      height: 40px;
+      border: 1px solid #6f312a;
+      border-radius: 10px;
+      color: white;
+      background: #6f312a;
+      box-shadow: 0 3px 10px rgba(19, 67, 49, .1);
+      font-size: 10px;
+      font-weight: 800;
+      letter-spacing: -.15px;
+    }
+    .brand strong, .brand small { display: block; }
+    .brand strong { font-size: 18px; letter-spacing: .2px; }
+    .brand small { margin-top: 2px; color: #8d827d; font-size: 12px; letter-spacing: .6px; }
+    .chapters { display: flex; align-items: center; justify-content: center; gap: 7px; }
+    .chapter-dot {
+      width: 9px;
+      height: 9px;
+      padding: 0;
+      border: 0;
+      border-radius: 999px;
+      background: #c6cec8;
+      cursor: pointer;
+      transition: width .25s ease, background .25s ease;
+    }
+    .chapter-dot.active { width: 30px; background: #7a3b32; }
+    .page-count { min-width: 185px; color: var(--muted); text-align: right; font-size: 12px; }
+    .page-count strong { color: var(--ink); font-size: 18px; }
+
+    .viewport { position: relative; overflow: hidden; }
+    .deck {
+      height: 100%;
+      display: flex;
+      transition: transform .62s cubic-bezier(.22, .75, .15, 1);
+      will-change: transform;
+    }
+    .page {
+      position: relative;
+      flex: 0 0 100%;
+      width: 100%;
+      min-width: 0;
+      height: 100%;
+      overflow: auto;
+      padding: clamp(26px, 4vw, 58px) clamp(28px, 6vw, 88px) 40px;
+    }
+    .page::before {
+      position: absolute;
+      inset: 0;
+      z-index: -2;
+      background-image: linear-gradient(rgba(122, 59, 50, .035) 1px, transparent 1px), linear-gradient(90deg, rgba(122, 59, 50, .035) 1px, transparent 1px);
+      background-size: 28px 28px;
+      content: "";
+      mask-image: linear-gradient(to bottom, rgba(0,0,0,.7), transparent 78%);
+    }
+    .page-shell { width: min(1240px, 100%); min-height: 100%; margin: 0 auto; display: flex; flex-direction: column; justify-content: center; }
+    .eyebrow { display: flex; align-items: center; gap: 10px; color: #6c5f5a; font-size: 11px; font-weight: 700; letter-spacing: 1.5px; text-transform: uppercase; }
+    .eyebrow::before { width: 28px; height: 2px; background: #c18476; content: ""; }
+    h1, h2, h3, p { margin-top: 0; }
+    h1, h2 { font-family: Georgia, "Noto Serif SC", serif; font-weight: 500; }
+    h1 { max-width: 880px; margin-bottom: 22px; font-size: clamp(42px, 5vw, 72px); line-height: 1.05; letter-spacing: -2px; }
+    h2 { margin-bottom: 12px; font-size: clamp(30px, 3.4vw, 42px); line-height: 1.15; letter-spacing: -1px; }
+    h3 { margin-bottom: 8px; font-size: 16px; }
+    .lede { max-width: 760px; color: var(--muted); font-size: clamp(16px, 1.5vw, 21px); line-height: 1.75; }
+    .kicker { color: var(--green); font-size: 12px; font-weight: 800; letter-spacing: .12em; }
+    .muted { color: var(--muted); }
+    .mono { font-family: "Cascadia Code", "SFMono-Regular", Consolas, monospace; }
+    .tiny { font-size: 11px; }
+    .tag { display: inline-flex; align-items: center; min-height: 25px; padding: 0 9px; border: 1px solid var(--line); border-radius: 999px; color: var(--muted); background: rgba(255,255,255,.72); font-size: 10px; font-weight: 700; }
+    .tag.green { color: #914c40; border-color: #eedbd7; background: #fbf5f3; }
+    .tag.amber { color: #71541b; border-color: #f6edd9; background: #f6edd9; }
+    .tag.dark { color: white; border-color: transparent; background: var(--navy); }
+
+    .hero-layout { display: grid; grid-template-columns: 1.08fr .92fr; align-items: center; gap: clamp(28px, 6vw, 88px); }
+    .hero-meta { display: flex; flex-wrap: wrap; gap: 9px; margin-top: 34px; }
+    .system-orbit {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 1;
+      max-width: 520px;
+      margin: auto;
+      border: 1px solid #eedbd7;
+      border-radius: 50%;
+      background: rgba(255,255,255,.64);
+      box-shadow: var(--shadow);
+    }
+    .system-orbit::before, .system-orbit::after { position: absolute; inset: 14%; border: 1px dashed #b9c9bf; border-radius: 50%; content: ""; }
+    .system-orbit::after { inset: 30%; border-style: solid; border-color: #d4ded7; }
+    .core {
+      position: absolute;
+      inset: 36%;
+      display: grid;
+      place-items: center;
+      border-radius: 50%;
+      color: white;
+      background: #6f312a;
+      box-shadow: 0 8px 22px rgba(122,59,50,.18);
+      font-weight: 900;
+    }
+    .orbit-item { position: absolute; display: grid; place-items: center; width: 86px; min-height: 58px; padding: 8px; border: 1px solid #eedbd7; border-radius: 10px; background: var(--card); box-shadow: var(--shadow); text-align: center; font-size: 11px; font-weight: 700; }
+    .orbit-item small { display: block; margin-top: 3px; color: var(--muted); font-size: 9px; font-weight: 500; }
+    .orbit-item:nth-of-type(1) { top: 7%; left: 39%; }
+    .orbit-item:nth-of-type(2) { top: 28%; right: 2%; }
+    .orbit-item:nth-of-type(3) { right: 12%; bottom: 9%; }
+    .orbit-item:nth-of-type(4) { bottom: 6%; left: 20%; }
+    .orbit-item:nth-of-type(5) { top: 32%; left: 1%; }
+    .pulse { animation: pulse 2.6s ease-in-out infinite; }
+
+    .section-head { display: grid; grid-template-columns: 1fr minmax(260px, 420px); align-items: end; gap: 30px; margin-bottom: 30px; }
+    .section-head p { margin-bottom: 2px; color: var(--muted); line-height: 1.65; }
+    .flow-row { display: grid; grid-template-columns: repeat(4, 1fr); gap: 14px; }
+    .flow-card {
+      position: relative;
+      min-height: 205px;
+      padding: 22px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: rgba(255,255,255,.92);
+      box-shadow: 0 8px 28px rgba(24,48,71,.06);
+      transition: transform .28s ease, border-color .28s ease, box-shadow .28s ease;
+    }
+    .flow-card:hover { transform: translateY(-4px); border-color: #d8ada4; box-shadow: var(--shadow); }
+    .flow-card::after { position: absolute; top: 48px; right: -18px; z-index: 2; width: 22px; height: 2px; background: var(--green-2); content: ""; }
+    .flow-card:last-child::after { display: none; }
+    .step-number { display: grid; place-items: center; width: 34px; height: 34px; margin-bottom: 26px; border-radius: 9px; color: #7a3b32; background: #f5e8e5; font-size: 12px; font-weight: 800; }
+    .flow-card p { color: var(--muted); font-size: 12px; line-height: 1.7; }
+    .file { margin-top: 14px; padding-top: 12px; border-top: 1px solid #e8ece8; color: var(--navy); font-size: 10px; word-break: break-all; }
+    .packet { position: absolute; top: 44px; right: -20px; z-index: 3; width: 8px; height: 8px; border-radius: 50%; background: #c18476; box-shadow: 0 0 0 5px rgba(193,132,118,.16); animation: packet 2.4s linear infinite; }
+
+    .split { display: grid; grid-template-columns: 1fr 1fr; gap: 28px; align-items: stretch; }
+    .panel { padding: 24px; border: 1px solid var(--line); border-radius: var(--radius); background: rgba(255,255,255,.94); box-shadow: var(--shadow); }
+    .panel-head { display: flex; align-items: center; justify-content: space-between; gap: 14px; margin-bottom: 20px; }
+    .layer-stack { display: grid; gap: 10px; }
+    .layer {
+      position: relative;
+      display: grid;
+      grid-template-columns: 64px 1fr auto;
+      align-items: center;
+      gap: 15px;
+      padding: 15px;
+      border: 1px solid #dce4de;
+      border-radius: 15px;
+      background: white;
+    }
+    .layer::before { position: absolute; left: 31px; top: -11px; width: 2px; height: 10px; background: #9ac6ae; content: ""; }
+    .layer:first-child::before { display: none; }
+    .layer-code { color: #7a3b32; font-size: 11px; font-weight: 800; }
+    .layer p { margin: 2px 0 0; color: var(--muted); font-size: 11px; }
+    .date-lanes { display: grid; gap: 18px; margin-top: 20px; }
+    .date-lane { display: grid; grid-template-columns: 105px 1fr; gap: 12px; align-items: center; }
+    .date-lane strong { font-size: 12px; }
+    .track { position: relative; height: 8px; border-radius: 999px; background: #e4e9e5; }
+    .track span { position: absolute; top: 50%; width: 15px; height: 15px; border: 3px solid white; border-radius: 50%; background: #7a3b32; box-shadow: 0 2px 8px rgba(25,42,33,.16); transform: translate(-50%, -50%); }
+    .track span::after { position: absolute; top: 15px; left: 50%; color: var(--muted); font-size: 9px; white-space: nowrap; transform: translateX(-50%); content: attr(data-label); }
+    .formula { margin-top: 20px; padding: 16px; border-left: 2px solid #c18476; border-radius: 0 6px 6px 0; background: #fbf5f3; font-size: 12px; line-height: 1.8; }
+
+    .retrieval-map { display: grid; grid-template-columns: .8fr 1.25fr .8fr; gap: 16px; align-items: center; }
+    .query-chip { padding: 22px; border-radius: 11px; color: white; background: #4b231f; box-shadow: var(--shadow); }
+    .query-chip small { display: block; margin-bottom: 9px; color: #a9bdcc; font-size: 10px; }
+    .query-chip p { margin: 0; font-size: 14px; line-height: 1.65; }
+    .funnel { display: grid; gap: 10px; }
+    .funnel-stage { position: relative; margin: auto; padding: 12px 16px; border-radius: 12px; text-align: center; font-size: 11px; font-weight: 800; }
+    .funnel-stage:nth-child(1) { width: 100%; background: #edf0ed; }
+    .funnel-stage:nth-child(2) { width: 84%; background: #f5e8e5; }
+    .funnel-stage:nth-child(3) { width: 68%; background: #eedbd7; }
+    .funnel-stage:nth-child(4) { width: 52%; color: white; background: #7a3b32; }
+    .schema-mini { display: grid; gap: 8px; }
+    .schema-table { padding: 13px; border: 1px solid var(--line); border-radius: 13px; background: white; font-size: 10px; }
+    .schema-table strong { display: block; margin-bottom: 7px; color: var(--navy); font-size: 12px; }
+    .schema-field { display: inline-block; margin: 3px 2px; padding: 4px 6px; border-radius: 6px; color: #914c40; background: #fbf5f3; }
+
+    .route-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 26px; }
+    .terminal { overflow: hidden; border-radius: 11px; color: #eedbd7; background: #17221c; box-shadow: var(--shadow); }
+    .terminal-bar { display: flex; align-items: center; gap: 6px; padding: 12px 15px; border-bottom: 1px solid rgba(255,255,255,.08); }
+    .terminal-bar i { width: 8px; height: 8px; border-radius: 50%; background: #5d7469; }
+    .terminal-body { min-height: 310px; padding: 20px; font: 12px/1.9 "Cascadia Code", Consolas, monospace; }
+    .terminal-body .line { opacity: 0; transform: translateY(5px); }
+    .page.active .terminal-body .line { animation: terminalLine .45s ease forwards; animation-delay: calc(var(--i) * .14s); }
+    .prompt { color: #d8ada4; }
+    .event { color: #c18476; }
+    .route-cards { display: grid; gap: 11px; }
+    .route-card { display: grid; grid-template-columns: 42px 1fr; gap: 12px; align-items: center; padding: 15px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+    .route-card span { display: grid; place-items: center; width: 42px; height: 42px; border-radius: 9px; color: #7a3b32; background: #f5e8e5; font-size: 13px; font-weight: 800; }
+    .route-card p { margin: 3px 0 0; color: var(--muted); font-size: 10px; }
+
+    .live-layout { display: grid; grid-template-columns: .86fr 1.14fr; gap: 28px; }
+    .live-controls { display: flex; gap: 9px; margin: 18px 0; }
+    .primary, .secondary {
+      min-height: 40px;
+      padding: 0 16px;
+      border-radius: 9px;
+      cursor: pointer;
+      font-size: 11px;
+      font-weight: 800;
+    }
+    .primary { color: white; border: 1px solid #7a3b32; background: #7a3b32; }
+    .primary:hover { background: #62302a; }
+    .secondary { color: #6c5f5a; border: 1px solid #dce2dd; background: white; }
+    .stage-list { display: grid; gap: 7px; margin-top: 18px; }
+    .stage-item { display: grid; grid-template-columns: 16px 1fr auto; gap: 10px; align-items: center; padding: 10px 12px; border-radius: 11px; color: var(--muted); background: rgba(255,255,255,.7); font-size: 11px; transition: .3s ease; }
+    .stage-item i { width: 9px; height: 9px; border: 2px solid #aebbb3; border-radius: 50%; }
+    .stage-item.active { color: var(--ink); background: #fbf5f3; transform: translateX(6px); }
+    .stage-item.active i { border-color: #7a3b32; background: #7a3b32; box-shadow: 0 0 0 5px rgba(122,59,50,.1); }
+    .stage-item.done i { border-color: var(--success); background: var(--success); }
+    .stage-item time { font-family: Consolas, monospace; font-size: 9px; }
+    .event-stream { min-height: 385px; padding: 18px; border-radius: 11px; color: #dce2dd; background: #17221c; box-shadow: var(--shadow); }
+    .stream-head { display: flex; justify-content: space-between; padding-bottom: 12px; border-bottom: 1px solid rgba(255,255,255,.08); color: #8fa79b; font-size: 10px; }
+    .stream-status { display: flex; align-items: center; gap: 6px; color: #cfd8d2; }
+    .stream-status i { width: 7px; height: 7px; border-radius: 50%; background: var(--success); animation: blink 1.2s infinite; }
+    .stream-log { height: 310px; overflow: auto; padding-top: 12px; font: 10px/1.7 "Cascadia Code", Consolas, monospace; }
+    .stream-row { display: grid; grid-template-columns: 56px 92px 1fr; gap: 9px; padding: 6px 0; border-bottom: 1px solid rgba(255,255,255,.045); animation: reveal .35s ease both; }
+    .stream-row time { color: #6f877a; }
+    .stream-row b { color: #d8ada4; font-weight: 600; }
+    .stream-row span { color: #cfddd5; }
+
+    .sql-layout { display: grid; grid-template-columns: 1.08fr .92fr; gap: 24px; }
+    .sql-box { overflow: hidden; border: 1px solid #25342c; border-radius: 11px; background: #17221c; box-shadow: var(--shadow); }
+    .sql-tabs { display: flex; align-items: center; justify-content: space-between; padding: 12px 16px; color: #94a99d; border-bottom: 1px solid rgba(255,255,255,.08); font-size: 10px; }
+    pre { margin: 0; white-space: pre-wrap; word-break: break-word; }
+    .sql-code { min-height: 330px; padding: 20px; color: #d9e6df; font: 11px/1.78 "Cascadia Code", Consolas, monospace; }
+    .kw { color: #d8ada4; }.field { color: #e7cbc5; }.lit { color: #f6edd9; }.comment { color: #8d827d; }
+    .guard-list { display: grid; gap: 9px; }
+    .guard { display: grid; grid-template-columns: 32px 1fr; gap: 11px; padding: 13px; border: 1px solid var(--line); border-radius: 10px; background: white; }
+    .guard i { display: grid; place-items: center; width: 30px; height: 30px; border-radius: 8px; color: #7a3b32; background: #f5e8e5; font-style: normal; font-size: 11px; font-weight: 800; }
+    .guard p { margin: 3px 0 0; color: var(--muted); font-size: 10px; line-height: 1.55; }
+
+    .result-layout { display: grid; grid-template-columns: 1.2fr .8fr; gap: 25px; }
+    .result-table { overflow: hidden; border: 1px solid var(--line); border-radius: 11px; background: white; box-shadow: var(--shadow); }
+    .result-table header { display: flex; justify-content: space-between; padding: 16px 18px; border-bottom: 1px solid var(--line); }
+    .fake-table { width: 100%; border-collapse: collapse; font-size: 10px; }
+    .fake-table th, .fake-table td { padding: 10px 13px; border-bottom: 1px solid #edf0ed; text-align: left; white-space: nowrap; }
+    .fake-table th { color: var(--muted); background: #f5f7f4; font-size: 9px; }
+    .fake-table tr { opacity: 0; }
+    .page.active .fake-table tr { animation: reveal .4s ease forwards; animation-delay: calc(var(--i) * .08s); }
+    .deliverables { display: grid; gap: 11px; }
+    .deliverable { position: relative; padding: 18px 18px 18px 55px; border: 1px solid var(--line); border-radius: 10px; background: var(--card); }
+    .deliverable::before { position: absolute; left: 17px; top: 17px; display: grid; place-items: center; width: 27px; height: 27px; border-radius: 7px; color: #7a3b32; background: #f5e8e5; content: attr(data-icon); font-size: 10px; font-weight: 800; }
+    .deliverable p { margin: 4px 0 0; color: var(--muted); font-size: 10px; line-height: 1.6; }
+    .trust-strip { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 18px; }
+
+    .footer-nav { z-index: 5; display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 18px; padding: 0 34px; border-top: 1px solid #edf0ed; background: rgba(251,252,250,.96); backdrop-filter: blur(14px); }
+    .nav-btn { display: inline-flex; align-items: center; gap: 8px; width: max-content; padding: 10px 14px; border: 1px solid #dce2dd; border-radius: 9px; color: #25342c; background: white; cursor: pointer; font-size: 11px; font-weight: 600; }
+    .nav-btn.next { justify-self: end; }
+    .nav-btn:disabled { cursor: default; opacity: .35; }
+    .progress-track { width: min(400px, 38vw); height: 4px; overflow: hidden; border-radius: 999px; background: #d8dfda; }
+    .progress-bar { height: 100%; width: 12.5%; border-radius: inherit; background: #7a3b32; transition: width .55s ease; }
+    .shortcut { color: var(--muted); font-size: 9px; }
+
+    @keyframes pulse { 50% { transform: scale(1.04); box-shadow: 0 10px 28px rgba(122,59,50,.24); } }
+    @keyframes packet { from { transform: translateX(-10px); } to { transform: translateX(20px); } }
+    @keyframes terminalLine { to { opacity: 1; transform: translateY(0); } }
+    @keyframes blink { 50% { opacity: .35; } }
+    @keyframes reveal { from { opacity: 0; transform: translateY(5px); } to { opacity: 1; transform: translateY(0); } }
+
+    @media (max-width: 920px) {
+      body { overflow: auto; }
+      .app { min-height: 100vh; height: auto; grid-template-rows: 66px minmax(calc(100vh - 132px), auto) 66px; }
+      .topbar, .footer-nav { padding-inline: 18px; }
+      .brand small, .shortcut { display: none; }
+      .page-count, .brand { min-width: auto; }
+      .page { min-height: calc(100vh - 132px); padding: 28px 20px; }
+      .hero-layout, .section-head, .split, .route-grid, .live-layout, .sql-layout, .result-layout { grid-template-columns: 1fr; }
+      .system-orbit { width: min(390px, 86vw); }
+      .flow-row { grid-template-columns: 1fr 1fr; }
+      .flow-card::after, .packet { display: none; }
+      .retrieval-map { grid-template-columns: 1fr; }
+      .schema-mini { grid-template-columns: repeat(2, 1fr); }
+    }
+    @media (max-width: 560px) {
+      .chapters { display: none; }
+      .flow-row { grid-template-columns: 1fr; }
+      .orbit-item { width: 74px; min-height: 50px; font-size: 9px; }
+      .footer-nav { grid-template-columns: auto 1fr auto; }
+      .progress-track { width: 100%; }
+      .nav-btn { padding: 9px 11px; }
+      .nav-btn .label { display: none; }
+      .stream-row { grid-template-columns: 48px 76px 1fr; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after { scroll-behavior: auto !important; animation-duration: .01ms !important; animation-iteration-count: 1 !important; transition-duration: .01ms !important; }
+    }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <div class="brand"><span class="brand-mark">FinQ</span><div><strong>FinQuery</strong><small>查询流程说明</small></div></div>
+      <nav class="chapters" aria-label="页面导航"></nav>
+      <div class="page-count"><strong id="pageNow">01</strong> / <span id="pageTotal">08</span></div>
+    </header>
+
+    <main class="viewport">
+      <div class="deck" id="deck">
+        <section class="page active" data-title="全景">
+          <div class="page-shell hero-layout">
+            <div>
+              <div class="eyebrow">FinQuery System Journey</div>
+              <h1>从原始数据，<br>到可信答案。</h1>
+              <p class="lede">一份可交互的系统地图：看清财务数据如何被清洗、派生、索引，并在一次自然语言查询中穿过检索、Agent、SQL 安全层与实时事件流。</p>
+              <div class="hero-meta"><span class="tag green">数据准备</span><span class="tag green">字段级检索</span><span class="tag green">只读 SQL</span><span class="tag green">SSE 实时进度</span><span class="tag amber">PIT 防前视</span></div>
+            </div>
+            <div class="system-orbit" aria-label="FinQuery 系统层次示意图">
+              <div class="core pulse">FinQ</div>
+              <div class="orbit-item">原始数据<small>CSV</small></div>
+              <div class="orbit-item">元数据<small>Schema · Terms</small></div>
+              <div class="orbit-item">工作流<small>LangGraph</small></div>
+              <div class="orbit-item">查询引擎<small>DuckDB</small></div>
+              <div class="orbit-item">用户界面<small>Vue · SSE</small></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-title="原始数据">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">01 · Data Preparation</div><h2>先把数据变得可查询</h2></div><p>查询速度和可信度，首先取决于离线数据工程。原始供应方 CSV 不直接暴露给 Agent，而是经过字段规范、类型转换、校验与压缩。</p></div>
+            <div class="flow-row">
+              <article class="flow-card"><span class="step-number">01</span><h3>盘点原始文件</h3><p>递归识别股票、报表与日期范围；保留供应方编码和来源边界。</p><div class="file mono">D:\trade_data\…\*.csv</div><i class="packet"></i></article>
+              <article class="flow-card"><span class="step-number">02</span><h3>规范字段与类型</h3><p>股票代码、紧凑日期、数值列和可选字段统一为稳定的英文物理字段。</p><div class="file mono">ColumnSpec(source → target)</div><i class="packet"></i></article>
+              <article class="flow-card"><span class="step-number">03</span><h3>验证数据质量</h3><p>检查主键、重复、日期、缺失、非有限数值以及文件清单。</p><div class="file mono">pipeline.py validate</div><i class="packet"></i></article>
+              <article class="flow-card"><span class="step-number">04</span><h3>产出 Curated Parquet</h3><p>按查询友好的结构压缩落盘，大体量数据与代码仓库分离。</p><div class="file mono">D:\trade_data_curated\trade_data</div></article>
+            </div>
+            <div class="trust-strip"><span class="tag">只读源目录</span><span class="tag">增量清单</span><span class="tag">UTF-8 / GB18030</span><span class="tag">Parquet 分区</span><span class="tag">可重复校验</span></div>
+          </div>
+        </section>
+
+        <section class="page" data-title="财务派生">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">02 · Financial Layers</div><h2>三层财务数据产品</h2></div><p>从披露事实到期间指标，再到交易日可见快照。每一层解决一种时间语义，避免把报告期、披露日和交易日混为一谈。</p></div>
+            <div class="split">
+              <div class="panel">
+                <div class="panel-head"><h3>构建链路</h3><span class="tag green">PIT 安全</span></div>
+                <div class="layer-stack">
+                  <div class="layer"><span class="layer-code">RAW</span><div><strong>原始财报 CSV</strong><p>数百个供应方字段，保留披露版本</p></div><span class="tag">输入</span></div>
+                  <div class="layer"><span class="layer-code">FS</span><div><strong>financial_statement</strong><p>标准字段、报表类型、报告期、披露日</p></div><span class="tag">事实</span></div>
+                  <div class="layer"><span class="layer-code">FP</span><div><strong>financial_period</strong><p>YTD · 单季度 · TTM · 平均余额 · 投入资本</p></div><span class="tag">期间</span></div>
+                  <div class="layer"><span class="layer-code">FD</span><div><strong>stock_financial_daily</strong><p>行情 + 市值 + PIT 财务指标服务层</p></div><span class="tag green">查询</span></div>
+                </div>
+              </div>
+              <div class="panel">
+                <div class="panel-head"><h3>三种日期，各司其职</h3><span class="tag amber">防止前视偏差</span></div>
+                <div class="date-lanes">
+                  <div class="date-lane"><strong>report_date</strong><div class="track"><span style="left:28%" data-label="经济期间结束"></span></div></div>
+                  <div class="date-lane"><strong>publish_date</strong><div class="track"><span style="left:57%" data-label="市场获知"></span></div></div>
+                  <div class="date-lane"><strong>trade_date</strong><div class="track"><span style="left:80%" data-label="行情时点"></span></div></div>
+                </div>
+                <div class="formula mono"><strong>ASOF 约束</strong><br><span class="field">financial_publish_date</span> ≤ <span class="field">trade_date</span><br><span class="comment">// 交易日只能使用当时已经披露的财报</span></div>
+                <p class="muted tiny" style="margin-top:18px">历史估值、ROIC、现金周期等横截面查询优先读取日频服务层；追溯具体披露版本则读取期间层或事实层。</p>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-title="元数据">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">03 · Metadata & Index</div><h2>让业务语言找到物理字段</h2></div><p>Schema 决定“能查什么”，术语表决定“怎么说也能找到”。两者共同构建字段文档与检索索引。</p></div>
+            <div class="retrieval-map">
+              <div class="query-chip"><small>用户业务表达</small><p>“低估值、高 ROIC、现金流健康的一般企业”</p></div>
+              <div class="funnel">
+                <div class="funnel-stage">_terms.json · 别名 / 概念 / 公式</div>
+                <div class="funnel-stage">_schema.json · 表 / 字段 / 类型 / 权限</div>
+                <div class="funnel-stage">字段文档 · BM25 + Embedding</div>
+                <div class="funnel-stage">Schema Index</div>
+              </div>
+              <div class="schema-mini">
+                <div class="schema-table"><strong>stock_financial_daily</strong><span class="schema-field">pe_parent_ttm</span><span class="schema-field">roic_ttm</span><span class="schema-field">fcff_ttm</span></div>
+                <div class="schema-table"><strong>financial_period</strong><span class="schema-field">report_date</span><span class="schema-field">publish_date</span><span class="schema-field">invested_capital</span></div>
+              </div>
+            </div>
+            <div class="trust-strip"><span class="tag green">active 指标必须落到真实字段</span><span class="tag">planned 指标不可直接查询</span><span class="tag">统一术语位置</span><span class="tag">权限过滤进入索引</span></div>
+          </div>
+        </section>
+
+        <section class="page" data-title="请求进入">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">04 · Request Entry</div><h2>一次查询如何开始</h2></div><p>前端建立 SSE 流；后端完成鉴权、额度、会话上下文与一次请求预处理，再决定是否真的访问数据库。</p></div>
+            <div class="route-grid">
+              <div class="terminal" aria-label="请求进入示例">
+                <div class="terminal-bar"><i></i><i></i><i></i><span style="margin-left:8px">POST /api/query · text/event-stream</span></div>
+                <div class="terminal-body">
+                  <div class="line" style="--i:1"><span class="prompt">user ›</span> 查询贵州茅台最近 12 个已披露报告期…</div>
+                  <div class="line" style="--i:2"><span class="event">submitted</span> 创建 task_id · 检查用户权限与额度</div>
+                  <div class="line" style="--i:3"><span class="event">context</span> 合并短期会话、已保存字段、最近结果</div>
+                  <div class="line" style="--i:4"><span class="event">preprocessing</span> 改写独立问题 · 提取检索词</div>
+                  <div class="line" style="--i:5"><span class="event">route</span> database_query</div>
+                  <div class="line" style="--i:6"><span class="event">presentation</span> table</div>
+                  <div class="line" style="--i:7"><span class="comment"># 后续进度持续通过 SSE 推送</span></div>
+                </div>
+              </div>
+              <div class="route-cards">
+                <div class="route-card"><span>◌</span><div><strong>direct_response</strong><p>普通问答，不访问数据库。</p></div></div>
+                <div class="route-card"><span>↗</span><div><strong>data_qa</strong><p>分析用户指定或最近一次真实结果。</p></div></div>
+                <div class="route-card"><span>▦</span><div><strong>database_query</strong><p>进入 Schema 检索、Agent 与 DuckDB。</p></div></div>
+                <div class="route-card"><span>?</span><div><strong>human clarification</strong><p>信息会改变结果时，由 LangGraph 暂停并等待确认。</p></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-title="实时流程">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">05 · Live Query</div><h2>把后台进度变成可感知的过程</h2></div><p>点击演示，观察一次数据库查询如何从检索走到结果。事件名称对应真实工作流阶段，时间仅用于动画示意。</p></div>
+            <div class="live-layout">
+              <div class="panel">
+                <span class="tag dark">DEMO QUERY</span>
+                <p style="margin:16px 0 0; line-height:1.7">查询贵州茅台最近 12 个已披露报告期，返回收入、利润、现金流和投入资本。</p>
+                <div class="live-controls"><button class="primary" id="runDemo">▶ 运行实时演示</button><button class="secondary" id="resetDemo">重置</button></div>
+                <div class="stage-list" id="stageList"></div>
+              </div>
+              <div class="event-stream">
+                <div class="stream-head"><span>SSE EVENT STREAM</span><span class="stream-status"><i></i><span id="streamState">等待运行</span></span></div>
+                <div class="stream-log" id="streamLog"><div class="muted">点击“运行实时演示”开始。</div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-title="SQL 安全">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">06 · Agent & Safety</div><h2>SQL 不是生成完就执行</h2></div><p>Agent 先发现允许的 MCP 工具，解析股票实体，生成查询契约和 SQL；随后经过 Schema、业务语义、权限与只读 AST 多重校验。</p></div>
+            <div class="sql-layout">
+              <div class="sql-box">
+                <div class="sql-tabs"><span>实际执行 SQL · DuckDB</span><span class="tag green">validated</span></div>
+                <pre class="sql-code"><span class="kw">SELECT</span> <span class="field">report_date</span>, <span class="field">publish_date</span>,
+       <span class="field">operating_revenue_ttm</span>, <span class="field">parent_net_profit_ttm</span>,
+       <span class="field">operating_cash_flow_ttm</span>, <span class="field">invested_capital</span>
+<span class="kw">FROM</span> (
+  <span class="kw">SELECT</span> ...
+  <span class="kw">FROM</span> <span class="field">financial_period</span>
+  <span class="kw">WHERE</span> <span class="field">symbol</span> = <span class="lit">'sh600519'</span>
+  <span class="kw">QUALIFY ROW_NUMBER()</span> <span class="kw">OVER</span> (
+    <span class="kw">PARTITION BY</span> <span class="field">report_date</span>
+    <span class="kw">ORDER BY</span> <span class="field">publish_date</span> <span class="kw">DESC</span>
+  ) = 1
+  <span class="kw">ORDER BY</span> <span class="field">report_date</span> <span class="kw">DESC LIMIT</span> <span class="lit">12</span>
+) recent
+<span class="kw">ORDER BY</span> <span class="field">report_date</span> <span class="kw">ASC</span>;</pre>
+              </div>
+              <div class="guard-list">
+                <div class="guard"><i>01</i><div><strong>工具边界</strong><p>只能调用 Skill 允许且当前用户可见的 MCP 工具。</p></div></div>
+                <div class="guard"><i>02</i><div><strong>查询契约</strong><p>粒度、来源表、过滤条件、指标和输出列必须完整。</p></div></div>
+                <div class="guard"><i>03</i><div><strong>Schema 校验</strong><p>表受最小 Schema 图限制；字段必须存在于完整注册 Schema。</p></div></div>
+                <div class="guard"><i>04</i><div><strong>业务语义</strong><p>最新交易日、最近报告期、披露版本和最终排序不可遗漏。</p></div></div>
+                <div class="guard"><i>05</i><div><strong>只读执行</strong><p>单条 SELECT/WITH、显式字段、权限检查、最多返回 200 行。</p></div></div>
+                <div class="guard"><i>↻</i><div><strong>有限修正</strong><p>失败 SQL 不得原样重试；简单确定性错误可在执行前安全修正。</p></div></div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <section class="page" data-title="可信结果">
+          <div class="page-shell">
+            <div class="section-head"><div><div class="eyebrow">07 · Result Delivery</div><h2>答案保留数据血缘</h2></div><p>数据库结果先成为结构化表格，再生成文字说明；若用户要求图表或报告，则复用同一批真实结果，而不是重新猜测数据。</p></div>
+            <div class="result-layout">
+              <div class="result-table">
+                <header><div><strong>贵州茅台 · 最近报告期</strong><div class="muted tiny" style="margin-top:4px">展示结构示意 · 正式数值以实际查询为准</div></div><span class="tag green">结构示意</span></header>
+                <div style="overflow:auto"><table class="fake-table"><thead><tr><th>报告期</th><th>披露日期</th><th>营业收入 TTM</th><th>归母净利润 TTM</th><th>投入资本</th></tr></thead><tbody>
+                  <tr style="--i:1"><td>2023-09-30</td><td>2024-10-26</td><td>—</td><td>—</td><td>—</td></tr>
+                  <tr style="--i:2"><td>2023-12-31</td><td>2024-04-03</td><td>¥…</td><td>¥…</td><td>¥…</td></tr>
+                  <tr style="--i:3"><td>2024-03-31</td><td>2024-04-27</td><td>¥…</td><td>¥…</td><td>¥…</td></tr>
+                  <tr style="--i:4"><td>2024-06-30</td><td>2024-08-09</td><td>¥…</td><td>¥…</td><td>¥…</td></tr>
+                  <tr style="--i:5"><td>…</td><td>…</td><td>…</td><td>…</td><td>…</td></tr>
+                  <tr style="--i:6"><td>2026-06-30</td><td>2026-08-15</td><td>¥…</td><td>¥…</td><td>¥…</td></tr>
+                </tbody></table></div>
+              </div>
+              <div class="deliverables">
+                <div class="deliverable" data-icon="▦"><strong>结果表</strong><p>明确列、真实行、分页与 Excel 导出。</p></div>
+                <div class="deliverable" data-icon="SQL"><strong>实际执行 SQL</strong><p>成功与失败应区分；候选 SQL 需明确标注“未执行”。</p></div>
+                <div class="deliverable" data-icon="Aa"><strong>结果说明</strong><p>基于真实查询结果生成标题、摘要和口径解释。</p></div>
+                <div class="deliverable" data-icon="↗"><strong>图表 / 报告</strong><p>复用本轮结果列生成可追溯的展示规格。</p></div>
+                <div class="deliverable" data-icon="✓"><strong>执行记录</strong><p>保留检索、工具调用、耗时、错误与重试轨迹。</p></div>
+              </div>
+            </div>
+            <div class="trust-strip"><span class="tag green">从数据到答案闭环</span><span class="tag">报告期 ≠ 披露日</span><span class="tag">SQL 可核验</span><span class="tag">失败阶段可定位</span><span class="tag">结果可继续分析</span></div>
+          </div>
+        </section>
+      </div>
+    </main>
+
+    <footer class="footer-nav">
+      <button class="nav-btn" id="prevBtn" aria-label="上一页">← <span class="label">上一页</span></button>
+      <div><div class="progress-track"><div class="progress-bar" id="progressBar"></div></div><div class="shortcut" style="margin-top:7px;text-align:center">← → 翻页 · Space 下一页 · Home / End 跳转</div></div>
+      <button class="nav-btn next" id="nextBtn" aria-label="下一页"><span class="label">下一页</span> →</button>
+    </footer>
+  </div>
+
+  <script>
+    const pages = [...document.querySelectorAll('.page')]
+    const deck = document.getElementById('deck')
+    const dots = document.querySelector('.chapters')
+    const now = document.getElementById('pageNow')
+    const total = document.getElementById('pageTotal')
+    const progress = document.getElementById('progressBar')
+    const prev = document.getElementById('prevBtn')
+    const next = document.getElementById('nextBtn')
+    let current = 0
+    let touchStart = 0
+    total.textContent = String(pages.length).padStart(2, '0')
+
+    pages.forEach((page, index) => {
+      const dot = document.createElement('button')
+      dot.className = 'chapter-dot'
+      dot.title = `${index + 1}. ${page.dataset.title}`
+      dot.setAttribute('aria-label', dot.title)
+      dot.addEventListener('click', () => go(index))
+      dots.appendChild(dot)
+    })
+
+    function go(index) {
+      current = Math.max(0, Math.min(pages.length - 1, index))
+      deck.style.transform = `translateX(-${current * 100}%)`
+      pages.forEach((page, i) => page.classList.toggle('active', i === current))
+      ;[...dots.children].forEach((dot, i) => dot.classList.toggle('active', i === current))
+      now.textContent = String(current + 1).padStart(2, '0')
+      progress.style.width = `${((current + 1) / pages.length) * 100}%`
+      prev.disabled = current === 0
+      next.disabled = current === pages.length - 1
+      pages[current].scrollTop = 0
+      history.replaceState(null, '', `#page-${current + 1}`)
+    }
+
+    prev.addEventListener('click', () => go(current - 1))
+    next.addEventListener('click', () => go(current + 1))
+    document.addEventListener('keydown', (event) => {
+      if (['INPUT', 'TEXTAREA', 'SELECT'].includes(document.activeElement?.tagName)) return
+      if (event.key === 'ArrowLeft') go(current - 1)
+      if (event.key === 'ArrowRight' || event.key === ' ') { event.preventDefault(); go(current + 1) }
+      if (event.key === 'Home') go(0)
+      if (event.key === 'End') go(pages.length - 1)
+    })
+    document.querySelector('.viewport').addEventListener('touchstart', event => { touchStart = event.changedTouches[0].screenX }, { passive: true })
+    document.querySelector('.viewport').addEventListener('touchend', event => {
+      const delta = event.changedTouches[0].screenX - touchStart
+      if (Math.abs(delta) > 55) go(current + (delta < 0 ? 1 : -1))
+    }, { passive: true })
+
+    const demoStages = [
+      ['preprocessing', '理解意图与提取检索词', '00.18s'],
+      ['retrieving', 'BM25 + Dense 字段召回', '00.46s'],
+      ['reranking', 'RRF 融合与 Rerank', '00.71s'],
+      ['schema_graph', '构建最小 Schema 图', '00.83s'],
+      ['planning_sql', '解析实体并生成查询契约', '01.26s'],
+      ['sql_ready', 'SQL 语义与安全校验通过', '01.43s'],
+      ['executing', 'DuckDB 读取 Curated Parquet', '01.58s'],
+      ['finalizing', '整理表格与结果说明', '01.82s'],
+      ['completed', '结果事件已送达', '02.04s'],
+    ]
+    const stageList = document.getElementById('stageList')
+    const streamLog = document.getElementById('streamLog')
+    const streamState = document.getElementById('streamState')
+    let demoTimer = null
+
+    function renderStages(active = -1) {
+      stageList.innerHTML = demoStages.map((item, index) => `<div class="stage-item ${index < active ? 'done' : index === active ? 'active' : ''}"><i></i><span>${item[1]}</span><time>${item[2]}</time></div>`).join('')
+    }
+    function resetDemo() {
+      clearInterval(demoTimer)
+      demoTimer = null
+      renderStages(-1)
+      streamState.textContent = '等待运行'
+      streamLog.innerHTML = '<div class="muted">点击“运行实时演示”开始。</div>'
+    }
+    function runDemo() {
+      resetDemo()
+      streamState.textContent = '连接中'
+      streamLog.innerHTML = ''
+      let index = 0
+      const append = () => {
+        const [stage, message, timestamp] = demoStages[index]
+        renderStages(index)
+        streamState.textContent = index === demoStages.length - 1 ? '已完成' : '实时接收中'
+        const row = document.createElement('div')
+        row.className = 'stream-row'
+        row.innerHTML = `<time>${timestamp}</time><b>${stage}</b><span>${message}</span>`
+        streamLog.appendChild(row)
+        streamLog.scrollTop = streamLog.scrollHeight
+        index += 1
+        if (index >= demoStages.length) { clearInterval(demoTimer); demoTimer = null }
+      }
+      append()
+      demoTimer = setInterval(append, 430)
+    }
+    document.getElementById('runDemo').addEventListener('click', runDemo)
+    document.getElementById('resetDemo').addEventListener('click', resetDemo)
+    renderStages()
+
+    const hashPage = Number(location.hash.replace('#page-', '')) - 1
+    go(Number.isInteger(hashPage) && hashPage >= 0 ? hashPage : 0)
+  </script>
+</body>
+</html>
